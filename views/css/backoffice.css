@@ -1,0 +1,942 @@
+#content.bootstrap .ingenico-settings {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  transition: all 0.3s ease; }
+  #content.bootstrap .ingenico-settings.test {
+    border-top: solid 8px rgba(251, 188, 63, 0.5); }
+  #content.bootstrap .ingenico-settings.live {
+    border-top: solid 8px rgba(38, 171, 42, 0.5); }
+  #content.bootstrap .ingenico-settings.install {
+    border-top: 0;
+    display: flex;
+    min-height: 500px; }
+    #content.bootstrap .ingenico-settings.install .form-wrapper.settings-form {
+      display: none; }
+    #content.bootstrap .ingenico-settings.install .account-creation-progress {
+      width: 100%;
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 8px;
+      background: #edefed;
+      transition: all 0.3s ease; }
+      #content.bootstrap .ingenico-settings.install .account-creation-progress.done {
+        background: #306ba8; }
+      #content.bootstrap .ingenico-settings.install .account-creation-progress .progress-half {
+        width: 50%;
+        float: left;
+        height: 8px; }
+        #content.bootstrap .ingenico-settings.install .account-creation-progress .progress-half.active {
+          transition: all 0.3s ease;
+          background: #306ba8;
+          border-radius: 0 10px 10px 0; }
+    #content.bootstrap .ingenico-settings.install .account-creation-done {
+      margin: 50px 0 30px; }
+  #content.bootstrap .ingenico-settings.installed .form-wrapper.installation-view {
+    display: none; }
+  #content.bootstrap .ingenico-settings .ingenico-button {
+    height: 50px;
+    padding: 0 27px;
+    background: #2a6baa;
+    border-radius: 30px;
+    text-align: center;
+    line-height: 50px;
+    font-size: 15px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    float: left;
+    border: 0; }
+    #content.bootstrap .ingenico-settings .ingenico-button.disabled {
+      background: #989898; }
+    #content.bootstrap .ingenico-settings .ingenico-button.connect-existing {
+      float: initial;
+      margin-top: 30px; }
+  #content.bootstrap .ingenico-settings .form-wrapper {
+    margin: 0 62px;
+    max-width: 800px;
+    display: grid; }
+    #content.bootstrap .ingenico-settings .form-wrapper .tab-content.panel {
+      padding: 0 0 32px;
+      border: 0;
+      max-width: 800px;
+      border-bottom: solid 1px #ececec;
+      margin-bottom: 24px; }
+    #content.bootstrap .ingenico-settings .form-wrapper .nav-tabs {
+      border-bottom: solid 1px #ddd;
+      margin: 12px 0 0 0; }
+      #content.bootstrap .ingenico-settings .form-wrapper .nav-tabs li {
+        background: #f6f6f6;
+        margin-right: 8px;
+        border: solid 1px #dddddd;
+        border-radius: 3px 3px 0 0; }
+        #content.bootstrap .ingenico-settings .form-wrapper .nav-tabs li.active {
+          background: #FFFFFF;
+          border-bottom: solid 1px #fff; }
+          #content.bootstrap .ingenico-settings .form-wrapper .nav-tabs li.active > a {
+            color: #306ba8; }
+        #content.bootstrap .ingenico-settings .form-wrapper .nav-tabs li > a {
+          margin-right: 0;
+          border: 0;
+          font-style: initial;
+          font-size: 15px;
+          cursor: pointer;
+          color: #000000;
+          font-weight: 600;
+          line-height: 30px;
+          padding: 10px 20px;
+          text-transform: initial; }
+    #content.bootstrap .ingenico-settings .form-wrapper .info-block {
+      background: #f6f6f6;
+      padding: 10px 20px;
+      display: inline-block;
+      border-radius: 4px; }
+    #content.bootstrap .ingenico-settings .form-wrapper .form-group {
+      margin: 0; }
+      #content.bootstrap .ingenico-settings .form-wrapper .form-group h2, #content.bootstrap .ingenico-settings .form-wrapper .form-group h3 {
+        margin: 0;
+        padding: 0; }
+    #content.bootstrap .ingenico-settings .form-wrapper .tooltiptext {
+      position: absolute;
+      width: 500px;
+      background: #fff;
+      z-index: 9;
+      box-shadow: 0px 0px 18px #c8c8c8;
+      padding: 16px;
+      margin: 80px 0 0 45px; }
+    #content.bootstrap .ingenico-settings .form-wrapper .panel-footer {
+      margin: 0;
+      padding: 0;
+      border-color: #fff; }
+    #content.bootstrap .ingenico-settings .form-wrapper .panel {
+      box-shadow: none; }
+    #content.bootstrap .ingenico-settings .form-wrapper .save-settings,
+    #content.bootstrap .ingenico-settings .form-wrapper .ingenico-button {
+      height: 50px;
+      width: fit-content;
+      min-width: 100px;
+      background: #2a6baa;
+      border-radius: 30px;
+      text-align: center;
+      line-height: 50px;
+      font-size: 15px;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      float: left;
+      border: 0; }
+    #content.bootstrap .ingenico-settings .form-wrapper .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 20px;
+      float: left;
+      margin: 0 0 15px; }
+      #content.bootstrap .ingenico-settings .form-wrapper .switch input {
+        display: none; }
+        #content.bootstrap .ingenico-settings .form-wrapper .switch input:checked + .slider:before {
+          background-color: #2a6baa; }
+        #content.bootstrap .ingenico-settings .form-wrapper .switch input:focus + .slider {
+          box-shadow: 0 0 1px #2a6baa; }
+        #content.bootstrap .ingenico-settings .form-wrapper .switch input:checked + .slider:before {
+          -webkit-transform: translateX(20px);
+          -ms-transform: translateX(20px);
+          transform: translateX(20px); }
+        #content.bootstrap .ingenico-settings .form-wrapper .switch input.disabled + .slider:before {
+          background-color: #afafaf; }
+        #content.bootstrap .ingenico-settings .form-wrapper .switch input.disabled {
+          pointer-events: none; }
+      #content.bootstrap .ingenico-settings .form-wrapper .switch .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #e4e4e4;
+        -webkit-transition: .4s;
+        transition: .4s; }
+        #content.bootstrap .ingenico-settings .form-wrapper .switch .slider:before {
+          position: absolute;
+          content: "";
+          height: 20px;
+          width: 20px;
+          background-color: #afafaf;
+          -webkit-transition: .4s;
+          transition: .4s; }
+        #content.bootstrap .ingenico-settings .form-wrapper .switch .slider.round {
+          border-radius: 34px; }
+          #content.bootstrap .ingenico-settings .form-wrapper .switch .slider.round:before {
+            border-radius: 50%; }
+    #content.bootstrap .ingenico-settings .form-wrapper .toggle-label {
+      float: left;
+      line-height: 20px;
+      padding-left: 10px;
+      font-weight: 600;
+      font-size: 15px; }
+    #content.bootstrap .ingenico-settings .form-wrapper .radio-toggle {
+      margin-top: 20px; }
+    #content.bootstrap .ingenico-settings .form-wrapper #upload-template {
+      opacity: 0;
+      position: absolute;
+      z-index: -1; }
+    #content.bootstrap .ingenico-settings .form-wrapper .upload-label {
+      padding: 10px;
+      border: solid 1px #e8eaef;
+      color: #767676;
+      width: 300px;
+      white-space: nowrap;
+      overflow-x: hidden;
+      float: left;
+      margin: 0; }
+    #content.bootstrap .ingenico-settings .form-wrapper .installment-row {
+      margin: 15px 0;
+      display: flex; }
+  #content.bootstrap .ingenico-settings .upload-template {
+    height: 40px;
+    width: 103px;
+    background: #2a6baa;
+    border-radius: 30px;
+    line-height: 40px;
+    font-size: 15px;
+    color: #fff;
+    font-weight: 600;
+    border: 0;
+    margin-left: 22px;
+    float: left; }
+  #content.bootstrap .ingenico-settings .col-lg-12 {
+    padding-left: 0; }
+  #content.bootstrap .ingenico-settings h1 {
+    margin: 16px 0;
+    font-weight: 600;
+    color: #000;
+    font-size: 36px; }
+  #content.bootstrap .ingenico-settings h2 {
+    font-style: initial;
+    color: #000;
+    font-size: 28px;
+    float: left;
+    margin: 0 0 10px;
+    font-weight: 100;
+    padding: 20px 0 0; }
+    #content.bootstrap .ingenico-settings h2.block-title {
+      font-style: initial;
+      color: #000;
+      font-size: 20px;
+      margin-bottom: 10px;
+      margin-top: 20px; }
+      #content.bootstrap .ingenico-settings h2.block-title span {
+        font-size: 14px;
+        padding-left: 10px;
+        color: #306ba8; }
+    #content.bootstrap .ingenico-settings h2.block-title.without-desc {
+      margin-bottom: 0; }
+    #content.bootstrap .ingenico-settings h2 .icon-span {
+      background: url(../imgs/help.svg);
+      cursor: pointer;
+      margin: 0px 16px -4px; }
+  #content.bootstrap .ingenico-settings h3 {
+    border: 0;
+    text-transform: initial;
+    font-size: 20px;
+    margin: 20px 0 10px;
+    color: #000;
+    font-weight: 600;
+    line-height: normal;
+    height: initial; }
+    #content.bootstrap .ingenico-settings h3 .icon-span {
+      background: url(../imgs/help.svg);
+      margin: -7px 15px;
+      cursor: pointer; }
+  #content.bootstrap .ingenico-settings h4 {
+    margin: 0 0 10px;
+    color: #000;
+    font-size: 18px; }
+  #content.bootstrap .ingenico-settings .icon-span {
+    height: 28px;
+    width: 28px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 18px;
+    margin: 0px 16px 16px; }
+    #content.bootstrap .ingenico-settings .icon-span.paypal {
+      position: absolute;
+      right: -60px;
+      margin-top: 15px;
+      background: url(../imgs/warning.svg); }
+    #content.bootstrap .ingenico-settings .icon-span.inline-store-cards {
+      position: absolute;
+      background: url(../imgs/warning.svg);
+      margin: -7px 15px;
+      cursor: pointer; }
+  #content.bootstrap .ingenico-settings .disclaimer {
+    border: solid 1px #e8eaef;
+    border-bottom: 2px solid #e82635;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    margin-top: 0px;
+    display: flex;
+    padding: 16px 0 0;
+    float: left;
+    width: 100%; }
+    #content.bootstrap .ingenico-settings .disclaimer p {
+      width: 90%;
+      line-height: 60px;
+      float: left;
+      padding: 0; }
+    #content.bootstrap .ingenico-settings .disclaimer .icon-span {
+      background: url(../imgs/warning.svg); }
+  #content.bootstrap .ingenico-settings .tab-content {
+    padding-bottom: 50px; }
+    #content.bootstrap .ingenico-settings .tab-content p {
+      font-size: 15px;
+      line-height: 27px;
+      font-weight: 100;
+      font-style: initial;
+      float: left;
+      color: #575665; }
+      #content.bootstrap .ingenico-settings .tab-content p.radio {
+        float: left;
+        width: 100%;
+        top: 0;
+        padding-top: 2px; }
+      #content.bootstrap .ingenico-settings .tab-content p span {
+        color: #00aff0;
+        padding-top: 5px;
+        display: block; }
+      #content.bootstrap .ingenico-settings .tab-content p .icon-span {
+        float: right;
+        cursor: pointer;
+        background: url(../imgs/help.svg); }
+  #content.bootstrap .ingenico-settings .webhook {
+    margin-bottom: 10px;
+    display: inline-block; }
+    #content.bootstrap .ingenico-settings .webhook p {
+      margin: 0; }
+    #content.bootstrap .ingenico-settings .webhook a.copy-link, #content.bootstrap .ingenico-settings .webhook a.modal-link {
+      line-height: 30px; }
+  #content.bootstrap .ingenico-settings a {
+    font-style: initial;
+    font-size: 14px;
+    cursor: pointer;
+    color: #306ba8;
+    font-weight: 600; }
+    #content.bootstrap .ingenico-settings a.modal-link {
+      line-height: 40px;
+      margin-left: 15px; }
+  #content.bootstrap .ingenico-settings input.form-control {
+    max-width: 500px;
+    height: 40px;
+    border: solid #e8eaef 1px;
+    padding-left: 15px;
+    background: #fff; }
+    #content.bootstrap .ingenico-settings input.form-control.suffix {
+      width: 200px;
+      text-align: right; }
+    #content.bootstrap .ingenico-settings input.form-control.country-list, #content.bootstrap .ingenico-settings input.form-control.payment-methods-list {
+      max-width: 100%;
+      background: #fff; }
+  #content.bootstrap .ingenico-settings input[type=number] {
+    width: 80px; }
+  #content.bootstrap .ingenico-settings input[type=email] {
+    width: 400px; }
+  #content.bootstrap .ingenico-settings .modal-link-how-to {
+    margin-left: 20px; }
+  #content.bootstrap .ingenico-settings .connect {
+    float: left;
+    color: #FFFFFF;
+    font-size: 15px;
+    margin: 0 20px;
+    height: 33px;
+    line-height: 33px;
+    padding: 0 10px;
+    font-style: initial;
+    border-radius: 4px; }
+    #content.bootstrap .ingenico-settings .connect.connected {
+      background: #3cae1c; }
+    #content.bootstrap .ingenico-settings .connect.not-connected {
+      background: #eb222e; }
+  #content.bootstrap .ingenico-settings .form-btn {
+    text-align: center;
+    background: #2a6baa;
+    color: #fff;
+    padding: 0 10px;
+    display: block;
+    cursor: pointer;
+    border-radius: 20px;
+    font-weight: 600;
+    float: left; }
+  #content.bootstrap .ingenico-settings .mask {
+    height: 25px;
+    line-height: 25px;
+    margin: -32px 413px;
+    width: 80px;
+    position: relative; }
+  #content.bootstrap .ingenico-settings .generate {
+    margin: -39px 515px;
+    height: 38px;
+    line-height: 38px;
+    font-size: 15px;
+    width: 100px; }
+  #content.bootstrap .ingenico-settings label {
+    font-size: 15px;
+    color: #000;
+    font-weight: 100;
+    margin-top: 15px;
+    width: 100%; }
+    #content.bootstrap .ingenico-settings label.email-label {
+      color: #575665;
+      margin-top: 15px; }
+  #content.bootstrap .ingenico-settings .radio label {
+    color: #575665;
+    margin: 0; }
+  #content.bootstrap .ingenico-settings .settings-group {
+    padding: 20px;
+    border: solid 1px #ececec;
+    margin-top: 17px; }
+  #content.bootstrap .ingenico-settings input {
+    float: left;
+    padding: 0; }
+  #content.bootstrap .ingenico-settings .suffix {
+    float: left;
+    line-height: 40px;
+    font-size: 15px;
+    color: #000;
+    padding-left: 5px; }
+  #content.bootstrap .ingenico-settings .connection-btn-message {
+    margin-top: 20px;
+    height: 33px; }
+    #content.bootstrap .ingenico-settings .connection-btn-message .connection-response {
+      float: left;
+      line-height: 33px;
+      font-size: 15px;
+      margin-left: 15px;
+      font-weight: 600; }
+      #content.bootstrap .ingenico-settings .connection-btn-message .connection-response .not-connected {
+        color: #eb222e; }
+      #content.bootstrap .ingenico-settings .connection-btn-message .connection-response .connected {
+        color: #26ab2a; }
+  #content.bootstrap .ingenico-settings .ingenico-btn {
+    height: 33px;
+    background: #2a6baa;
+    border-radius: 30px;
+    padding: 0 15px;
+    text-align: center;
+    line-height: 33px;
+    font-size: 15px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    float: left;
+    border: 0; }
+  #content.bootstrap .ingenico-settings .webhook-url {
+    font-weight: normal; }
+  #content.bootstrap .ingenico-settings .copy-response {
+    display: none;
+    float: left;
+    width: 100%;
+    color: #26ab2a; }
+  #content.bootstrap .ingenico-settings .title-link {
+    margin-top: 11px; }
+  #content.bootstrap .ingenico-settings button:focus {
+    outline: 0; }
+  #content.bootstrap .ingenico-settings .error-label {
+    width: 100%;
+    float: left;
+    list-style: none;
+    padding: 5px 0;
+    color: #eb222e; }
+  #content.bootstrap .ingenico-settings [type="radio"]:checked,
+  #content.bootstrap .ingenico-settings [type="radio"]:not(:checked) {
+    position: absolute;
+    left: -9999px; }
+  #content.bootstrap .ingenico-settings [type="radio"]:checked + label,
+  #content.bootstrap .ingenico-settings [type="radio"]:not(:checked) + label {
+    position: relative;
+    padding-left: 25px;
+    cursor: pointer;
+    line-height: 20px;
+    display: inline-block;
+    color: #666; }
+  #content.bootstrap .ingenico-settings [type="radio"]:checked + label:before,
+  #content.bootstrap .ingenico-settings [type="radio"]:not(:checked) + label:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 1px;
+    width: 17px;
+    height: 17px;
+    border-radius: 100%;
+    background: #306ba8; }
+  #content.bootstrap .ingenico-settings [type="radio"]:not(:checked) + label:before {
+    background: #fff;
+    border: solid 1px #ccc; }
+  #content.bootstrap .ingenico-settings [type="radio"]:checked + label:after,
+  #content.bootstrap .ingenico-settings [type="radio"]:not(:checked) + label:after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    background: #FFFFFF;
+    position: absolute;
+    top: 6px;
+    left: 5px;
+    border-radius: 100%;
+    -webkit-transition: all 0.2s ease;
+    transition: all 0.2s ease; }
+  #content.bootstrap .ingenico-settings [type="radio"]:not(:checked) + label:after {
+    opacity: 0;
+    -webkit-transform: scale(0);
+    transform: scale(0); }
+  #content.bootstrap .ingenico-settings [type="radio"]:checked + label:after {
+    opacity: 1;
+    -webkit-transform: scale(1);
+    transform: scale(1); }
+  #content.bootstrap .ingenico-settings .collapse-btn {
+    float: right;
+    font-style: initial;
+    font-size: 15px;
+    font-weight: 100;
+    color: #306ba8;
+    padding: 5px 0px;
+    cursor: pointer; }
+    #content.bootstrap .ingenico-settings .collapse-btn .hide-collapse {
+      display: none; }
+    #content.bootstrap .ingenico-settings .collapse-btn i {
+      border: solid #306ba8;
+      border-width: 0 1.5px 1.5px 0;
+      display: inline-block;
+      padding: 4px;
+      margin-left: 5px; }
+      #content.bootstrap .ingenico-settings .collapse-btn i.right {
+        transform: rotate(-45deg);
+        -webkit-transform: rotate(-45deg); }
+      #content.bootstrap .ingenico-settings .collapse-btn i.up {
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+        margin-left: 10px;
+        margin-bottom: 2px; }
+  #content.bootstrap .ingenico-settings #connection .account-header {
+    cursor: pointer; }
+  #content.bootstrap .ingenico-settings #payment_methods ul {
+    margin: 0;
+    padding: 0; }
+    #content.bootstrap .ingenico-settings #payment_methods ul li {
+      list-style: none;
+      float: left;
+      width: 92%;
+      border: solid 1px #dddddd;
+      margin-bottom: 16px;
+      height: 62px;
+      line-height: 62px;
+      padding: 0 16px;
+      font-weight: 700;
+      font-size: 15px;
+      color: #000;
+      transition: all 0.3s ease; }
+      #content.bootstrap .ingenico-settings #payment_methods ul li:hover {
+        background: #fbfbfb; }
+        #content.bootstrap .ingenico-settings #payment_methods ul li:hover .countries {
+          display: none; }
+        #content.bootstrap .ingenico-settings #payment_methods ul li:hover .payment-method-settings {
+          display: flex; }
+          #content.bootstrap .ingenico-settings #payment_methods ul li:hover .payment-method-settings a {
+            display: flex; }
+            #content.bootstrap .ingenico-settings #payment_methods ul li:hover .payment-method-settings a:hover {
+              text-decoration: none; }
+            #content.bootstrap .ingenico-settings #payment_methods ul li:hover .payment-method-settings a i {
+              margin: 18px 5px; }
+      #content.bootstrap .ingenico-settings #payment_methods ul li label {
+        width: auto;
+        font-weight: 700;
+        margin: 0 0 0 20px; }
+      #content.bootstrap .ingenico-settings #payment_methods ul li .countries {
+        float: right; }
+      #content.bootstrap .ingenico-settings #payment_methods ul li .payment-method-settings {
+        float: right;
+        display: none; }
+    #content.bootstrap .ingenico-settings #payment_methods ul li.twint img {
+      padding-bottom: 5px; }
+    #content.bootstrap .ingenico-settings #payment_methods ul li#paypal-warn {
+      position: relative;
+      width: 8%;
+      float: right;
+      border: none; }
+      #content.bootstrap .ingenico-settings #payment_methods ul li#paypal-warn .icon-span {
+        position: relative;
+        margin: auto;
+        background: url(../imgs/warning.svg);
+        cursor: pointer; }
+    #content.bootstrap .ingenico-settings #payment_methods ul li#paypal-warn:hover {
+      background: inherit; }
+  #content.bootstrap .ingenico-settings .label-container {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none; }
+    #content.bootstrap .ingenico-settings .label-container:after {
+      content: "";
+      position: absolute;
+      display: none; }
+    #content.bootstrap .ingenico-settings .label-container input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0; }
+    #content.bootstrap .ingenico-settings .label-container .checkmark {
+      position: absolute;
+      top: -4px;
+      left: 5px;
+      height: 20px;
+      width: 20px;
+      background-color: #fff;
+      border: solid 1px #ddd; }
+      #content.bootstrap .ingenico-settings .label-container .checkmark:after {
+        left: 7px;
+        top: 3px;
+        width: 5px;
+        height: 11px;
+        border: solid #2a6baa;
+        border-width: 0 2px 2px 0;
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg);
+        content: "";
+        position: absolute;
+        display: none; }
+    #content.bootstrap .ingenico-settings .label-container input:checked ~ .checkmark:after {
+      display: block; }
+    #content.bootstrap .ingenico-settings .label-container input.disabled ~ .checkmark {
+      opacity: 0.2;
+      pointer-events: none; }
+  #content.bootstrap .ingenico-settings .payment-page-disclaimer {
+    margin: 10px 0; }
+  #content.bootstrap .ingenico-settings .range-bar {
+    width: 435px;
+    margin-top: 15px;
+    margin-right: 10px;
+    float: left; }
+  #content.bootstrap .ingenico-settings .ui-slider-handle {
+    background: #2a6baa;
+    border: 0px;
+    border-radius: 20px;
+    width: 20px;
+    height: 20px;
+    top: -5px;
+    outline: none; }
+    #content.bootstrap .ingenico-settings .ui-slider-handle:after {
+      width: 8px;
+      height: 8px;
+      background: #fff;
+      content: "";
+      display: block;
+      margin: 6px 6px;
+      border-radius: 10px; }
+    #content.bootstrap .ingenico-settings .ui-slider-handle b {
+      margin: 20px -10px;
+      position: absolute;
+      width: 40px;
+      text-align: center; }
+      #content.bootstrap .ingenico-settings .ui-slider-handle b.left-handler {
+        margin: -20px -10px; }
+  #content.bootstrap .ingenico-settings .ui-slider-range {
+    background: #2a6baa; }
+  #content.bootstrap .ingenico-settings .ui-widget-content {
+    background: #dddddd;
+    border: 0; }
+  #content.bootstrap .ingenico-settings #settings h1 {
+    float: left; }
+  #content.bootstrap .ingenico-settings #settings .advanced-switch {
+    float: right;
+    margin-top: 25px; }
+    #content.bootstrap .ingenico-settings #settings .advanced-switch .switch-label {
+      float: left;
+      line-height: 20px;
+      padding-right: 10px;
+      font-weight: 600;
+      font-size: 15px; }
+      #content.bootstrap .ingenico-settings #settings .advanced-switch .switch-label.right {
+        padding-right: 0px;
+        padding-left: 10px; }
+    #content.bootstrap .ingenico-settings #settings .advanced-switch .switch .slider:before {
+      background-color: #2a6baa; }
+  #content.bootstrap .ingenico-settings #settings .advanced_settings {
+    width: 100%; }
+  #content.bootstrap .ingenico-settings #support label {
+    font-weight: bold; }
+  #content.bootstrap .ingenico-settings #support label.upload-label {
+    font-weight: normal; }
+  #content.bootstrap .ingenico-settings #support #description {
+    background-color: #fff; }
+  #content.bootstrap .ingenico-settings #support .cloud {
+    display: inline;
+    background: url(../imgs/cloud.svg) center no-repeat;
+    padding: 10px; }
+  #content.bootstrap .ingenico-settings #support .import-export strong {
+    font-size: 20px;
+    line-height: 28px;
+    color: #000;
+    font-weight: bold; }
+  #content.bootstrap .ingenico-settings #support strong {
+    color: #000; }
+
+.ingenico-modal {
+  position: absolute;
+  overflow: initial;
+  overflow-y: initial; }
+  .ingenico-modal .modal-dialog {
+    width: 960px;
+    margin: 20px auto; }
+  .ingenico-modal .modal-header {
+    border: 0;
+    padding: 15px 32px; }
+    .ingenico-modal .modal-header h3 {
+      margin: 10px 0;
+      color: #000;
+      font-weight: 1000; }
+    .ingenico-modal .modal-header .close {
+      margin-top: 10px;
+      font-size: 25px; }
+  .ingenico-modal .modal-content {
+    width: 960px;
+    border: 0;
+    border-radius: 0; }
+    .ingenico-modal .modal-content .modal-body {
+      background: #f7f7f9;
+      padding: 5px 32px 5px; }
+    .ingenico-modal .modal-content .modal-footer {
+      /* float: left; */
+      width: 100%;
+      background: #fff;
+      border-top: 0; }
+      .ingenico-modal .modal-content .modal-footer .close, .ingenico-modal .modal-content .modal-footer .apply {
+        background: #2a6baa;
+        opacity: 1;
+        color: #fff;
+        text-shadow: none;
+        border-radius: 20px;
+        width: fit-content;
+        font-size: 15px;
+        border: 0;
+        font-weight: 700;
+        min-height: 40px;
+        min-width: 110px; }
+  .ingenico-modal img {
+    width: 100%; }
+  .ingenico-modal ul {
+    list-style: none;
+    font-weight: 100;
+    padding: 0px;
+    font-size: 15px;
+    margin: 15px 0; }
+  .ingenico-modal#countries-list .modal-body.col-lg-12, .ingenico-modal#payment-methods-list .modal-body.col-lg-12 {
+    padding: 16px; }
+    .ingenico-modal#countries-list .modal-body.col-lg-12 ul, .ingenico-modal#payment-methods-list .modal-body.col-lg-12 ul {
+      padding: 10px 16px 16px;
+      background: #FFF;
+      margin-top: 16px;
+      border: solid 1px #ddd; }
+      .ingenico-modal#countries-list .modal-body.col-lg-12 ul label, .ingenico-modal#payment-methods-list .modal-body.col-lg-12 ul label {
+        margin: 10px 0 0; }
+      .ingenico-modal#countries-list .modal-body.col-lg-12 ul input, .ingenico-modal#payment-methods-list .modal-body.col-lg-12 ul input {
+        float: left;
+        padding: 0;
+        margin: 0;
+        width: 18px;
+        height: 18px;
+        margin-right: 16px; }
+  .ingenico-modal .info-box {
+    font-size: 15px;
+    padding: 20px;
+    margin-bottom: 20px; }
+    .ingenico-modal .info-box.red-info-box {
+      background: rgba(232, 38, 53, 0.05); }
+    .ingenico-modal .info-box.green-info-box {
+      background: rgba(38, 171, 42, 0.05); }
+
+#content.bootstrap .ingenico-header.panel {
+  margin-bottom: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  transition: all 0.3s ease; }
+  #content.bootstrap .ingenico-header.panel.test {
+    border-bottom: solid 1px #fbbc3f; }
+  #content.bootstrap .ingenico-header.panel.live {
+    border-bottom: solid 1px #26ab2a; }
+  #content.bootstrap .ingenico-header.panel.install {
+    border-bottom: solid 1px #c3c3c3; }
+    #content.bootstrap .ingenico-header.panel.install .btn-toolbar .header-links .create-account {
+      display: none; }
+    #content.bootstrap .ingenico-header.panel.install .btn-toolbar .header-switch {
+      display: none; }
+    #content.bootstrap .ingenico-header.panel.install.done .btn-toolbar .header-links .create-account.configuration {
+      display: block; }
+  #content.bootstrap .ingenico-header.panel img {
+    width: 100%; }
+  #content.bootstrap .ingenico-header.panel #toolbar-nav {
+    margin-top: 11px; }
+  #content.bootstrap .ingenico-header.panel .test-live-toggle-test {
+    float: left;
+    padding-right: 14px; }
+  #content.bootstrap .ingenico-header.panel .test-live-toggle-live {
+    float: right;
+    padding-left: 14px; }
+  #content.bootstrap .ingenico-header.panel .nav-pills > li {
+    padding: 10px 15px;
+    font-size: 15px;
+    font-weight: 600; }
+    #content.bootstrap .ingenico-header.panel .nav-pills > li > a {
+      padding: 0; }
+  #content.bootstrap .ingenico-header.panel .switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px; }
+    #content.bootstrap .ingenico-header.panel .switch input {
+      display: none; }
+      #content.bootstrap .ingenico-header.panel .switch input:checked + .slider:before {
+        background-color: #26ab2a; }
+      #content.bootstrap .ingenico-header.panel .switch input:focus + .slider {
+        box-shadow: 0 0 1px #26ab2a; }
+      #content.bootstrap .ingenico-header.panel .switch input:checked + .slider:before {
+        -webkit-transform: translateX(20px);
+        -ms-transform: translateX(20px);
+        transform: translateX(20px); }
+    #content.bootstrap .ingenico-header.panel .switch .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #e4e4e4;
+      -webkit-transition: .4s;
+      transition: .4s; }
+      #content.bootstrap .ingenico-header.panel .switch .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        background-color: #fbbc3f;
+        -webkit-transition: .4s;
+        transition: .4s; }
+      #content.bootstrap .ingenico-header.panel .switch .slider.round {
+        border-radius: 34px; }
+        #content.bootstrap .ingenico-header.panel .switch .slider.round:before {
+          border-radius: 50%; }
+  #content.bootstrap .ingenico-header.panel .create-account {
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer; }
+    #content.bootstrap .ingenico-header.panel .create-account.configuration {
+      display: none; }
+
+.create-account-form {
+  display: none; }
+
+.installation-form .settings-form {
+  display: none; }
+
+.installation-form .country-select {
+  padding-left: 25px; }
+  .installation-form .country-select select {
+    height: 40px;
+    background: #306ba8;
+    color: #fff;
+    border-radius: 25px;
+    font-size: 15px;
+    transition: inherit;
+    box-shadow: inherit;
+    font-weight: 600;
+    border: 0;
+    -moz-appearance: none;
+    /* Firefox */
+    -webkit-appearance: none;
+    /* Safari and Chrome */
+    appearance: none;
+    padding-left: 25px; }
+  .installation-form .country-select:after {
+    position: absolute;
+    content: "";
+    top: 60px;
+    right: 20px;
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    border-color: #fff transparent transparent transparent; }
+
+.installation-form .installation-button {
+  width: 340px;
+  height: 80px;
+  border: solid 1px #306ba8;
+  border-radius: 40px;
+  text-align: center;
+  line-height: 80px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #306ba8;
+  float: left;
+  cursor: pointer; }
+  .installation-form .installation-button#create-account {
+    margin-right: 17px; }
+
+.installation-form p.account-gdpr {
+  padding-left: 40px; }
+
+.checkbox-container {
+  margin-bottom: -10px !important;
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+  .checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0; }
+    .checkbox-container input:checked ~ .checkmark:after {
+      display: block; }
+  .checkbox-container .checkmark {
+    position: absolute;
+    top: 0px;
+    left: 5px;
+    height: 25px;
+    width: 25px;
+    border: solid 1px #e8eaef; }
+    .checkbox-container .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+      left: 9px;
+      top: 5px;
+      width: 5px;
+      height: 10px;
+      border: solid #767676;
+      border-width: 0 3px 3px 0;
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg); }
+  .checkbox-container:checked ~ .checkmark {
+    background-color: #2196F3; }
+
+.registration-complete {
+  display: none;
+  width: 100%;
+  text-align: center; }
+  .registration-complete p {
+    text-align: center;
+    font-size: 24px;
+    width: 100%;
+    margin: 0;
+    color: #000000; }

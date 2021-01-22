@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+         backupGlobals="false"
+         colors="true"
+         bootstrap="./tests/bootstrap.php"
+         verbose="true"
+>
+    <testsuites>
+        <testsuite name="Ingenico PrestaShop Module Tests">
+            <directory>./tests/</directory>
+            <directory>./tests/controllers/front/</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

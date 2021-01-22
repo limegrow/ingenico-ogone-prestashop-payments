@@ -1,0 +1,937 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Ingenico ePayments\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: main <main@localhost>\n"
+"Language-Team: Ingenico Team\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2019-04-08T16:11:23+00:00\n"
+"PO-Revision-Date: 2019-05-15 16:30+0200\n"
+"Language: es-ES\n"
+"X-Domain: messages\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.8.5\n"
+"X-Poedit-KeywordsList: $this->__;__\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+msgid "tab.connection"
+msgstr "Conexión"
+
+msgid "tab.settings"
+msgstr "Configuración"
+
+msgid "tab.payment_methods"
+msgstr "Métodos de pago"
+
+msgid "tab.payment_page"
+msgstr "Página de pago"
+
+msgid "tab.installments"
+msgstr "Pagos"
+
+msgid "tab.subscriptions"
+msgstr "Suscripciones"
+
+msgid "tab.support"
+msgstr "Soporte"
+
+msgid "form.install.success"
+msgstr "Instalación correcta."
+
+msgid "form.header.create_account"
+msgstr "Crear una nueva cuenta"
+
+msgid "form.header.configuration"
+msgstr "Ir a la configuración de la cuenta"
+
+msgid "form.header.test"
+msgstr "Prueba"
+
+msgid "form.header.live"
+msgstr "Real"
+
+msgid "form.create_account.title"
+msgstr "Crear o conectar su cuenta"
+
+msgid "form.create_account.label.create_account"
+msgstr "Crear una cuenta"
+
+msgid "form.create_account.label.company_name"
+msgstr "Nombre de la empresa"
+
+msgid "form.create_account.label.business_country"
+msgstr "País de su entidad empresarial"
+
+msgid "form.create_account.label.select_country"
+msgstr "Seleccionar país"
+
+msgid "form.create_account.label.email"
+msgstr "Correo electrónico"
+
+msgid "form.create_account.label.checkmark"
+msgstr "Al marcar la casilla, consiento que Ingenico procese y utilice mis datos personales según lo estipulado en la Política de privacidad de Ingenico para gestionar mi solicitud y enviarme ofertas comerciales relacionadas con productos y servicios de Ingenico. Se me ha informado de que podré retirar mi consentimiento en cualquier momento mediante la opción “anular suscripción” del correo electrónico que reciba o poniéndome en contacto con un agente de privacidad de datos de Ingenico."
+
+msgid "form.create_account.label.done.label1"
+msgstr "¡Hecho!"
+
+msgid "form.create_account.label.done.label2"
+msgstr "Nos pondremos en contacto con usted en las siguientes 48 horas con"
+
+msgid "form.create_account.label.done.label3"
+msgstr "todas las credenciales necesarias para que pueda configurar su cuenta de prueba gratuita."
+
+msgid "form.create_account.button.connect-existing"
+msgstr "Ir a la configuración de la cuenta"
+
+msgid "form.create_account.button.create_account"
+msgstr "Crear una cuenta"
+
+msgid "form.create_account.button.account_exist"
+msgstr "Conectar su cuenta existente"
+
+msgid "form.connection.title"
+msgstr "Conexión"
+
+msgid "form.connection.label.test_account"
+msgstr "Cuenta de prueba"
+
+msgid "form.connection.label.live_account"
+msgstr "Cuenta real"
+
+msgid "form.connection.label.pspid"
+msgstr "PSPID"
+
+msgid "form.connection.label.where"
+msgstr "Dónde encontrarlo"
+
+msgid "form.connection.label.signature"
+msgstr "Firma"
+
+msgid "form.connection.label.copied"
+msgstr "Copiado en el portapapeles"
+
+msgid "form.connection.label.howto"
+msgstr "Cómo proceder"
+
+msgid "form.connection.label.webhook_settings"
+msgstr "Configuración de Webhook"
+
+msgid "form.connection.label.directlink.directlink"
+msgstr "DirectLink"
+
+msgid "form.connection.label.directlink.label1"
+msgstr "¿Por qué puedo necesitarlo?"
+
+msgid "form.connection.label.directlink.label2"
+msgstr "Lo necesitará si quiere usar tokenización y/o pagos en línea."
+
+msgid "form.connection.label.directlink.label3"
+msgstr "La tokenización permite programar pagos, vender suscripciones y ofrecer “pago en 1 clic”."
+
+msgid "form.connection.label.directlink.label4"
+msgstr "Para poder usar DirectLink, debe cumplir los PCI-SAQA."
+
+msgid "form.connection.label.readmore"
+msgstr "Leer más"
+
+msgid "form.connection.label.user"
+msgstr "Usuario"
+
+msgid "form.connection.label.password"
+msgstr "Contraseña"
+
+msgid "form.connection.button.show"
+msgstr "Mostrar"
+
+msgid "form.connection.button.hide"
+msgstr "Ocultar"
+
+msgid "form.connection.button.generate"
+msgstr "Generar"
+
+msgid "form.connection.button.copy_value"
+msgstr "Copiar valor"
+
+msgid "form.connection.button.copy_link"
+msgstr "Copiar enlace"
+
+msgid "form.settings.title"
+msgstr "Configuración"
+
+msgid "form.settings.mode.basic"
+msgstr "Básica"
+
+msgid "form.settings.mode.advanced"
+msgstr "Avanzada"
+
+msgid "form.settings.label.tokenisation"
+msgstr "Tokenización"
+
+msgid "form.settings.label.readmore"
+msgstr "Leer más"
+
+msgid "form.settings.label.disclaimer"
+msgstr "Para poder usar la tokenización, debe cumplir los PCI-SAQA y conectarse a DirectLink."
+
+msgid "form.settings.label.stored_cards"
+msgstr "Tarjetas almacenadas"
+
+msgid "form.settings.label.skipsecurity"
+msgstr "Omitir comprobación de seguridad (CVV y 3D Secure)"
+
+msgid "form.settings.label.skipsecurity.note"
+msgstr "El emisor de la tarjeta tiene el derecho final de solicitar una comprobación de seguridad según sea necesario para evitar fraudes."
+
+msgid "form.settings.label.capture"
+msgstr "Captura de pago retrasado"
+
+msgid "form.settings.label.directsales"
+msgstr "Ventas directas (captura automática)"
+
+msgid "form.settings.label.sendemail"
+msgstr "Enviar un correo electrónico para cada nueva solicitud de captura"
+
+msgid "form.settings.email"
+msgstr "Correo electrónico"
+
+msgid "form.settings.label.orders"
+msgstr "Pedidos"
+
+msgid "form.settings.label.payment_reminder"
+msgstr "Correo electrónico de recordatorio de pago"
+
+msgid "form.settings.label.payment_reminder_description"
+msgstr "Envíe un correo electrónico de recordatorio a sus clientes para recordarles pedidos pendientes que aún no hayan sido abonados por su parte."
+
+msgid "form.settings.label.payment_reminder_send"
+msgstr "Enviar un correo electrónico de recordatorio"
+
+msgid "form.settings.label.delay_in_days"
+msgstr "retraso (días)"
+
+msgid "form.payment_methods.title"
+msgstr "Métodos de pago"
+
+msgid "form.payment_methods.label.geography"
+msgstr "Geografía de negocio"
+
+msgid "form.payment_methods.label.choose_countries"
+msgstr "Seleccione países de su actividad comercial y obtenga automáticamente los mejores métodos de pago."
+
+msgid "form.payment_methods.label.type_search"
+msgstr "Escriba para buscar un método de pago..."
+
+msgid "form.payment_methods.label.no_available"
+msgstr "No se encontraron métodos de pago disponibles"
+
+msgid "form.payment_methods.button.fetch"
+msgstr "Obtener por países"
+
+msgid "form.payment_methods.button.add"
+msgstr "Añadir método de pago"
+
+msgid "form.payment_methods.button.delete"
+msgstr "Eliminar"
+
+msgid "form.payment_methods.button.add_more"
+msgstr "Añadir más métodos de pago"
+
+msgid "form.payment_page.title"
+msgstr "Página de pago"
+
+msgid "form.payment_page.label.choose_access"
+msgstr "Elegir acceso al pago"
+
+msgid "form.payment_page.label.inline"
+msgstr "Pago en línea para tarjetas"
+
+msgid "form.payment_page.label.redirect"
+msgstr "Redirigir a la página de pago"
+
+msgid "form.payment_page.label.disclaimer"
+msgstr "Para poder usar pagos en línea, debe cumplir los PCI-SAQ-AEP."
+
+msgid "form.payment_page.label.template"
+msgstr "Personalización opcional"
+
+msgid "form.payment_page.label.step1"
+msgstr "Paso 1"
+
+msgid "form.payment_page.label.step2"
+msgstr "Paso 2"
+
+msgid "form.payment_page.label.step3"
+msgstr "Paso 3"
+
+msgid "form.payment_page.label.readmore"
+msgstr "Consulte información sobre la personalización de plantillas."
+
+msgid "form.payment_page.label.create_own"
+msgstr "Cree su propia plantilla."
+
+msgid "form.payment_page.label.point_your"
+msgstr "Apuntar a su plantilla"
+
+msgid "form.payment_page.label.ingenico"
+msgstr "Usar administrador de plantillas de Ingenico"
+
+msgid "form.payment_page.label.upload"
+msgstr "Cargar aquí"
+
+msgid "form.payment_page.label.external"
+msgstr "Apuntar a almacenamiento externo"
+
+msgid "form.payment_page.label.upload_template"
+msgstr "Cargue plantilla en el"
+
+msgid "form.payment_page.label.template_manager"
+msgstr "administrador de plantillas."
+
+msgid "form.payment_page.label.template_name"
+msgstr "Nombre de la plantilla"
+
+msgid "form.payment_page.label.browse"
+msgstr "Buscar archivo..."
+
+msgid "form.payment_page.label.file_url"
+msgstr "URL del archivo"
+
+msgid "form.payment_page.label.pci"
+msgstr "Para poder usar pagos en línea, debe cumplir los PCI-SAQ-AEP."
+
+msgid "form.payment_page.button.upload"
+msgstr "Cargar"
+
+msgid "form.support.title"
+msgstr "Soporte"
+
+msgid "form.support.assistance"
+msgstr "Asistencia de configuración"
+
+msgid "form.support.hint"
+msgstr "Si tiene dificultades para configurar su cuenta, puede enviar una solicitud de asistencia a Ingenico que incluya automáticamente su [1]configuración guardada[/1]. Si ya está en contacto con nuestro departamento de soporte, incluya el identificador de su ticket de soporte."
+
+msgid "form.support.label1"
+msgstr "Ticket de soporte (opcional)"
+
+msgid "form.support.label2"
+msgstr "Su correo electrónico (para poder comunicarnos con usted)"
+
+msgid "form.support.label3"
+msgstr "Describa el problema (opcional)"
+
+msgid "form.support.label4"
+msgstr "Su email de contacto"
+
+msgid "form.support.disclaimer1"
+msgstr "Va a comunicar al departamento de soporte de Ingenico la configuración de su conexión relacionada solo con Ingenico."
+
+msgid "form.support.submit"
+msgstr "Enviar"
+
+msgid "form.support.export_import"
+msgstr "Exportar/importar su configuración"
+
+msgid "form.support.upload"
+msgstr "Cargar"
+
+msgid "form.support.import"
+msgstr "Importar"
+
+msgid "form.support.disclaimer2"
+msgstr "Esto sobrescribirá toda su configuración actual (conexión, métodos de pago, página de pago)."
+
+msgid "form.support.download_settings"
+msgstr "Descargar su configuración como un archivo"
+
+msgid "form.support.export_settings"
+msgstr "Exportar configuración"
+
+msgid "form.support.import_settings"
+msgstr "Importar configuración"
+
+msgid "form.support.import_hint"
+msgstr "Importe el archivo con la configuración correcta enviada por el departamento de soporte de Ingenico."
+
+msgid "form.support.import_success"
+msgstr "Configuración importada correctamente."
+
+msgid "form.support.browse_file"
+msgstr "Buscar archivo..."
+
+msgid "form.support.validation.file_required"
+msgstr "Cargue el archivo que quiera importar"
+
+msgid "form.support.validation.email_required"
+msgstr "El campo de correo electrónico es obligatorio"
+
+msgid "form.support.validation.email_invalid"
+msgstr "Correo electrónico no válido"
+
+msgid "form.support.validation.mail_sent"
+msgstr "Correo electrónico de soporte enviado correctamente."
+
+msgid "form.support.validation.mail_failed"
+msgstr "Error al enviar el correo electrónico."
+
+msgid "form.support.validation.ticket_failed"
+msgstr "Ticket no válido."
+
+msgid "form.support.invalid_json_data"
+msgstr "El formato del archivo cargado no es válido."
+
+msgid "form.support.upload_confirmation.title"
+msgstr "Confirmación de carga"
+
+msgid "form.support.upload_confirmation"
+msgstr "Va a importar (y sobrescribir) toda su configuración con los valores tomados del archivo cargado."
+
+msgid "modal.countries_list.select"
+msgstr "Seleccione países y obtenga los mejores métodos de pago"
+
+msgid "modal.countries_list.placeholder"
+msgstr "Escriba para buscar un país..."
+
+msgid "modal.delayed_payment.whatis"
+msgstr "¿Qué es la captura diferida?"
+
+msgid "modal.delayed_payment.label1"
+msgstr "Puede proporcionar una opción de pago diferido si no puede garantizar las cantidades de su inventario actual. En ese caso, no se cobrará a sus clientes a menos que verifique su stock y apruebe manualmente el pago."
+
+msgid "modal.delayed_payment.label2"
+msgstr "El importe del pedido se reservará en la cuenta de pago de su cliente durante 7 días naturales. Se arriesga a no tener fondos suficientes para capturar el pago (después de 7 días) si no acepta el pago durante este tiempo."
+
+msgid "modal.directlink.why"
+msgstr "¿Por qué necesito DirectLink?"
+
+msgid "modal.directlink.label1"
+msgstr "Necesitará DirectLink si quiere usar tokenización y/o pagos en línea."
+
+msgid "modal.directlink.label2"
+msgstr "La tokenización permite"
+
+msgid "modal.directlink.label3"
+msgstr "• programar pagos"
+
+msgid "modal.directlink.label4"
+msgstr "• vender suscripciones"
+
+msgid "modal.directlink.label5"
+msgstr "• ofrecer “pago en 1 clic”"
+
+msgid "modal.directlink.label6"
+msgstr "• autorizar y capturar por separado"
+
+msgid "modal.directlink.label7"
+msgstr "Cómo proceder con el valor de firma"
+
+msgid "modal.directlink.label8"
+msgstr "1. Inicie sesión en el portal de comerciantes (área de administración) con su PSPID y su contraseña."
+
+msgid "modal.directlink.label9"
+msgstr "2. Abra la página"
+
+msgid "modal.directlink.label10"
+msgstr "Configuración -> Usuarios"
+
+msgid "modal.directlink.label11"
+msgstr "Para nuevas integraciones, cree un nuevo usuario como se indica a continuación. Utilice el ID de usuario y la contraseña generados."
+
+msgid "modal.directlink.label12"
+msgstr "Seleccione Perfil = Admin y cualquier dirección de correo electrónico que desee."
+
+msgid "modal.directlink.label13"
+msgstr "Si está conectando una cuenta existente, lleve a cabo la acción contraria. Introduzca en los detalles del complemento acerca de su usuario existente que se creó para la integración técnica."
+
+msgid "modal.directlink.label14"
+msgstr "¿Cómo se crea un usuario de DirectLink?"
+
+msgid "modal.directlink.label15"
+msgstr "1. Inicie sesión en el portal de comerciantes (área de administración) con su PSPID y su contraseña."
+
+msgid "modal.directlink.label16"
+msgstr "2. Abra la página"
+
+msgid "modal.directlink.label17"
+msgstr "Configuración -> Usuarios"
+
+msgid "modal.directlink.label18"
+msgstr "Para nuevas integraciones, cree un nuevo usuario. Recomendamos que utilice el ID de usuario y la contraseña generados."
+
+msgid "modal.directlink.label19"
+msgstr "Seleccione Perfil = Admin y cualquier dirección de correo electrónico que desee."
+
+msgid "modal.directlink.label20"
+msgstr "Si está conectando una cuenta existente, lleve a cabo la acción contraria. En esta página, introduzca todos los detalles de su usuario existente que se creó para la integración técnica."
+
+msgid "modal.oneclick.whatis"
+msgstr "¿Por qué puedo necesitar usar la opción “Tarjetas almacenadas”?"
+
+msgid "modal.oneclick.label1"
+msgstr "Puede aumentar significativamente su conversión de ventas permitiendo a sus clientes guardar sus métodos de pago y omitir la autorización para sus próximas compras."
+
+msgid "modal.tokenization.whatis"
+msgstr "¿Qué es la tokenización?"
+
+msgid "modal.tokenization.label1"
+msgstr "La tokenización es un proceso que permite guardar tarjetas de crédito autorizadas (u otros métodos de pago) sin tener acceso a datos confidenciales del cliente."
+
+msgid "modal.payment-page.inline"
+msgstr "Pago en línea para tarjetas"
+
+msgid "modal.payment-page.redirect"
+msgstr "Redirigir a la página de pago"
+
+msgid "modal.reminder.whatis"
+msgstr "¿Cuál es la finalidad de un correo electrónico de recordatorio?"
+
+msgid "modal.reminder.label1"
+msgstr "Un correo electrónico de recordatorio es una solución comúnmente utilizada para aumentar la conversión de pedidos no ejecutados."
+
+msgid "modal.reminder.label2"
+msgstr "En combinación con la opción \"Congelar pedido\", se recomienda enviar un recordatorio antes de que se cancele un pedido. Dicho enfoque impondrá una captura de pago inmediata sin tener que comprobar el stock o revertir un pedido desde el estado \"Cancelado\"."
+
+msgid "modal.psp.whatis"
+msgstr "¿Qué es mi PSPID?"
+
+msgid "modal.psp.label1"
+msgstr "EL PSPID es su identificador exclusivo en Ingenico ePayments."
+
+msgid "modal.psp.label2"
+msgstr "Debe enviárselo su administrador de cuentas una vez que haya creado su cuenta."
+
+msgid "modal.template.howto"
+msgstr "¿Cómo se asigna su plantilla de página de pago?"
+
+msgid "modal.template.label1"
+msgstr "1. Inicie sesión en el portal de comerciantes (área de administración) con su PSPID y su contraseña."
+
+msgid "modal.template.label2"
+msgstr "2. Abra la siguiente página Configuración -> Plantilla -> Administrador de archivos y cargue su archivo css personalizado con los estilos que se correspondan con el diseño de su tienda."
+
+msgid "modal.template.label3"
+msgstr "Seguidamente, abra la pestaña “Selección de plantilla” y seleccione el archivo con los estilos cargado."
+
+msgid "modal.template.label4"
+msgstr "Luego escriba el nombre de su archivo HTML en el siguiente campo de entrada."
+
+msgid "modal.template.inline.howto"
+msgstr "¿Cómo asignar estilos personalizados para la sección de entrada de tu tarjeta?"
+
+msgid "modal.template.inline.label1"
+msgstr "1. Inicia sesión en el portal de comerciantes (área de administración) con tu PSPID y tu contraseña."
+
+msgid "modal.template.inline.label2"
+msgstr "2. Abre la siguiente página Configuración -> Plantilla -> Administrador de archivos y carga tu archivo css personalizado con los estilos adaptados al diseño de tu tienda."
+
+msgid "modal.template.inline.label3"
+msgstr "Seguidamente, abre la pestaña “Selección de plantilla” y selecciona el archivo cargado con los estilos."
+
+msgid "modal.signature.howto"
+msgstr "Cómo proceder con el valor de firma"
+
+msgid "modal.signature.label1"
+msgstr "1. Inicie sesión en el portal de comerciantes (área de administración) con su PSPID y su contraseña."
+
+msgid "modal.signature.label2"
+msgstr "2. Abra las siguientes páginas e inserte el valor de firma en los campos resaltados"
+
+msgid "modal.signature.label3"
+msgstr "Configuración -> Información técnica -> Feedback de transacción"
+
+msgid "modal.signature.label4"
+msgstr "Configuración -> Información técnica -> Verificación de datos y orígenes"
+
+msgid "modal.signature.label5"
+msgstr "Verifique que ha seleccionado las siguientes dos opciones, tal y como se muestra a continuación"
+
+msgid "modal.webhook.howto"
+msgstr "Cómo proceder con la configuración de webhook"
+
+msgid "modal.webhook.label1"
+msgstr "1. Inicie sesión en el portal de comerciantes (área de administración) con su PSPID y su contraseña."
+
+msgid "modal.webhook.label2"
+msgstr "2. Abra las siguientes páginas e inserte el valor de firma en los campos resaltados"
+
+msgid "modal.webhook.label3"
+msgstr "Configuración -> Información técnica -> Feedback de transacción"
+
+msgid "modal.webhook.label4"
+msgstr "3. Avance y seleccione la opción, tal y como se muestra a continuación"
+
+msgid "modal.inline_store_cards.howto"
+msgstr "¿Cómo se muestra/oculta la casilla “Recordarme” en las tarjetas?"
+
+msgid "modal.inline_store_cards.label1"
+msgstr "1. Inicie sesión en el portal de comerciantes (área de administración) con su PSPID y su contraseña."
+
+msgid "modal.inline_store_cards.label2"
+msgstr "2. Abra la siguiente página Configuración -> Alias y busque la sección titulada “Página de tokenización alojada”, tal y como se muestra a continuación."
+
+msgid "modal.inline_store_cards.label3"
+msgstr "Si ha seleccionado la opción “Guardar tarjetas”, elija la opción “Sí” aquí. En caso contrario, seleccione “No”."
+
+msgid "modal.paypal.howto"
+msgstr "Cómo configurar y probar PayPal"
+
+msgid "modal.paypal.label1"
+msgstr "1. Inicie sesión en el portal de comerciantes (área de administración) con su PSPID y su contraseña."
+
+msgid "modal.paypal.label2"
+msgstr "2. Abra la siguiente página y busque PayPal"
+
+msgid "modal.paypal.label3"
+msgstr "Configuración -> Métodos de pago -> Métodos de pago seleccionados"
+
+msgid "modal.paypal.label4"
+msgstr "3. Haga clic en el icono “Editar” para PayPal"
+
+msgid "modal.paypal.label5"
+msgstr "4. Escriba “test@test.com” en el campo ID del pagador y haga clic en el botón “Enviar”."
+
+msgid "modal.paypal.label6"
+msgstr "¡Advertencia![1] Podrá llevar a cabo pruebas sencillas con el simulador de Ingenico.[1] Las funciones “Pago en 1 clic” y “Pagos” solo están disponibles en el modo real."
+
+msgid "modal.paypal.label7"
+msgstr "Para configurar correctamente una cuenta de PayPal,"
+
+msgid "modal.paypal.label8"
+msgstr "siga las instrucciones del sitio web de Ingenico en este enlace"
+
+msgid "modal.paypal_test.label1"
+msgstr "Uso limitado de PayPal en modo de prueba"
+
+msgid "modal.paypal_test.label2"
+msgstr "En el modo de prueba solo puede hacer pagos de PayPal a través del simulador de Ingenico. Esto limita las pruebas a pagos básicos."
+
+msgid "modal.paypal_test.label3"
+msgstr "Las funciones “Pago en 1 clic” y “Pagos” solo están disponibles en el modo real."
+
+msgid "modal.paypal_test.label4"
+msgstr "Gracias por su comprensión."
+
+msgid "modal.refund_failed.title"
+msgstr "Reembolso fallido"
+
+msgid "modal.refund_failed.label1"
+msgstr "Lamentablemente, la operación de reembolso de esta transacción no está permitida o ha fallado."
+
+msgid "modal.refund_failed.label2"
+msgstr "Póngase en contacto con el departamento de soporte de Ingenico ePayments"
+
+msgid "modal.refund_failed.label3"
+msgstr "Encontrará aquí los números de teléfono de soporte"
+
+msgid "modal.credentials-validation.label1"
+msgstr "Faltan credenciales del entorno real"
+
+msgid "modal.credentials-validation.label2"
+msgstr "Para poder cambiar al modo real, necesita rellenar todas las credenciales en la sección “Conexión -> Real”."
+
+msgid "ingenico.payment.info"
+msgstr "Información de pago de Ingenico"
+
+msgid "order.payid"
+msgstr "PayID"
+
+msgid "order.payidsub"
+msgstr "PayID Sub"
+
+msgid "order.payment_method"
+msgstr "Método de pago"
+
+msgid "order.status"
+msgstr "Estado"
+
+msgid "order.brand"
+msgstr "Marca"
+
+msgid "order.card_no"
+msgstr "Número enmascarado"
+
+msgid "order.customer_name"
+msgstr "Customer Name"
+
+msgid "order.action.confirmation"
+msgstr "Confirmación"
+
+msgid "order.action.capture"
+msgstr "Capturar"
+
+msgid "order.action.cancel"
+msgstr "Cancelar"
+
+msgid "order.action.refund"
+msgstr "Reembolso"
+
+msgid "order.action.refund_btn"
+msgstr "Ingenico Reembolso"
+
+msgid "order.action.refund_amount"
+msgstr "Importe de reembolso"
+
+msgid "order.action.capture_amount"
+msgstr "Importe de captura"
+
+msgid "order.action.captured"
+msgstr "Capturado"
+
+msgid "order.action.refunded"
+msgstr "Reembolsado"
+
+msgid "order.action.cancelled"
+msgstr "Cancelado"
+
+msgid "order.action.refund_pending"
+msgstr "Se está procesando el reembolso"
+
+msgid "order.action.capture_pending"
+msgstr "La captura se está procesando"
+
+msgid "order.action.capture_too_much"
+msgstr "Demasiado"
+
+msgid "order.action.capture_too_little"
+msgstr "Demasiado poco"
+
+msgid "order.action.refund_too_much"
+msgstr "Demasiado"
+
+msgid "order.action.refund_too_little"
+msgstr "Demasiado poco"
+
+msgid "order.action.capture_confirmation"
+msgstr "¿Quiere llevar a cabo la captura?"
+
+msgid "order.action.cancellation_confirmation"
+msgstr "¿Quiere cancelar el pago?"
+
+msgid "order.action.refund_confirmation"
+msgstr "¿Quiere reembolsar el pago?"
+
+msgid "order.errors.capture_too_much"
+msgstr "Importe de captura demasiado elevado"
+
+msgid "order.errors.capture_too_little"
+msgstr "Importe de captura demasiado bajo"
+
+msgid "order.errors.refund_too_much"
+msgstr "Importe de reembolso demasiado elevado"
+
+msgid "order.errors.refund_too_little"
+msgstr "Importe de reembolso demasiado bajo"
+
+msgid "button.back"
+msgstr "Volver"
+
+msgid "button.submit"
+msgstr "Enviar"
+
+msgid "button.save"
+msgstr "Guardar"
+
+msgid "button.apply"
+msgstr "Aplicar"
+
+msgid "button.close"
+msgstr "Cerrar"
+
+msgid "collapse.show"
+msgstr "Mostrar"
+
+msgid "collapse.hide"
+msgstr "Ocultar"
+
+msgid "toggle.enabled"
+msgstr "Activado"
+
+msgid "toggle.disabled"
+msgstr "Desactivado"
+
+msgid "checkout.pay_by_methods_others"
+msgstr "Pagar con %methods% y otros"
+
+msgid "checkout.pay_by_methods"
+msgstr "Pagar con %methods%"
+
+msgid "checkout.use_new_payment_method"
+msgstr "Usar nuevo método de pago"
+
+msgid "checkout.payment_cancelled"
+msgstr "Su proceso de pago se ha cancelado."
+
+msgid "checkout.error"
+msgstr "Se ha producido un error. Pruebe a volver a hacer el pedido. PaymentID: %payment_id%. Estado: %status%. Detalles: %code% %message%."
+
+msgid "checkout.payment_info"
+msgstr "Estado del pago: %status%. Estado: %status_code%. PayID: %payment_id%."
+
+msgid "checkout.test_mode_warning"
+msgstr "Advertencia del modo de prueba"
+
+msgid "checkout.manual_capture_required"
+msgstr "Necesita capturar manualmente este pago."
+
+msgid "checkout.click_capture"
+msgstr "Busque el pedido y haga clic en el botón \"Capturar\"."
+
+msgid "checkout.back_to_shop"
+msgstr "Volver a la tienda"
+
+msgid "checkout.something_wrong"
+msgstr "Algo ha salido mal"
+
+msgid "checkout.please_wait"
+msgstr "Por favor, espere..."
+
+msgid "exceptions.upload_filed"
+msgstr "Se ha producido un error al cargar su archivo."
+
+msgid "validator.mime_html_only"
+msgstr "Solo se permite \"text/html\" como tipo de mime."
+
+msgid "validator.extension_html_only"
+msgstr "Solo se permiten archivos html."
+
+msgid "validator.mime_text_only"
+msgstr "Solo se permite \"plain/text\" como tipo de mime."
+
+msgid "order_status.pending_payment"
+msgstr "Pago pendiente"
+
+msgid "order_status.authorized"
+msgstr "Autorizado"
+
+msgid "modal.payment-methods-modal.title"
+msgstr "¿Por qué configurar la lista de métodos de pago?"
+
+msgid "modal.payment-methods-modal.label1"
+msgstr "Asegúrese de incluir en la lista exactamente los mismos métodos de pago que estén configurados para su cuenta de administración de Ingenico."
+
+msgid "modal.payment-methods-modal.label2"
+msgstr "La lista de métodos de pago se mostrará a sus clientes durante el proceso de pago que apunte a un pago de Ingenico."
+
+msgid "modal.payment-methods-modal.label3"
+msgstr "También se utilizará para crear la página con la selección de pago si elige el modo en línea."
+
+msgid "modal.optional-customisation.title"
+msgstr "O que é a personalização de modelo?"
+
+msgid "modal.optional-customisation.label1"
+msgstr "Tanto si usa el modo en línea o el de redireccionamiento, puede personalizar el estilo de su página de pago (en el modo de redireccionamiento) o los colores de selección de introducción de la tarjeta (en el modo en línea)."
+
+msgid "modal.optional-customisation.label2"
+msgstr "Aún así, el estado predeterminado ya está enteramente diseñado de forma muy genérica para que pueda empezar a aceptar pagos directamente."
+
+msgid "modal.openinvoice.title"
+msgstr "Elige el país de tu entidad empresarial"
+
+msgid "modal.openinvoice.label1"
+msgstr "Los métodos de pago de factura abierta solo están disponibles en los países de la lista. Elige el país en el que está registrada tu empresa."
+
+msgid "modal.openinvoice.country_nl"
+msgstr "Países Bajos"
+
+msgid "modal.openinvoice.country_de"
+msgstr "Alemania"
+
+msgid "modal.openinvoice.country_se"
+msgstr "Sweden"
+
+msgid "modal.openinvoice.country_fi"
+msgstr "Finland"
+
+msgid "modal.openinvoice.country_dk"
+msgstr "Denmark"
+
+msgid "modal.openinvoice.country_no"
+msgstr "Norway"
+
+msgid "modal.openinvoice.another"
+msgstr "Otro país. No hay pagos de factura abierta disponibles."
+
+msgid "modal.openinvoice.payments.title"
+msgstr "Please select one of the Open Invoice payment methods"
+
+msgid "modal.openinvoice.payments.label1"
+msgstr "You selected %country% that offer Open Invoice payment methods."
+
+msgid "modal.openinvoice.payments.label2"
+msgstr "You can only use one of the two Open Invoice payment methods at the same time."
+
+msgid "modal.openinvoice.payments.label3"
+msgstr "Please choose:"
+
+msgid "modal.openinvoice.payments.afterpay"
+msgstr "Afterpay"
+
+msgid "modal.openinvoice.payments.klarna"
+msgstr "Klarna"
+
+msgid "modal.openinvoice.additional_data_required"
+msgstr "Debes facilitar información adicional para este método de pago"
+
+msgid "modal.openinvoice.proceed"
+msgstr "Continuar"
+
+msgid "Billing address"
+msgstr "Billing address"
+
+msgid "Billing state"
+msgstr "Provincia de facturación"
+
+msgid "Billing street number"
+msgstr "Número de domicilio de facturación"
+
+msgid "Shipping state"
+msgstr "Provincia de envío"
+
+msgid "Shipping address"
+msgstr "Shipping address"
+
+msgid "Shipping street number"
+msgstr "Número de domicilio de envío"
+
+msgid "Shipping company"
+msgstr "Empresa de envío"
+
+msgid "Shipping customer title"
+msgstr "Título del cliente de envío"
+
+msgid "Shipping fax"
+msgstr "Fax de envío"
+
+msgid "Customer dob"
+msgstr "Fecha de nacimiento del cliente"
+
+msgid "Customer gender"
+msgstr "Género del cliente"
+
+msgid "Customer civility"
+msgstr "Tratamiento"
+
+msgid "Notifications"
+msgstr "Notificaciones"
+
+msgid "Send an e-mail when order has been paid or reverted from cancelled state."
+msgstr "Envíe un correo electrónico cuando el pedido esté pagado o fuera del estado cancelado."
+
+msgid "Send an e-mail when refund has been failed."
+msgstr "Envíe un correo electrónico cuando haya fallado el reembolso."
+
+msgid "Invalid e-mail address"
+msgstr "Dirección de correo electrónico inválida"
+
+msgid "Pay with Ingenico ePayments"
+msgstr "Pague con Ingenico ePayments"
+
+msgid "Pay safely on the next page with Ingenico using your preferred payment method"
+msgstr "Pague de forma segura en la página siguiente con Ingenico utilizando su método de pago preferido"
+
+msgid "%brand% ends with %cardno%, expires on %month%/%year%"
+msgstr "%brand% termina en %cardno%, expira el %month%/%year%"
+

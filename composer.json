@@ -1,0 +1,29 @@
+{
+  "name": "ingenico/ingenico_epayments",
+  "description": "Ingenico ePayments Module for PrestaShop",
+  "version": "3.0.0",
+  "license": [
+    "OSL"
+  ],
+  "authors": [
+    {
+      "name": "Limegrow",
+      "email": "info@limegrow.com",
+      "homepage": "https://limegrow.com"
+    }
+  ],
+  "support": {
+    "email": "support.ecom@ingenico.com"
+  },
+  "require": {
+    "php": ">=7.0",
+    "ext-curl": "*",
+    "ext-mbstring": "*",
+    "ext-bcmath": "*",
+    "ingenico/ogone-sdk-php": "^3.0.0",
+    "ingenico/ogone-client": "^5.0.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^7"
+  }
+}

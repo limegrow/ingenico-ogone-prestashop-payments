@@ -1,0 +1,936 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Ingenico ePayments\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: main <main@localhost>\n"
+"Language-Team: Ingenico Team\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2019-04-08T16:11:23+00:00\n"
+"PO-Revision-Date: 2019-04-08 22:13+0600\n"
+"Language: nl-Nl\n"
+"X-Domain: messages\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.0.6\n"
+"X-Poedit-KeywordsList: $this->__;__\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+msgid "tab.connection"
+msgstr "Verbinding"
+
+msgid "tab.settings"
+msgstr "Instellingen"
+
+msgid "tab.payment_methods"
+msgstr "Betalingsmethoden"
+
+msgid "tab.payment_page"
+msgstr "Betalingspagina"
+
+msgid "tab.installments"
+msgstr "Afbetalingstermijnen"
+
+msgid "tab.subscriptions"
+msgstr "Abonnementen"
+
+msgid "tab.support"
+msgstr "Ondersteuning"
+
+msgid "form.install.success"
+msgstr "De installatie is geslaagd."
+
+msgid "form.header.create_account"
+msgstr "Een nieuwe account maken"
+
+msgid "form.header.configuration"
+msgstr "Ga naar accountconfiguratie"
+
+msgid "form.header.test"
+msgstr "Test"
+
+msgid "form.header.live"
+msgstr "Live"
+
+msgid "form.create_account.title"
+msgstr "Uw account maken of verbinden"
+
+msgid "form.create_account.label.create_account"
+msgstr "Een account maken"
+
+msgid "form.create_account.label.company_name"
+msgstr "Bedrijfsnaam"
+
+msgid "form.create_account.label.business_country"
+msgstr "Land van uw bedrijfsentiteit"
+
+msgid "form.create_account.label.select_country"
+msgstr "Selecteer land"
+
+msgid "form.create_account.label.email"
+msgstr "E-mail"
+
+msgid "form.create_account.label.checkmark"
+msgstr "Door het vak aan te vinken, stem ik in met de verwerking en het gebruik van mijn persoonsgegevens door Ingenico volgens Ingenico\'s Privacybeleid voor het afhandelen van mijn aanvraag en tevens met het aan mij versturen van commerciële aanbiedingen in verband met producten en diensten van Ingenico. Ik ben geïnformeerd over het feit dat ik te allen tijde mijn toestemming kan intrekken door de optie “afmelden” te gebruiken in de e-mail die ik mogelijk ontvang of door contact op te nemen met een medewerker gegevensbescherming (Privacy Officer) van Ingenico."
+
+msgid "form.create_account.label.done.label1"
+msgstr "Klaar!"
+
+msgid "form.create_account.label.done.label2"
+msgstr "We nemen binnen de volgende 48 uur contact met u op"
+
+msgid "form.create_account.label.done.label3"
+msgstr "met alle benodigde toegangsgegevens voor het instellen van uw gratis testaccount."
+
+msgid "form.create_account.button.connect-existing"
+msgstr "Ga naar accountconfiguratie"
+
+msgid "form.create_account.button.create_account"
+msgstr "Een account maken"
+
+msgid "form.create_account.button.account_exist"
+msgstr "Uw bestaande account verbinden"
+
+msgid "form.connection.title"
+msgstr "Verbinding"
+
+msgid "form.connection.label.test_account"
+msgstr "Testaccount"
+
+msgid "form.connection.label.live_account"
+msgstr "Live-account"
+
+msgid "form.connection.label.pspid"
+msgstr "PSPID"
+
+msgid "form.connection.label.where"
+msgstr "Waar vind ik...?"
+
+msgid "form.connection.label.signature"
+msgstr "Handtekening"
+
+msgid "form.connection.label.copied"
+msgstr "Gekopieerd naar Klembord"
+
+msgid "form.connection.label.howto"
+msgstr "Hoe nu verder?"
+
+msgid "form.connection.label.webhook_settings"
+msgstr "Webhook-instellingen"
+
+msgid "form.connection.label.directlink.directlink"
+msgstr "DirectLink"
+
+msgid "form.connection.label.directlink.label1"
+msgstr "Waarom zou ik dit nodig hebben?"
+
+msgid "form.connection.label.directlink.label2"
+msgstr "U hebt het nodig als u tokenisatie en/of inline-betalingen wilt gebruiken."
+
+msgid "form.connection.label.directlink.label3"
+msgstr "Tokenisatie stelt u ertoe in staat betalingen te plannen, abonnementen te verkopen en “betalen met één klik” aan te bieden."
+
+msgid "form.connection.label.directlink.label4"
+msgstr "Als u Direct Link wilt gebruiken, moet u voldoen aan PCI-SAQA."
+
+msgid "form.connection.label.readmore"
+msgstr "Meer informatie"
+
+msgid "form.connection.label.user"
+msgstr "Gebruiker"
+
+msgid "form.connection.label.password"
+msgstr "Wachtwoord"
+
+msgid "form.connection.button.show"
+msgstr "Weergeven"
+
+msgid "form.connection.button.hide"
+msgstr "Verbergen"
+
+msgid "form.connection.button.generate"
+msgstr "Genereren"
+
+msgid "form.connection.button.copy_value"
+msgstr "Waarde kopiëren"
+
+msgid "form.connection.button.copy_link"
+msgstr "Link kopiëren"
+
+msgid "form.settings.title"
+msgstr "Instellingen"
+
+msgid "form.settings.mode.basic"
+msgstr "Basis"
+
+msgid "form.settings.mode.advanced"
+msgstr "Geavanceerd"
+
+msgid "form.settings.label.tokenisation"
+msgstr "Tokenisatie"
+
+msgid "form.settings.label.readmore"
+msgstr "Meer informatie"
+
+msgid "form.settings.label.disclaimer"
+msgstr "Als u tokenisatie wilt gebruiken, moet u voldoen aan PCI-SAQA en moet u verbonden zijn met DirectLink."
+
+msgid "form.settings.label.stored_cards"
+msgstr "Opgeslagen kaarten"
+
+msgid "form.settings.label.skipsecurity"
+msgstr "Beveiligingscontrole overslaan (CVV en 3D Secure)"
+
+msgid "form.settings.label.skipsecurity.note"
+msgstr "De uitgever van de kaart heeft het ultieme recht een beveiligingscontrole te vragen als dit nodig is om fraude te voorkomen."
+
+msgid "form.settings.label.capture"
+msgstr "Vertraagde capture betaling"
+
+msgid "form.settings.label.directsales"
+msgstr "Rechtstreekse verkopen (automatische capture)"
+
+msgid "form.settings.label.sendemail"
+msgstr "Stuur een e-mailbericht voor alle nieuwe captureverzoeken"
+
+msgid "form.settings.email"
+msgstr "e-mailadres"
+
+msgid "form.settings.label.orders"
+msgstr "Bestellingen"
+
+msgid "form.settings.label.payment_reminder"
+msgstr "E-mail betalingsherinnering"
+
+msgid "form.settings.label.payment_reminder_description"
+msgstr "Stuur een herinnerings-e-mail aan uw klanten om hen te herinneren aan een lopende bestelling waarbij de betaling aan hun kant onvolledig is."
+
+msgid "form.settings.label.payment_reminder_send"
+msgstr "Een herinnerings-e-mail sturen"
+
+msgid "form.settings.label.delay_in_days"
+msgstr "vertraging in dagen"
+
+msgid "form.payment_methods.title"
+msgstr "Betalingsmethoden"
+
+msgid "form.payment_methods.label.geography"
+msgstr "Bedrijfsgeografie"
+
+msgid "form.payment_methods.label.choose_countries"
+msgstr "Kies landen waarin u commercieel actief bent en haal automatisch de best overeenkomende betalingsmethoden op."
+
+msgid "form.payment_methods.label.type_search"
+msgstr "Typ om een betalingsmethode te zoeken..."
+
+msgid "form.payment_methods.label.no_available"
+msgstr "Kan geen beschikbare betalingsmethoden vinden"
+
+msgid "form.payment_methods.button.fetch"
+msgstr "Ophalen op land"
+
+msgid "form.payment_methods.button.add"
+msgstr "Betalingsmethode toevoegen"
+
+msgid "form.payment_methods.button.delete"
+msgstr "Verwijderen"
+
+msgid "form.payment_methods.button.add_more"
+msgstr "Meer betalingsmethoden toevoegen"
+
+msgid "form.payment_page.title"
+msgstr "Betalingspagina"
+
+msgid "form.payment_page.label.choose_access"
+msgstr "Toegang tot de betaling kiezen"
+
+msgid "form.payment_page.label.inline"
+msgstr "Inline-betaling voor kaarten"
+
+msgid "form.payment_page.label.redirect"
+msgstr "Omleiden naar de betalingspagina"
+
+msgid "form.payment_page.label.disclaimer"
+msgstr "Als u inline-betalingen wilt gebruiken, moet u aan PCI SAQ-AEP voldoen."
+
+msgid "form.payment_page.label.template"
+msgstr "Optionele aanpassing"
+
+msgid "form.payment_page.label.step1"
+msgstr "Stap 1"
+
+msgid "form.payment_page.label.step2"
+msgstr "Stap 2"
+
+msgid "form.payment_page.label.step3"
+msgstr "Stap 3"
+
+msgid "form.payment_page.label.readmore"
+msgstr "Meer over sjabloonaanpassing"
+
+msgid "form.payment_page.label.create_own"
+msgstr "Uw eigen sjabloon maken."
+
+msgid "form.payment_page.label.point_your"
+msgstr "Naar uw sjabloon verwijzen"
+
+msgid "form.payment_page.label.ingenico"
+msgstr "De sjabloonmanager van Ingenico gebruiken"
+
+msgid "form.payment_page.label.upload"
+msgstr "Hier uploaden"
+
+msgid "form.payment_page.label.external"
+msgstr "Naar externe opslag verwijzen"
+
+msgid "form.payment_page.label.upload_template"
+msgstr "Sjabloon uploaden naar de"
+
+msgid "form.payment_page.label.template_manager"
+msgstr "sjabloonmanager."
+
+msgid "form.payment_page.label.template_name"
+msgstr "Naam sjabloon"
+
+msgid "form.payment_page.label.browse"
+msgstr "Zoeken in bestand..."
+
+msgid "form.payment_page.label.file_url"
+msgstr "Bestands-URL"
+
+msgid "form.payment_page.label.pci"
+msgstr "Als u inline-betalingen wilt gebruiken, moet u aan PCI SAQ-AEP voldoen."
+
+msgid "form.payment_page.button.upload"
+msgstr "Uploaden"
+
+msgid "form.support.title"
+msgstr "Ondersteuning"
+
+msgid "form.support.assistance"
+msgstr "Configuratiehulp"
+
+msgid "form.support.hint"
+msgstr "Als u problemen hebt bij het instellen van uw account, kunt u een aanvraag bij Ingenico indienen waarin automatisch uw winkelstellingen zijn opgenomen. Vermeld uw ticket-ID als u al in contact bent met onze ondersteuningsafdeling."
+
+msgid "form.support.label1"
+msgstr "Ondersteuningsticket (optioneel)"
+
+msgid "form.support.label2"
+msgstr "Uw e-mailadres (waar we u kunnen bereiken)"
+
+msgid "form.support.label3"
+msgstr "Beschrijf uw probleem (optioneel)"
+
+msgid "form.support.label4"
+msgstr "Uw e-mailadres voor contact"
+
+msgid "form.support.disclaimer1"
+msgstr "U staat op het punt de ondersteuningsafdeling van Ingenico uw winkel-verbindingsinstellingen te sturen, uitsluitend voor zover deze op Ingenico betrekking hebben."
+
+msgid "form.support.submit"
+msgstr "Verzenden"
+
+msgid "form.support.export_import"
+msgstr "Uw instellingen exporteren/importeren"
+
+msgid "form.support.upload"
+msgstr "Uploaden"
+
+msgid "form.support.import"
+msgstr "Importeren"
+
+msgid "form.support.disclaimer2"
+msgstr "Hiermee overschrijft u alle huidige instellingen (verbinding, betalingsmethoden, betalingspagina)."
+
+msgid "form.support.download_settings"
+msgstr "Uw instellingen downloaden als bestand"
+
+msgid "form.support.export_settings"
+msgstr "Instellingen exporteren"
+
+msgid "form.support.import_settings"
+msgstr "Instellingen importeren"
+
+msgid "form.support.import_hint"
+msgstr "Het bestand importeren met de juiste instellingen die u van de ondersteuning van Ingenico hebt ontvangen."
+
+msgid "form.support.import_success"
+msgstr "De instellingen zijn geïmporteerd."
+
+msgid "form.support.browse_file"
+msgstr "Zoeken in bestand..."
+
+msgid "form.support.validation.file_required"
+msgstr "Upload het bestand dat u wilt importeren"
+
+msgid "form.support.validation.email_required"
+msgstr "Het veld E-mail is verplicht"
+
+msgid "form.support.validation.email_invalid"
+msgstr "Ongeldig e-mailadres"
+
+msgid "form.support.validation.mail_sent"
+msgstr "E-mailbericht naar ondersteuning is verzonden."
+
+msgid "form.support.validation.mail_failed"
+msgstr "Kan e-mailbericht niet verzenden."
+
+msgid "form.support.validation.ticket_failed"
+msgstr "Ongeldige ticket."
+
+msgid "form.support.invalid_json_data"
+msgstr "Ongeldig(e) indeling of geüpload bestand."
+
+msgid "form.support.upload_confirmation.title"
+msgstr "Uploadbevestiging"
+
+msgid "form.support.upload_confirmation"
+msgstr "U staat op het punt alle bestaande instellingen te overschrijven door de waarden uit het geüploade bestand te importeren."
+
+msgid "modal.countries_list.select"
+msgstr "Selecteer landen en haal de best overeenkomende betalingsmethoden op"
+
+msgid "modal.countries_list.placeholder"
+msgstr "Typ om een land te zoeken..."
+
+msgid "modal.delayed_payment.whatis"
+msgstr "Wat is vertraagde capture?"
+
+msgid "modal.delayed_payment.label1"
+msgstr "U kunt een vertraagde betalingsoptie aanbieden als u uw huidige voorraadhoeveelheden niet kunt garanderen. In dat geval wordt het bedrag niet bij de klant in rekening gebracht tot u uw voorraad hebt gecontroleerd en de betaling handmatig goedkeurt."
+
+msgid "modal.delayed_payment.label2"
+msgstr "Het bedrag van de bestelling wordt 7 kalenderdagen gereserveerd in de betalingsaccount van uw klant. U riskeert (na 7 dagen) dat u onvoldoende middelen hebt voor een capture van de betaling indien u de betaling niet gedurende deze tijd accepteert."
+
+msgid "modal.directlink.why"
+msgstr "Waarom heb ik DirectLink nodig?"
+
+msgid "modal.directlink.label1"
+msgstr "U hebt DirectLink nodig als u tokenisatie en/of inline-betalingen wilt gebruiken."
+
+msgid "modal.directlink.label2"
+msgstr "Tokenisatie stelt u in staat"
+
+msgid "modal.directlink.label3"
+msgstr "• betalingen te plannen"
+
+msgid "modal.directlink.label4"
+msgstr "• abonnementen te verkopen"
+
+msgid "modal.directlink.label5"
+msgstr "•“betalen met één klik” aan te bieden"
+
+msgid "modal.directlink.label6"
+msgstr "• autorisatie en capture gescheiden uit te voeren"
+
+msgid "modal.directlink.label7"
+msgstr "Wat te doen met de handtekeningwaarde?"
+
+msgid "modal.directlink.label8"
+msgstr "1. Meld u aan bij het winkeliersportaal (backoffice) met uw PSPID en wachtwoord."
+
+msgid "modal.directlink.label9"
+msgstr "2. Open de pagina"
+
+msgid "modal.directlink.label10"
+msgstr "Configuratie -> Gebruikers"
+
+msgid "modal.directlink.label11"
+msgstr "Maak voor nieuwe integraties een nieuwe gebruiker aan, zoals hierna gedemonstreerd. Gebruik de gegenereerde gebruikers-ID en wachtwoord."
+
+msgid "modal.directlink.label12"
+msgstr "Selecteer de gewenste Profiel = Admin en het eventuele e-mailadres."
+
+msgid "modal.directlink.label13"
+msgstr "Voer de omgekeerde procedure uit als u verbinding maakt met een bestaande account. Geef in de plug-in details op over uw bestaande gebruiker die voor technische integratie is aangemaakt."
+
+msgid "modal.directlink.label14"
+msgstr "Hoe maakt u een DirectLink-gebruiker?"
+
+msgid "modal.directlink.label15"
+msgstr "1. Meld u aan bij het winkeliersportaal (backoffice) met uw PSPID en wachtwoord."
+
+msgid "modal.directlink.label16"
+msgstr "2. Open de pagina"
+
+msgid "modal.directlink.label17"
+msgstr "Configuratie -> Gebruikers"
+
+msgid "modal.directlink.label18"
+msgstr "Voor nieuwe integraties maakt u een nieuwe gebruiker. We raden aan dat u de gegenereerde gebruikers-ID en wachtwoord gebruikt."
+
+msgid "modal.directlink.label19"
+msgstr "Selecteer de gewenste Profiel = Admin en het eventuele e-mailadres."
+
+msgid "modal.directlink.label20"
+msgstr "Voer de omgekeerde procedure uit als u verbinding maakt met een bestaande account. Geef op deze pagina alle details op over uw bestaande gebruiker die voor technische integratie is aangemaakt."
+
+msgid "modal.oneclick.whatis"
+msgstr "Waarom zou ik de optie “Opgeslagen kaarten” nodig kunnen hebben?"
+
+msgid "modal.oneclick.label1"
+msgstr "Het is mogelijk dat u een aanzienlijke toename in uw verkoopconversie ziet als u het klanten toestaat hun betalingsmethoden op te slaan en de autorisatie voor hun volgende aankoop over te slaan."
+
+msgid "modal.tokenization.whatis"
+msgstr "Wat is tokenisatie?"
+
+msgid "modal.tokenization.label1"
+msgstr "Tokenisatie is een proces dat het mogelijk maakt geautoriseerde creditcards (of andere betalingsmethoden) op te slaan zonder toegang te krijgen tot gevoelige klantgegevens."
+
+msgid "modal.payment-page.inline"
+msgstr "Inline-betaling voor kaarten"
+
+msgid "modal.payment-page.redirect"
+msgstr "Omleiden naar de betalingspagina"
+
+msgid "modal.reminder.whatis"
+msgstr "Wat is het doel van een herinnerings-e-mail?"
+
+msgid "modal.reminder.label1"
+msgstr "Een herinnerings-e-mail is een veelgebruikte oplossing voor het verhogen van de conversie voor niet-uitgevoerde orders."
+
+msgid "modal.reminder.label2"
+msgstr "Het is aan te bevelen een herinnering te sturen voordat een order wordt geannuleerd, in combinatie met het \"bevriezen van de bestelling\". Een dergelijke benadering legt een onmiddellijke betalingscapture op zonder dat u een voorraadcontrole hoeft uit te voeren of een bestelling uit de status \"Geannuleerd\" hoeft terug te halen."
+
+msgid "modal.psp.whatis"
+msgstr "Wat is mijn PSPID?"
+
+msgid "modal.psp.label1"
+msgstr "PSPID is uw unieke ID voor Ingenico ePayments."
+
+msgid "modal.psp.label2"
+msgstr "U ontvangt deze als het goed is van uw accountmanager zodra uw account is aangemaakt."
+
+msgid "modal.template.howto"
+msgstr "Hoe wijst u uw betalingspaginasjabloon toe?"
+
+msgid "modal.template.label1"
+msgstr "1. Meld u aan bij het winkeliersportaal (backoffice) met uw PSPID en wachtwoord."
+
+msgid "modal.template.label2"
+msgstr "2. Open de volgende pagina Configuratie -> Sjabloon -> Bestandsbeheer en upload uw aangepaste .css-bestand met de stijlen die met uw winkeldesign overeenkomen."
+
+msgid "modal.template.label3"
+msgstr "Open vervolgens het tabblad Sjabloonselectie en selecteer het door u geüploade bestand met de stijlen."
+
+msgid "modal.template.label4"
+msgstr "Typ vervolgens de naam van uw HTML-bestand in het onderstaande invoerveld."
+
+msgid "modal.template.inline.howto"
+msgstr "Hoe kan ik aangepaste stijlen toewijzen aan mijn kaartinvoer-sectie?"
+
+msgid "modal.template.inline.label1"
+msgstr "1. Meld je aan bij het handelaarsportaal (backoffice) met je PSPID en wachtwoord."
+
+msgid "modal.template.inline.label2"
+msgstr "2. Open de volgende pagina Configuratie -> Template -> Bestandsbeheer en upload je aangepaste css-bestand met de stijlen die met je winkelontwerp overeenkomen."
+
+msgid "modal.template.inline.label3"
+msgstr "Open dan het tabblad “Template selection” en selecteer je geüploade bestand met de stijlen."
+
+msgid "modal.signature.howto"
+msgstr "Wat te doen met de handtekeningwaarde?"
+
+msgid "modal.signature.label1"
+msgstr "1. Meld u aan bij het winkeliersportaal (backoffice) met uw PSPID en wachtwoord."
+
+msgid "modal.signature.label2"
+msgstr "2. Open de volgende pagina/'s en voeg de Handtekening-waarde in in de gemarkeerde velden."
+
+msgid "modal.signature.label3"
+msgstr "Configuratie -> Technische informatie -> Transactiefeedback"
+
+msgid "modal.signature.label4"
+msgstr "Configuratie -> Technische informatie -> Verificatie gegevens en oorsprong"
+
+msgid "modal.signature.label5"
+msgstr "Zorg ervoor dat u de volgende twee opties hebt geselecteerd, zoals hieronder weergegeven"
+
+msgid "modal.webhook.howto"
+msgstr "Hoe stelt u de webhook in?"
+
+msgid "modal.webhook.label1"
+msgstr "1. Meld u aan bij het winkeliersportaal (backoffice) met uw PSPID en wachtwoord."
+
+msgid "modal.webhook.label2"
+msgstr "2. Open de volgende pagina/'s en voeg de Handtekening-waarde in in de gemarkeerde velden."
+
+msgid "modal.webhook.label3"
+msgstr "Configuratie -> Technische informatie -> Transactiefeedback"
+
+msgid "modal.webhook.label4"
+msgstr "3. Schuif naar beneden en selecteer de optie zoals hieronder weergegeven."
+
+msgid "modal.inline_store_cards.howto"
+msgstr "Hoe kunt u het selectievakje “Onthoud mijn gegevens” voor de kaarten weergeven of verbergen?"
+
+msgid "modal.inline_store_cards.label1"
+msgstr "1. Meld u aan bij het winkeliersportaal (backoffice) met uw PSPID en wachtwoord."
+
+msgid "modal.inline_store_cards.label2"
+msgstr "2. Open de volgende pagina Configuratie -> Alias en zoek de sectie met de naam “Gehoste tokenisatiepagina” op, zoals hieronder weergegeven."
+
+msgid "modal.inline_store_cards.label3"
+msgstr "Als u de optie “Kaarten opslaan” hebt geselecteerd, selecteert u hier de optie “Ja”. Zo niet, selecteer dan “Nee”."
+
+msgid "modal.paypal.howto"
+msgstr "PayPal configureren en testen"
+
+msgid "modal.paypal.label1"
+msgstr "1. Meld u aan bij het winkeliersportaal (backoffice) met uw PSPID en wachtwoord."
+
+msgid "modal.paypal.label2"
+msgstr "2. Open de volgende pagina en zoek naar PayPal"
+
+msgid "modal.paypal.label3"
+msgstr "Configuratie -> Betalingsmethoden -> Geselecteerde betalingsmethoden"
+
+msgid "modal.paypal.label4"
+msgstr "3. Klik op het pictogram “bewerken” voor PayPal"
+
+msgid "modal.paypal.label5"
+msgstr "4. Typ “test@test.com” in het veld ID van betaler en klik dan op de knop “Verzenden”."
+
+msgid "modal.paypal.label6"
+msgstr "Waarschuwing![1] U kunt alleen eenvoudige tests uitvoeren met de Ingenico-simulator.[1] De functies “Betalen met één klik” en “Betalingstermijnen” zijn alleen beschikbaar in de Live-modus."
+
+msgid "modal.paypal.label7"
+msgstr "Voor het correct instellen van een PayPal-account, dient u"
+
+msgid "modal.paypal.label8"
+msgstr "de instructies op de Ingenico-website te volgen, te vinden met de volgende link"
+
+msgid "modal.paypal_test.label1"
+msgstr "Beperkt gebruik van PayPal in testmodus"
+
+msgid "modal.paypal_test.label2"
+msgstr "In de testmodus kunt u alleen PayPal-betalingen verrichten via de Ingenico-simulator. Dit beperkt het testen tot basisbetalingen."
+
+msgid "modal.paypal_test.label3"
+msgstr "“Betalen met één klik” en “Betalingstermijnen” zijn alleen in de Live-modus beschikbaar."
+
+msgid "modal.paypal_test.label4"
+msgstr "Hartelijk dank voor uw begrip!"
+
+msgid "modal.refund_failed.title"
+msgstr "Terugbetaling is mislukt"
+
+msgid "modal.refund_failed.label1"
+msgstr "Terugbetaling is voor deze transactie helaas niet toegestaan of mislukt."
+
+msgid "modal.refund_failed.label2"
+msgstr "Neem contact op met de ondersteuningsdienst van Ingenico ePayments"
+
+msgid "modal.refund_failed.label3"
+msgstr "U vindt de telefoonnummers voor ondersteuning hier"
+
+msgid "modal.credentials-validation.label1"
+msgstr "Ontbrekende toegangsgegevens Live-omgeving"
+
+msgid "modal.credentials-validation.label2"
+msgstr "Indien u naar de Live-modus wilt overschakelen, dient u alle toegangsgegevens in te vullen in de sectie “Verbinding -> Live”."
+
+msgid "ingenico.payment.info"
+msgstr "Betalingsinfo Ingenico"
+
+msgid "order.payid"
+msgstr "PayID"
+
+msgid "order.payidsub"
+msgstr "PayID Sub"
+
+msgid "order.payment_method"
+msgstr "Betalingsmethode"
+
+msgid "order.status"
+msgstr "Status"
+
+msgid "order.brand"
+msgstr "Merk"
+
+msgid "order.card_no"
+msgstr "Gemaskeerd nummer"
+
+msgid "order.customer_name"
+msgstr "Customer Name"
+
+msgid "order.action.confirmation"
+msgstr "Bevestiging"
+
+msgid "order.action.capture"
+msgstr "Capture"
+
+msgid "order.action.cancel"
+msgstr "Annuleren"
+
+msgid "order.action.refund"
+msgstr "Terugbetalen"
+
+msgid "order.action.refund_btn"
+msgstr "Ingenico Terugbetalen"
+
+msgid "order.action.refund_amount"
+msgstr "Bedrag terugbetaling"
+
+msgid "order.action.capture_amount"
+msgstr "Bedrag capture"
+
+msgid "order.action.captured"
+msgstr "Capture uitgevoerd"
+
+msgid "order.action.refunded"
+msgstr "Terugbetaald"
+
+msgid "order.action.cancelled"
+msgstr "Geannuleerd"
+
+msgid "order.action.refund_pending"
+msgstr "De terugbetaling wordt verwerkt"
+
+msgid "order.action.capture_pending"
+msgstr "Capture is aan het verwerken"
+
+msgid "order.action.capture_too_much"
+msgstr "Te veel"
+
+msgid "order.action.capture_too_little"
+msgstr "Te weinig"
+
+msgid "order.action.refund_too_much"
+msgstr "Te veel"
+
+msgid "order.action.refund_too_little"
+msgstr "Te weinig"
+
+msgid "order.action.capture_confirmation"
+msgstr "Wilt u de capture uitvoeren?"
+
+msgid "order.action.cancellation_confirmation"
+msgstr "Wilt u de betaling annuleren?"
+
+msgid "order.action.refund_confirmation"
+msgstr "Wilt u de betaling terugbetalen?"
+
+msgid "order.errors.capture_too_much"
+msgstr "Het capturebedrag is te hoog"
+
+msgid "order.errors.capture_too_little"
+msgstr "Het capturebedrag is te laag"
+
+msgid "order.errors.refund_too_much"
+msgstr "Het terugbetalingsbedrag is te hoog"
+
+msgid "order.errors.refund_too_little"
+msgstr "Het terugbetalingsbedrag is te laag"
+
+msgid "button.back"
+msgstr "Terug"
+
+msgid "button.submit"
+msgstr "Verzenden"
+
+msgid "button.save"
+msgstr "Opslaan"
+
+msgid "button.apply"
+msgstr "Toepassen"
+
+msgid "button.close"
+msgstr "Sluiten"
+
+msgid "collapse.show"
+msgstr "Weergeven"
+
+msgid "collapse.hide"
+msgstr "Verbergen"
+
+msgid "toggle.enabled"
+msgstr "Ingeschakeld"
+
+msgid "toggle.disabled"
+msgstr "Uitgeschakeld"
+
+msgid "checkout.pay_by_methods_others"
+msgstr "Betaal via %methods% en op andere manieren"
+
+msgid "checkout.pay_by_methods"
+msgstr "Betaal via %methods%"
+
+msgid "checkout.use_new_payment_method"
+msgstr "Nieuwe betalingsmethode gebruiken"
+
+msgid "checkout.payment_cancelled"
+msgstr "Uw betalingsproces is geannuleerd."
+
+msgid "checkout.error"
+msgstr "Er is een fout opgetreden. Probeer de bestelling opnieuw te plaatsen. PaymentID: %payment_id%. Status: %status%. Details: %code% %message%."
+
+msgid "checkout.payment_info"
+msgstr "Betaling is %status%. Status: %status_code%. PayID: %payment_id%."
+
+msgid "checkout.test_mode_warning"
+msgstr "Waarschuwing testmodus"
+
+msgid "checkout.manual_capture_required"
+msgstr "U dient voor deze betaling een handmatige capture uit te voeren."
+
+msgid "checkout.click_capture"
+msgstr "Zoek de bestelling op en klik op de knop \"Capture\"."
+
+msgid "checkout.back_to_shop"
+msgstr "Terug naar de winkel"
+
+msgid "checkout.something_wrong"
+msgstr "Er is iets fout gegaan"
+
+msgid "checkout.please_wait"
+msgstr "Even geduld a.u.b."
+
+msgid "exceptions.upload_filed"
+msgstr "Er is een fout opgetreden bij het uploaden van uw bestand."
+
+msgid "validator.mime_html_only"
+msgstr "Alleen MIME-type \"text/html\" is toegestaan."
+
+msgid "validator.extension_html_only"
+msgstr "Alleen html-bestanden zijn toegestaan."
+
+msgid "validator.mime_text_only"
+msgstr "Alleen MIME-type \"plain/text\" is toegestaan."
+
+msgid "order_status.pending_payment"
+msgstr "In afwachting van de betaling"
+
+msgid "order_status.authorized"
+msgstr "Geautoriseerd"
+
+msgid "modal.payment-methods-modal.title"
+msgstr "Waarom de lijst met betalingsmethoden instellen?"
+
+msgid "modal.payment-methods-modal.label1"
+msgstr "Zorg ervoor dat u exact dezelfde betalingsmethoden vermeldt die in Ingenico backoffice voor uw account zijn geconfigureerd."
+
+msgid "modal.payment-methods-modal.label2"
+msgstr "De lijst met betalingsmethoden wordt tijdens het afrekenen aan uw klanten weergegeven, met een verwijzing naar Ingenico-betaling."
+
+msgid "modal.payment-methods-modal.label3"
+msgstr "De lijst zal ook worden gebruikt om de pagina met de betalingsselectie op te zetten als u de modus Inline kies."
+
+msgid "modal.optional-customisation.title"
+msgstr "Wat is sjabloonaanpassing?"
+
+msgid "modal.optional-customisation.label1"
+msgstr "Als u de modus Inline of Redirect gebruikt, kunt u de stijl van uw betalingpagina (modus Redirect) of de kleuren voor uw kaartinvoersectie (modus Inline) aanpassen."
+
+msgid "modal.optional-customisation.label2"
+msgstr "De standaardtoestand is echter al voorzien van een compleet algemeen ontwerp, zodat u ook meteen kunt beginnen met het accepteren van betalingen."
+
+msgid "modal.openinvoice.title"
+msgstr "Kies het land waar je bedrijfsentiteit gevestigd is"
+
+msgid "modal.openinvoice.label1"
+msgstr "Openstaande factuur-betalingsmethoden zijn alleen beschikbaar voor de landen in de lijst. Kies het land waarin je bedrijf is geregistreerd."
+
+msgid "modal.openinvoice.country_nl"
+msgstr "Nederland"
+
+msgid "modal.openinvoice.country_de"
+msgstr "Duitsland"
+
+msgid "modal.openinvoice.country_se"
+msgstr "Sweden"
+
+msgid "modal.openinvoice.country_fi"
+msgstr "Finland"
+
+msgid "modal.openinvoice.country_dk"
+msgstr "Denmark"
+
+msgid "modal.openinvoice.country_no"
+msgstr "Norway"
+
+msgid "modal.openinvoice.another"
+msgstr "Een ander land. Openstaande factuur-betalingen zijn niet beschikbaar"
+
+msgid "modal.openinvoice.payments.title"
+msgstr "Please select one of the Open Invoice payment methods"
+
+msgid "modal.openinvoice.payments.label1"
+msgstr "You selected %country% that offer Open Invoice payment methods."
+
+msgid "modal.openinvoice.payments.label2"
+msgstr "You can only use one of the two Open Invoice payment methods at the same time."
+
+msgid "modal.openinvoice.payments.label3"
+msgstr "Please choose:"
+
+msgid "modal.openinvoice.payments.afterpay"
+msgstr "Afterpay"
+
+msgid "modal.openinvoice.payments.klarna"
+msgstr "Klarna"
+
+msgid "modal.openinvoice.additional_data_required"
+msgstr "Geef aanvullende informatie op die voor deze betalingsmethode nodig is"
+
+msgid "modal.openinvoice.proceed"
+msgstr "Proceed"
+
+msgid "Billing state"
+msgstr "Staat/provincie facturering"
+
+msgid "Billing address"
+msgstr "Billing address"
+
+msgid "Billing street number"
+msgstr "Huisnummer facturering"
+
+msgid "Shipping state"
+msgstr "Staat/provincie verzending"
+
+msgid "Shipping address"
+msgstr "Shipping address"
+
+msgid "Shipping street number"
+msgstr "Huisnummer verzending"
+
+msgid "Shipping company"
+msgstr "Bedrijf verzending"
+
+msgid "Shipping customer title"
+msgstr "Titel klant verzending"
+
+msgid "Shipping fax"
+msgstr "Fax verzending"
+
+msgid "Customer dob"
+msgstr "Geboortedatum klant"
+
+msgid "Customer gender"
+msgstr "Geslacht klant"
+
+msgid "Customer civility"
+msgstr "Aanspreekvorm klant"
+
+msgid "Notifications"
+msgstr "Meldingen"
+
+msgid "Send an e-mail when order has been paid or reverted from cancelled state."
+msgstr "Stuur een e-mail wanneer de bestelling is betaald of uit de geannuleerde staat is."
+
+msgid "Send an e-mail when refund has been failed."
+msgstr "Stuur een e-mail wanneer de terugbetaling is mislukt."
+
+msgid "Invalid e-mail address"
+msgstr "Ongeldig e-mailadres"
+
+msgid "Pay with Ingenico ePayments"
+msgstr "Betaal met Ingenico ePayments"
+
+msgid "Pay safely on the next page with Ingenico using your preferred payment method"
+msgstr "Betaal veilig op de volgende pagina met Ingenico en gebruik uw favoriete betaalmethode"
+
+msgid "%brand% ends with %cardno%, expires on %month%/%year%"
+msgstr "%brand% eindigt op %cardno%, vervalt op %month%-%year%"

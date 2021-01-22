@@ -1,0 +1,192 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Ingenico ePayments\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: main <main@localhost>\n"
+"Language-Team: Ingenico Team\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2019-04-08T15:46:29+00:00\n"
+"PO-Revision-Date: 2019-04-08 22:09+0600\n"
+"Language: en_US\n"
+"X-Domain: email\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.0.6\n"
+"X-Poedit-KeywordsList: $view->__;__\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: ../templates\n"
+
+msgid "admin_authorization.subject"
+msgstr "Payment authorized. Manual capture required."
+
+msgid "admin_authorization.dear_manager"
+msgstr "Dear %name% manager"
+
+msgid "admin_authorization.text1"
+msgstr "Payment for the <a href=\"%url%\">order %order_id%</a> has been authorized and requires a manual capture."
+
+msgid "admin_authorization.text2"
+msgstr "In order to do that please <a href=\"%url%\">open the order details</a> and click on the \"Capture\" button."
+
+msgid "admin_authorization.regards"
+msgstr "Kind regards"
+
+msgid "admin_authorization.team"
+msgstr "%platform_name% team"
+
+msgid "admin_order_paid.subject"
+msgstr "Order status changed"
+
+msgid "admin_order_paid.dear"
+msgstr "Dear %name%"
+
+msgid "admin_order_paid.text1"
+msgstr "The order <a href=\"%url%\">%order_id%</a> has been paid by your customer and reverted from the Canceled state."
+
+msgid "admin_order_paid.text2"
+msgstr "The order [%url%] %order_id% has been paid by your customer and reverted from the Canceled state."
+
+msgid "admin_order_paid.text3"
+msgstr "Please review your stock and see if you need to refund or capture the payment."
+
+msgid "admin_order_paid.regards"
+msgstr "Kind regards"
+
+msgid "admin_order_paid.team"
+msgstr "%platform_name% team"
+
+msgid "admin_refund_failed.subject"
+msgstr "No refund possible"
+
+msgid "admin_refund_failed.hello"
+msgstr "Hello!"
+
+msgid "admin_refund_failed.text1"
+msgstr "We couldn't execute a refund to your customer for the order %order_id%."
+
+msgid "admin_refund_failed.text2"
+msgstr "Her/His payment method has probably changed or doesn't allow refunds."
+
+msgid "admin_refund_failed.text3"
+msgstr "Please contact your customer in order to proceed with the refund."
+
+msgid "admin_refund_failed.regards"
+msgstr "Kind regards"
+
+msgid "admin_refund_failed.team"
+msgstr "%platform_name% team"
+
+msgid "authorization.subject"
+msgstr "Payment authorized"
+
+msgid "authorization.dear"
+msgstr "Dear %name%"
+
+msgid "authorization.text1"
+msgstr "Payment for the <a href=\"%url%\">order %order_id%</a> is pending acceptance on our side."
+
+msgid "authorization.text2"
+msgstr "Once we ensure that requested order items are available, your payment will be accepted and order will be shipped."
+
+msgid "authorization.administration"
+msgstr "administration"
+
+msgid "onboarding_request.subject"
+msgstr "New account request from the merchant (%platform%, %country%)"
+
+msgid "onboarding_request.dear"
+msgstr "Dear"
+
+msgid "onboarding_request.text1"
+msgstr "A new %platform_name% account request has been received through"
+
+msgid "onboarding_request.text2"
+msgstr "Merchant data"
+
+msgid "onboarding_request.text3"
+msgstr "Company name"
+
+msgid "onboarding_request.text4"
+msgstr "Email"
+
+msgid "onboarding_request.text5"
+msgstr "Business entity Country"
+
+msgid "onboarding_request.text6"
+msgstr "Requested on"
+
+msgid "onboarding_request.text7"
+msgstr "Plugin data"
+
+msgid "onboarding_request.text8"
+msgstr "Plugin version"
+
+msgid "onboarding_request.text9"
+msgstr "Please get in touch with the merchant in order to proceed with this account!"
+
+msgid "onboarding_request.text11"
+msgstr "Shopping Cart team"
+
+msgid "order_paid.subject"
+msgstr "Order status changed"
+
+msgid "order_paid.dear"
+msgstr "Dear %name%"
+
+msgid "order_paid.text1"
+msgstr "We have accepted payment for the order <a href=\"%url%\">%order_id%</a> and it has been reverted from the \"Canceled\" state."
+
+msgid "order_paid.text2"
+msgstr "We have accepted payment for the order [%url%] %order_id% and it has been reverted from the \"Canceled\" state."
+
+msgid "order_paid.text3"
+msgstr "We need to review the stock and ship available items. If we cannot fulfill the complete order, the amount corresponding to the missing items will be refunded to your payment method."
+
+msgid "order_paid.administration"
+msgstr "administration"
+
+msgid "refund_failed.subject"
+msgstr "No refund possible"
+
+msgid "refund_failed.dear"
+msgstr "Dear %name%"
+
+msgid "refund_failed.text1"
+msgstr "Unfortunately you made a payment for the order %order_id% too late and stock was no longer available."
+
+msgid "refund_failed.text2"
+msgstr "We tried to refund you automatically but either something changed with your payment method or it doesn't accept automatic refunds."
+
+msgid "refund_failed.text3"
+msgstr "Please indicate your preferred way of accepting a refund. It could be, for example, your bank account number or an e-wallet."
+
+msgid "refund_failed.administration"
+msgstr "administration"
+
+msgid "reminder.subject"
+msgstr "Reminder"
+
+msgid "reminder.dear"
+msgstr "Dear %name%"
+
+msgid "reminder.text1"
+msgstr "We noticed that you haven't completed the payment for your order on %shop_name%"
+
+msgid "reminder.text2"
+msgstr "This is the content of your order"
+
+msgid "reminder.item"
+msgstr "Item"
+
+msgid "reminder.price"
+msgstr "Price"
+
+msgid "reminder.total"
+msgstr "Total amount"
+
+msgid "reminder.text3"
+msgstr "We hope your items are still in stock!"
+
+msgid "reminder.text4"
+msgstr "Complete Payment"

@@ -1,0 +1,45 @@
+{
+    "name": "ingenico/ogone-sdk-php",
+    "description": "Ingenico SDK for PHP",
+    "version": "2.0.2",
+    "license": [
+        "OSL"
+    ],
+    "authors": [
+        {
+            "name": "Limegrow",
+            "email": "info@limegrow.com",
+            "homepage": "https://limegrow.com"
+        },
+        {
+            "name": "Marlon BVBA",
+            "email": "info@marlon.be",
+            "homepage": "https://www.marlon.be"
+        },
+        {
+            "name": "Nicolas Clavaud",
+            "email": "nicolas@lrqdo.fr",
+            "homepage": "https://github.com/nclavaud"
+        }
+    ],
+    "support": {
+        "email": "support.ecom@ingenico.com"
+    },
+    "require": {
+        "php": ">=7.0",
+        "ext-libxml": "*",
+        "ext-simplexml": "*",
+        "ext-intl": "*",
+        "monolog/monolog": "*"
+    },
+    "require-dev" : {
+        "phpunit/phpunit": "^7",
+        "symfony/class-loader": "@stable"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ogone\\": "lib/Ogone/",
+            "Ogone\\Tests\\": "tests/Ogone/Tests/"
+        }
+    }
+}

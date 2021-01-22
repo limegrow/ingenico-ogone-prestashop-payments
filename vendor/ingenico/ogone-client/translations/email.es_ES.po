@@ -1,0 +1,192 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Ingenico ePayments\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: main <main@localhost>\n"
+"Language-Team: Ingenico Team\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2019-04-08T15:46:29+00:00\n"
+"PO-Revision-Date: 2019-04-08 22:09+0600\n"
+"Language: es_ES\n"
+"X-Domain: email\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.0.6\n"
+"X-Poedit-KeywordsList: $view->__;__\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: ../templates\n"
+
+msgid "admin_authorization.subject"
+msgstr "Pago autorizado. Captura manual necesaria."
+
+msgid "admin_authorization.dear_manager"
+msgstr "Estimado administrador %name%:"
+
+msgid "admin_authorization.text1"
+msgstr "El pago del <a href=\"%url%\">pedido %order_id%</a> ha sido autorizado y requiere una captura manual."
+
+msgid "admin_authorization.text2"
+msgstr "Para hacerlo, <a href=\"%url%\">abra los detalles del pedido</a> y haga clic en el botón \"Capturar\"."
+
+msgid "admin_authorization.regards"
+msgstr "Saludos cordiales,"
+
+msgid "admin_authorization.team"
+msgstr "El equipo de Ingenico"
+
+msgid "admin_order_paid.subject"
+msgstr "El estado del pedido ha cambiado"
+
+msgid "admin_order_paid.dear"
+msgstr "Estimado/a %name%:"
+
+msgid "admin_order_paid.text1"
+msgstr "El pedido <a href=\"%url%\">%order_id%</a> ha sido pagado por su cliente y lo hemos revertido desde el estado Cancelado."
+
+msgid "admin_order_paid.text2"
+msgstr "El pedido [%url%] %order_id% ha sido pagado por su cliente y lo hemos revertido desde el estado Cancelado."
+
+msgid "admin_order_paid.text3"
+msgstr "Revise su stock y compruebe si necesita reembolsar o capturar el pago."
+
+msgid "admin_order_paid.regards"
+msgstr "Saludos cordiales,"
+
+msgid "admin_order_paid.team"
+msgstr "El equipo de %platform_name%"
+
+msgid "admin_refund_failed.subject"
+msgstr "No ha sido posible el reembolso"
+
+msgid "admin_refund_failed.hello"
+msgstr "¡Hola!"
+
+msgid "admin_refund_failed.text1"
+msgstr "No hemos podido realizar un reembolso a su cliente para el pedido %order_id%."
+
+msgid "admin_refund_failed.text2"
+msgstr "Su método de pago probablemente ha cambiado o no permite reembolsos."
+
+msgid "admin_refund_failed.text3"
+msgstr "Póngase en contacto con su cliente para poder realizar el reembolso."
+
+msgid "admin_refund_failed.regards"
+msgstr "Saludos cordiales,"
+
+msgid "admin_refund_failed.team"
+msgstr "El equipo de %platform_name%"
+
+msgid "authorization.subject"
+msgstr "Pago autorizado"
+
+msgid "authorization.dear"
+msgstr "Estimado/a %name%:"
+
+msgid "authorization.text1"
+msgstr "El pago del <a href=\"%url%\">pedido %order_id%</a> está pendiente de su aceptación."
+
+msgid "authorization.text2"
+msgstr "Cuando hayamos verificado que los artículos solicitados están disponibles, su pago será aceptado y el pedido será enviado."
+
+msgid "authorization.administration"
+msgstr "administración"
+
+msgid "onboarding_request.subject"
+msgstr "Solicitud de nueva cuenta del comerciante (%platform%, %country%)"
+
+msgid "onboarding_request.dear"
+msgstr "Hola."
+
+msgid "onboarding_request.text1"
+msgstr "Hemos recibido una solicitud de nueva cuenta de %platform_name%"
+
+msgid "onboarding_request.text2"
+msgstr "Datos del comerciante"
+
+msgid "onboarding_request.text3"
+msgstr "Nombre de la empresa"
+
+msgid "onboarding_request.text4"
+msgstr "Email"
+
+msgid "onboarding_request.text5"
+msgstr "País de la entidad empresarial"
+
+msgid "onboarding_request.text6"
+msgstr "Fecha de solicitud"
+
+msgid "onboarding_request.text7"
+msgstr "Datos del complemento"
+
+msgid "onboarding_request.text8"
+msgstr "Versión del complemento"
+
+msgid "onboarding_request.text9"
+msgstr "Póngase en contacto con el comerciante para poder continuar con el registro de esta cuenta."
+
+msgid "onboarding_request.text11"
+msgstr "Equipo de la cesta de la compra"
+
+msgid "order_paid.subject"
+msgstr "El estado del pedido ha cambiado"
+
+msgid "order_paid.dear"
+msgstr "Estimado/a %name%:"
+
+msgid "order_paid.text1"
+msgstr "Hemos aceptado el pago del pedido <a href=\"%url%\">%order_id%</a> y lo hemos revertido desde el estado \"Cancelado\"."
+
+msgid "order_paid.text2"
+msgstr "Hemos aceptado el pago del pedido [%url%] %order_id% y lo hemos revertido desde el estado \"Cancelado\"."
+
+msgid "order_paid.text3"
+msgstr "Necesitamos revisar el stock y enviar los artículos disponibles. Si no podemos cumplir con el pedido completo, el importe correspondiente a los artículos que falten se reembolsará en su método de pago."
+
+msgid "order_paid.administration"
+msgstr "administración"
+
+msgid "refund_failed.subject"
+msgstr "No ha sido posible el reembolso"
+
+msgid "refund_failed.dear"
+msgstr "Estimado/a %name%:"
+
+msgid "refund_failed.text1"
+msgstr "Lamentablemente, ha tardado demasiado en realizar el pago del pedido %order_id% y ya no está disponible."
+
+msgid "refund_failed.text2"
+msgstr "Hemos intentado realizar el reembolso de forma automática pero su método de pago ha cambiado o no acepta reembolsos automáticos."
+
+msgid "refund_failed.text3"
+msgstr "Indique cómo prefiere aceptar el reembolso. Puede usar, por ejemplo, un número de cuenta o aceptarlo en formato e-wallet."
+
+msgid "refund_failed.administration"
+msgstr "administración"
+
+msgid "reminder.subject"
+msgstr "Recordatorio"
+
+msgid "reminder.dear"
+msgstr "Estimado/a %name%:"
+
+msgid "reminder.text1"
+msgstr "Hemos observado que aún no ha realizado el pago de su pedido en %shop_name%"
+
+msgid "reminder.text2"
+msgstr "Este es el contenido de su pedido"
+
+msgid "reminder.item"
+msgstr "Artículo"
+
+msgid "reminder.price"
+msgstr "Precio"
+
+msgid "reminder.total"
+msgstr "Importe total"
+
+msgid "reminder.text3"
+msgstr "¡Esperemos que sus artículos sigan estando disponibles!"
+
+msgid "reminder.text4"
+msgstr "Finalizar pago"

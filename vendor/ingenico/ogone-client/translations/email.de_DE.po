@@ -1,0 +1,192 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Ingenico ePayments\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: main <main@localhost>\n"
+"Language-Team: Ingenico Team\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2019-04-08T15:46:29+00:00\n"
+"PO-Revision-Date: 2019-04-08 22:09+0600\n"
+"Language: de_DE\n"
+"X-Domain: email\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.0.6\n"
+"X-Poedit-KeywordsList: $view->__;__\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: ../templates\n"
+
+msgid "admin_authorization.subject"
+msgstr "Zahlung autorisiert. Manuelle Erfassung erforderlich."
+
+msgid "admin_authorization.dear_manager"
+msgstr "Sehr geehrter %name% Manager"
+
+msgid "admin_authorization.text1"
+msgstr "Die Zahlung für die <a href=\"%url%\">Bestellung %order_id%</a> wurde autorisiert und erfordert eine manuelle Erfassung."
+
+msgid "admin_authorization.text2"
+msgstr "Dafür <a href=\"%url%\">öffnen Sie bitte die Details der Bestellung</a> und klicken Sie auf die Schaltfläche \"Capture\"."
+
+msgid "admin_authorization.regards"
+msgstr "Mit freundlichen Grüßen"
+
+msgid "admin_authorization.team"
+msgstr "Ihr %platform_name%-Team"
+
+msgid "admin_order_paid.subject"
+msgstr "Bestellstatus geändert"
+
+msgid "admin_order_paid.dear"
+msgstr "Sehr geehrter %name%"
+
+msgid "admin_order_paid.text1"
+msgstr "Die Bestellung <a href=\"%url%\">%order_id%</a> wurde durch Ihren Kunden bezahlt und der Status Stornierung wurde aufgehoben."
+
+msgid "admin_order_paid.text2"
+msgstr "Die Bestellung [%url%] %order_id% wurde durch Ihren Kunden bezahlt und der Status Stornierung wurde aufgehoben."
+
+msgid "admin_order_paid.text3"
+msgstr "Bitte prüfen Sie Ihren Lagerbestand und prüfen Sie, ob Sie die Zahlung erstatten oder erfassen müssen."
+
+msgid "admin_order_paid.regards"
+msgstr "Mit freundlichen Grüßen"
+
+msgid "admin_order_paid.team"
+msgstr "Ihr %platform_name%-Team"
+
+msgid "admin_refund_failed.subject"
+msgstr "Keine Erstattung möglich"
+
+msgid "admin_refund_failed.hello"
+msgstr "Hallo!"
+
+msgid "admin_refund_failed.text1"
+msgstr "Wir konnten für die Bestellung %order_id% keine Erstattung an Ihren Kunden vornehmen."
+
+msgid "admin_refund_failed.text2"
+msgstr "Ihre/Seine Zahlungsmethode hat sich wahrscheinlich geändert oder ermöglicht keine Erstattungen."
+
+msgid "admin_refund_failed.text3"
+msgstr "Bitte wenden Sie sich an Ihren Kunden, um mit der Erstattung fortzufahren."
+
+msgid "admin_refund_failed.regards"
+msgstr "Mit freundlichen Grüßen"
+
+msgid "admin_refund_failed.team"
+msgstr "Ihr %platform_name%-Team"
+
+msgid "authorization.subject"
+msgstr "Zahlung autorisiert"
+
+msgid "authorization.dear"
+msgstr "Sehr geehrter %name%"
+
+msgid "authorization.text1"
+msgstr "Die Zahlung für die <a href=\"%url%\">Bestellung %order_id%</a> muss noch von uns akzeptiert werden."
+
+msgid "authorization.text2"
+msgstr "Sobald wir sichergestellt haben, dass die gewünschten Artikel verfügbar sind, wird Ihre Zahlung akzeptiert und die Bestellung versandt."
+
+msgid "authorization.administration"
+msgstr "Verwaltung"
+
+msgid "onboarding_request.subject"
+msgstr "Neue Kontoanfrage durch den Händler (%platform%, %country%)"
+
+msgid "onboarding_request.dear"
+msgstr "Sehr geehrter"
+
+msgid "onboarding_request.text1"
+msgstr "Ein neuer Antrag auf ein %platform_name%-Konto wurde erhalten über"
+
+msgid "onboarding_request.text2"
+msgstr "Händlerdaten"
+
+msgid "onboarding_request.text3"
+msgstr "Name des Unternehmens"
+
+msgid "onboarding_request.text4"
+msgstr "E-Mail"
+
+msgid "onboarding_request.text5"
+msgstr "Land der Wirtschaftseinheit"
+
+msgid "onboarding_request.text6"
+msgstr "Angefordert am"
+
+msgid "onboarding_request.text7"
+msgstr "Plugin-Daten"
+
+msgid "onboarding_request.text8"
+msgstr "Plugin-Version"
+
+msgid "onboarding_request.text9"
+msgstr "Bitte wenden Sie sich an Ihren Händler, um mit diesem Konto fortzufahren!"
+
+msgid "onboarding_request.text11"
+msgstr "Warenkorb-Team"
+
+msgid "order_paid.subject"
+msgstr "Bestellstatus geändert"
+
+msgid "order_paid.dear"
+msgstr "Sehr geehrter %name%"
+
+msgid "order_paid.text1"
+msgstr "Wir haben die Zahlung für die Bestellung <a href=\"%url%\">%order_id%</a> akzeptiert und der Status \"Stornierung\" wurde aufgehoben."
+
+msgid "order_paid.text2"
+msgstr "Wir haben die Zahlung für die Bestellung [%url%] %order_id% akzeptiert und der Status \"Stornierung\" wurde aufgehoben."
+
+msgid "order_paid.text3"
+msgstr "Wir müssen die Lagerbestände überprüfen und verfügbare Artikel versenden. Wenn wir die komplette Bestellung nicht ausführen können, wird der entsprechende Betrag für die fehlenden Artikel über Ihre Zahlungsmethode erstattet."
+
+msgid "order_paid.administration"
+msgstr "Verwaltung"
+
+msgid "refund_failed.subject"
+msgstr "Keine Erstattung möglich"
+
+msgid "refund_failed.dear"
+msgstr "Sehr geehrter %name%"
+
+msgid "refund_failed.text1"
+msgstr "Leider haben Sie die Bestellung %order_id% zu spät bezahlt und der Lagerbestand war nicht mehr lieferbar."
+
+msgid "refund_failed.text2"
+msgstr "Wir haben uns um eine automatische Erstattung bemüht, aber entweder hat sich etwas an Ihrer Zahlungsmethode geändert oder es werden keine automatischen Erstattungen akzeptiert."
+
+msgid "refund_failed.text3"
+msgstr "Bitte geben Sie Ihre bevorzugte Art der Erstattung an. Das könnte beispielsweise Ihre Kontonummer oder ein E-Wallet sein."
+
+msgid "refund_failed.administration"
+msgstr "Verwaltung"
+
+msgid "reminder.subject"
+msgstr "Erinnerung"
+
+msgid "reminder.dear"
+msgstr "Sehr geehrter %name%"
+
+msgid "reminder.text1"
+msgstr "Wir haben festgestellt, dass Sie die Zahlung für Ihre Bestellung auf %shop_name% nicht abgeschlossen haben"
+
+msgid "reminder.text2"
+msgstr "Dies ist der Inhalt Ihrer Bestellung"
+
+msgid "reminder.item"
+msgstr "Artikel"
+
+msgid "reminder.price"
+msgstr "Preis"
+
+msgid "reminder.total"
+msgstr "Gesamtbetrag"
+
+msgid "reminder.text3"
+msgstr "Wir hoffen, dass Ihre Artikel noch vorrätig sind!"
+
+msgid "reminder.text4"
+msgstr "Zahlung abschließen"

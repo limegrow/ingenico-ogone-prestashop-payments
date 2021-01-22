@@ -1,0 +1,150 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Ingenico ePayments\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: main <main@localhost>\n"
+"Language-Team: Ingenico Team\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2019-04-08T16:14:20+00:00\n"
+"PO-Revision-Date: 2019-04-08 22:18+0600\n"
+"Language: fr_FR\n"
+"X-Domain: messages\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.0.6\n"
+"X-Poedit-KeywordsList: $this->__;__\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: ../src\n"
+
+msgid "checkout.error"
+msgstr "Une erreur s’est produite. Veuillez essayer de placer de nouveau la commande. Identifiant de paiement: %payment_id%. Statut: %status%. Coordonnées: %code% %message%."
+
+msgid "checkout.payment_info"
+msgstr "Le paiement est %status%. Statut: %status_code%. Identifiant de paiement: %payment_id%."
+
+msgid "checkout.payment_cancelled"
+msgstr "Payment has been cancelled."
+
+msgid "exceptions.alias_none"
+msgstr "L’alias n’existe pas."
+
+msgid "exceptions.access_denied"
+msgstr "Accès refusé."
+
+msgid "exceptions.refund_unavailable"
+msgstr "Remboursement indisponible"
+
+msgid "exceptions.refund_failed"
+msgstr "Échec du remboursement. Erreur %code% %message%"
+
+msgid "exceptions.capture_unavailable"
+msgstr "Remboursement indisponible"
+
+msgid "exceptions.capture_failed"
+msgstr "Échec de la saisie. Erreur %code% %message%"
+
+msgid "exceptions.cancellation_unavailable"
+msgstr "Annulation indisponible"
+
+msgid "exceptions.cancellation_failed"
+msgstr "Échec de l’annulation. Erreur %code% %message%"
+
+msgid "exceptions.upload_filed"
+msgstr "Une erreur s’est produite lors du téléchargement de votre fichier."
+
+msgid "validator.mime_html_only"
+msgstr "Seul le type MIME \"text/html\" est autorisé."
+
+msgid "validator.extension_html_only"
+msgstr "Seuls les fichiers html sont autorisés."
+
+msgid "validator.instalments.negative_values"
+msgstr "Les versements négatifs ne sont pas valides."
+
+msgid "validator.instalments.too_much"
+msgstr "La commande peut être réglée via 24 versements maximum."
+
+msgid "validator.instalments.maximum_period"
+msgstr "La période entre chaque versement est de 90 jours maximum."
+
+msgid "validator.instalments.first_payment"
+msgstr "Le premier paiement doit correspondre à 1 % - 99 %."
+
+msgid "validator.request_timeout"
+msgstr "Requête expirée non valide."
+
+msgid "validator.short_signature"
+msgstr "Vous devez utiliser une signature contenant exactement 40 caractères. Nous vous recommandons de la générer et de l’insérer dans le back-office d’ comme indiqué dans la fenêtre d’aide."
+
+msgid "validator.template_url_invalid"
+msgstr "Le modèle de fichier URL n’est pas valide."
+
+msgid "validator.settings.reminderemail.negative_values"
+msgstr "La valeur de retard n'est pas valide."
+
+msgid "core.authorization_usage"
+msgstr "Enregistrer la carte pour les paiements futurs sur ce magasin"
+
+msgid "Cards"
+msgstr "Cartes"
+
+msgid "Real-time Banking"
+msgstr "Services bancaires en temps réel"
+
+msgid "e-Wallet"
+msgstr "e-Wallet"
+
+msgid "Prepaid Vouchers"
+msgstr "Bons prépayés"
+
+msgid "France"
+msgstr "France"
+
+msgid "Belgium"
+msgstr "Belgique"
+
+msgid "Germany"
+msgstr "Allemagne"
+
+msgid "Italy"
+msgstr "Italie"
+
+msgid "Luxembourg"
+msgstr "Luxembourg"
+
+msgid "Netherlands"
+msgstr "Pays-Bas"
+
+msgid "Portugal"
+msgstr "Portugal"
+
+msgid "Spain"
+msgstr "Espagne"
+
+msgid "Switzerland"
+msgstr "Suisse"
+
+msgid "United Kingdom of Great Britain and Northern Ireland"
+msgstr "Royaume-Uni"
+
+msgid "Value is required"
+msgstr "Champ obligatoire"
+
+msgid "Value must not exceed %s characters"
+msgstr "Value must not exceed %s characters"
+
+msgid "Date is invalid"
+msgstr "Date is invalid"
+
+msgid "Value is not numeric"
+msgstr "Value is not numeric"
+
+msgid "Invalid value"
+msgstr "Invalid value"
+
+msgid "Male"
+msgstr "Homme"
+
+msgid "Female"
+msgstr "Femme"

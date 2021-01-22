@@ -1,0 +1,30 @@
+{
+  "name": "ingenico_epayments",
+  "version": "3.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "gulp-sass": "^4.0.2",
+    "node-sass": "^4.11.0"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.1",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-rename": "^1.4.0",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglify-es": "^1.0.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://bitbucket.org/ingenico-limegrow/connector-prestashop-1.7.git"
+  },
+  "author": "Ingenico",
+  "license": "SEE LICENSE IN License.txt",
+  "homepage": "https://bitbucket.org/ingenico-limegrow/connector-prestashop-1.7#readme"
+}

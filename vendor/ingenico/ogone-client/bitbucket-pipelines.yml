@@ -1,0 +1,34 @@
+# This is a sample build configuration for PHP.
+# Check our guides at https://confluence.atlassian.com/x/e8YWN for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+image: php:7.1.1
+
+clone:
+  depth: full              # SonarCloud scanner needs the full history to assign issues properly
+
+definitions:
+  caches:
+    sonar: ~/.sonar/cache  # Caching SonarCloud artifacts will speed up your build
+
+  steps:
+    - step: &analyze-sonarcloud
+        name: Analyze on SonarCloud
+        caches:
+          - sonar
+          - docker
+        script:
+          - pipe: sonarsource/sonarcloud-scan:0.1.5
+            variables:
+              SONAR_TOKEN: ${SONAR_TOKEN}
+              # EXTRA_ARGS: '-Dsonar.sources=src -Dsonar.tests=src -Dsonar.test.inclusions="**/testing/**,**/*.spec.ts" -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info'
+
+# Currently we run it for all branches and pull requests. 
+# Later we would split it up by "branches", where we would have image and script for "master" and same for "develop" and "feature/*" branches.
+pipelines:
+  default:
+    - step: *analyze-sonarcloud
+  pull-requests:
+    '**':
+      - step: *analyze-sonarcloud
