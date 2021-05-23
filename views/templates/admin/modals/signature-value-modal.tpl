@@ -1,5 +1,5 @@
 {*
-* 2007-2019 Ingenico
+* 2007-2021 Ingenico
 *
 * NOTICE OF LICENSE
 *
@@ -12,7 +12,7 @@
 * to license@prestashop.com so we can send you a copy immediately.
 *
 *  @author Ingenico <contact@ingenico.com>
-*  @copyright  2007-2019 Ingenico
+*  @copyright  2007-2021 Ingenico
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 <div id="signature-value-modal" class="ingenico-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">
@@ -33,15 +33,15 @@
                     <li>{l s='modal.signature.label2' mod='ingenico_epayments'}:<br>
                         {l s='modal.signature.label3' mod='ingenico_epayments'}</li>
                 </ul>
-                <img src="{$module_dir}/views/imgs/signature-value-1.png">
+                <img src="{$module_dir|escape}/views/img/signature-value-1.png">
                 <ul>
                     <li>{l s='modal.signature.label4' mod='ingenico_epayments'}</li>
                 </ul>
-                <img src="{$module_dir}/views/imgs/signature-value-2.png">
+                <img src="{$module_dir|escape}/views/img/signature-value-2.png">
                 <ul>
                     <li>{l s='modal.signature.label5' mod='ingenico_epayments'}</li>
                 </ul>
-                <img src="{$module_dir}/views/imgs/signature-value-3.png">
+                <img src="{$module_dir|escape}/views/img/signature-value-3.png">
             </div>
             <div class="modal-footer">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">

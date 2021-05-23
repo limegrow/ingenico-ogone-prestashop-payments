@@ -1,5 +1,5 @@
 {*
-* 2007-2019 Ingenico
+* 2007-2021 Ingenico
 *
 * NOTICE OF LICENSE
 *
@@ -12,7 +12,7 @@
 * to license@prestashop.com so we can send you a copy immediately.
 *
 *  @author Ingenico <contact@ingenico.com>
-*  @copyright  2007-2019 Ingenico
+*  @copyright  2007-2021 Ingenico
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 <form class="ingenico-cc-form" action="{$action|escape}" method="POST">
@@ -24,31 +24,26 @@
             </label>
 
             {if $payment_page_type === 'INLINE'}
-                <script>
-                    window.onload = function() {
-                        jQuery(document).ready(function($) {
-                            $(document).on('click', 'input[name="alias"]', function() {
-                                if ($(this).val() === 'new') {
-                                    $('#ingenico_form').show();
-                                } else {
-                                    $('#ingenico_form').hide();
-                                }
-                            });
-                        });
-                    };
+                <div class="one-click-wrap">
+                    <div class="cc-helper-text"></div>
+                    <div class="iframe-wrap">
+                        <iframe id="ingenico_iframe" lazyload="on" src="{$frame_url|escape}" style="width: 100%; min-height: 505px; border: none;"></iframe>
+                    </div>
+                </div>
+                <script type="application/javascript">
+                    document.addEventListener('DOMContentLoaded', function() {
+                        IngenicoCCInline.init();
+                    });
                 </script>
-
-                <div class="cc-helper-text"></div>
-                <iframe id="ingenico_iframe" lazyload="on" src="{$frame_url|escape}" style="width: 100%; min-height: 505px; border: none;"></iframe>
             {/if}
 
             <br />
 
             {foreach $aliases as $index => $alias}
-                <label for="alias_{$alias->getId()}">
-                    <input type="radio" id="alias_{$alias->getId()}" name="alias" value="{$alias->getId()}">
-                    <img src="{$alias->getEmbeddedLogo()}" width="50" alt="{$alias->getTranslatedName()}">
-                    {$alias->getTranslatedName()}
+                <label for="alias_{$alias->getId()|escape}">
+                    <input type="radio" id="alias_{$alias->getId()|escape}" name="alias" value="{$alias->getId()|escape}">
+                    <img src="{$alias->getEmbeddedLogo() nofilter}" width="50" alt="{$alias->getTranslatedName()|escape}">
+                    {$alias->getTranslatedName()|escape}
                 </label>
                 <br />
             {/foreach}
@@ -58,6 +53,11 @@
             {if $payment_page_type === 'INLINE'}
                 <div class="cc-helper-text"></div>
                 <iframe id="ingenico_iframe" lazyload="on" src="{$frame_url|escape}" style="width: 100%; min-height: 505px; border: none;"></iframe>
+                <script type="application/javascript">
+                    document.addEventListener('DOMContentLoaded', function() {
+                        IngenicoCCInline.init();
+                    });
+                </script>
             {/if}
         {/if}
     </div>

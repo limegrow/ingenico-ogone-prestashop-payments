@@ -1,4 +1,5 @@
 <?php
+/** @phpcs:ignore Generic.Files.LineLength.TooLong */
 /** @var \IngenicoClient\MailTemplate $view */
 /** @var string $contents */
 /** @var string $locale */

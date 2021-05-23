@@ -1,5 +1,5 @@
 {*
-* 2007-2019 Ingenico
+* 2007-2021 Ingenico
 *
 * NOTICE OF LICENSE
 *
@@ -12,7 +12,7 @@
 * to license@prestashop.com so we can send you a copy immediately.
 *
 *  @author Ingenico <contact@ingenico.com>
-*  @copyright  2007-2019 Ingenico
+*  @copyright  2007-2021 Ingenico
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 <div id="template-manager-inline-modal" class="ingenico-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">
@@ -36,13 +36,13 @@
                         {l s='modal.template.inline.label2' mod='ingenico_epayments'}
                     </li>
                 </ul>
-                <img src="{$module_dir}/views/imgs/template-manager.png">
+                <img src="{$module_dir|escape}/views/img/template-manager.png">
                 <ul>
                     <li>
                         {l s='modal.template.inline.label3' mod='ingenico_epayments'}
                     </li>
                 </ul>
-                <img src="{$module_dir}/views/imgs/template-manager-2-inline.png">
+                <img src="{$module_dir|escape}/views/img/template-manager-2-inline.png">
             </div>
             <div class="modal-footer">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">

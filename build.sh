@@ -6,6 +6,8 @@ mkdir $TMPDIR/ingenico_epayments
 cp -R -f $CURRENT_DIR/* $TMPDIR/ingenico_epayments/
 
 cd $TMPDIR/ingenico_epayments/
+composer require ingenico/ogone-sdk-php
+composer require ingenico/ogone-client
 npm install
 gulp js:build
 gulp css:build
@@ -15,7 +17,7 @@ git clone https://github.com/jmcollin/autoindex
 read -r -d '' AUTOINDEX_INDEX <<"EOF"
 <?php
 /**
- * 2007-2020 Ingenico
+ * 2007-2021 Ingenico
  *
  * NOTICE OF LICENSE
  *

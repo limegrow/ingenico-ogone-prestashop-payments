@@ -1,5 +1,5 @@
 {*
-* 2007-2019 Ingenico
+* 2007-2021 Ingenico
 *
 * NOTICE OF LICENSE
 *
@@ -12,7 +12,7 @@
 * to license@prestashop.com so we can send you a copy immediately.
 *
 *  @author Ingenico <contact@ingenico.com>
-*  @copyright  2007-2019 Ingenico
+*  @copyright  2007-2021 Ingenico
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 <div id="countries-list" class="ingenico-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">
@@ -35,9 +35,9 @@
                         {foreach $payment_countries as $key => $country}
                             <li>
                                 <label class="label-container">
-                                    <input type="checkbox" name="payment_country[]" value="{$key}">
+                                    <input type="checkbox" name="payment_country[]" value="{$key|escape}">
                                     <span class="checkmark"></span>
-                                    {$country}
+                                    {$country|escape}
                                 </label>
                             </li>
                         {/foreach}

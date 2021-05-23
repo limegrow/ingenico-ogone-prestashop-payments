@@ -3,16 +3,23 @@
 namespace IngenicoClient;
 
 use IngenicoClient\PaymentMethod\Afterpay;
+use IngenicoClient\PaymentMethod\Bancontact;
+use IngenicoClient\PaymentMethod\Ideal;
 use IngenicoClient\PaymentMethod\Klarna;
 use IngenicoClient\PaymentMethod\KlarnaBankTransfer;
 use IngenicoClient\PaymentMethod\KlarnaDirectDebit;
 use IngenicoClient\PaymentMethod\KlarnaFinancing;
 use IngenicoClient\PaymentMethod\KlarnaPayLater;
 use IngenicoClient\PaymentMethod\KlarnaPayNow;
+use IngenicoClient\PaymentMethod\FacilyPay3x;
+use IngenicoClient\PaymentMethod\FacilyPay3xnf;
+use IngenicoClient\PaymentMethod\FacilyPay4x;
+use IngenicoClient\PaymentMethod\FacilyPay4xnf;
 use Ogone\AbstractPaymentRequest;
 use Ogone\DirectLink\PaymentOperation;
 use Ogone\Ecommerce\EcommercePaymentRequest;
 use Ogone\Ecommerce\EcommercePaymentResponse;
+use VIISON\AddressSplitter\AddressSplitter;
 
 trait HostedCheckout
 {
@@ -51,19 +58,124 @@ trait HostedCheckout
      */
     public function getHostedCheckoutPaymentRequest(Order $order, Alias $alias)
     {
-        if ($this->configuration->getSettingsDirectsales()) {
-            $operation = new PaymentOperation(PaymentOperation::REQUEST_FOR_DIRECT_SALE);
-        } else {
+        // Get Payment Method
+        $paymentMethod = $alias->getPaymentMethod();
+
+        // Payment ID
+        $paymentId = $paymentMethod ? $paymentMethod->getId() : null;
+
+        // Operation Code
+        if (in_array($paymentId, [
+                Klarna::CODE,
+                KlarnaBankTransfer::CODE,
+                KlarnaDirectDebit::CODE,
+                KlarnaFinancing::CODE,
+                KlarnaPayLater::CODE,
+                KlarnaPayNow::CODE,
+            ])
+        ) {
+            // Klarna allows RES only
             $operation = new PaymentOperation(PaymentOperation::REQUEST_FOR_AUTHORISATION);
+        } else {
+            $operation = new PaymentOperation(
+                $this->configuration->getSettingsDirectsales() ? PaymentOperation::REQUEST_FOR_DIRECT_SALE :
+                    PaymentOperation::REQUEST_FOR_AUTHORISATION
+            );
+        }
+
+        // Get Items
+        $items = [];
+        if ($paymentMethod && $paymentMethod->getOrderLineItemsRequired()) {
+            $items = (array) $order->getItems();
+
+            // Workaround for the rounding issue
+            // Checking for the rounding issue
+            $amount = $order->getAmount();
+
+            // Calculate amount
+            $calculated = 0;
+
+            /** @var OrderItem $item */
+            foreach ($items as $id => $item) {
+                $price = $item->getQty() * sprintf("%.2f", $item->getUnitPrice());
+                if ($item->getVatIncluded()) {
+                    $calculated += $price;
+                } else {
+                    $calculated += $price + ($item->getQty() * sprintf("%.2f", $item->getUnitVat()));
+                }
+            }
+
+            // Add Discount
+            if (bccomp($calculated, $amount, 2) === 1) {
+                if (($calculated - $amount) > 0.9) {
+                    throw new Exception(
+                        sprintf('Error: Total amount is different to the sum of the details %s/%s occurred.',
+                            $calculated,
+                            $amount
+                        )
+                    );
+                }
+
+                $items[] = new OrderItem(
+                    [
+                        OrderItem::ITEM_TYPE => OrderItem::TYPE_DISCOUNT,
+                        OrderItem::ITEM_ID => 'rounding',
+                        OrderItem::ITEM_NAME => 'Discount',
+                        OrderItem::ITEM_DESCRIPTION => 'Discount',
+                        OrderItem::ITEM_UNIT_PRICE => -1 * ($calculated - $amount),
+                        OrderItem::ITEM_QTY => 1,
+                        OrderItem::ITEM_UNIT_VAT => 0,
+                        OrderItem::ITEM_VATCODE => 0,
+                        OrderItem::ITEM_VAT_INCLUDED => 1
+                    ]
+                );
+
+                if ($this->logger) {
+                    $this->logger->warn(
+                        sprintf('Rounding issue. Amount %s vs %s', $amount, $calculated),
+                        [$order->getOrderId()]
+                    );
+                }
+            }
+
+            // Add Fee
+            if (bccomp($calculated, $amount, 2) === -1) {
+                if (($amount - $calculated) > 0.9) {
+                    throw new Exception(
+                        sprintf('Error: Total amount is different to the sum of the details %s/%s occurred.',
+                            $calculated,
+                            $amount
+                        )
+                    );
+                }
+
+                $items[] = new OrderItem(
+                    [
+                        OrderItem::ITEM_TYPE => OrderItem::TYPE_FEE,
+                        OrderItem::ITEM_ID => 'rounding',
+                        OrderItem::ITEM_NAME => 'Fee',
+                        OrderItem::ITEM_DESCRIPTION => 'Fee',
+                        OrderItem::ITEM_UNIT_PRICE => ($amount - $calculated),
+                        OrderItem::ITEM_QTY => 1,
+                        OrderItem::ITEM_UNIT_VAT => 0,
+                        OrderItem::ITEM_VATCODE => 0,
+                        OrderItem::ITEM_VAT_INCLUDED => 1
+                    ]
+                );
+
+                if ($this->logger) {
+                    $this->logger->warn(
+                        sprintf('Rounding issue. Amount %s vs %s', $amount, $calculated),
+                        [$order->getOrderId()]
+                    );
+                }
+            }
         }
 
         // Redirect method require empty Alias name to generate new Alias
         if ($alias->getIsShouldStoredPermanently()) {
             $alias->setAlias('');
         }
-
-        // Get Payment Method
-        $paymentMethod = $alias->getPaymentMethod();
 
         // Build Payment Request
         $request = new EcommercePaymentRequest($this->getConfiguration()->getShaComposer('in'));
@@ -106,6 +218,12 @@ trait HostedCheckout
                 // no break
         }
 
+        // Set List Type
+        $listType = $this->getConfiguration()->getPaymentpageListType();
+        if ($listType) {
+            $request->setData('pmlisttype', $listType);
+        }
+
         /** @var EcommercePaymentRequest $request */
         $request = self::copyOrderDataToPaymentRequest($request, $order);
         $request = self::copyBrowserDataToPaymentRequest($request, $order);
@@ -117,10 +235,14 @@ trait HostedCheckout
             $request->setCn(str_replace(['"', "'"], '', $order->getBillingFullName()));
         }
 
+        // Parameters for BCMC
+        if ($paymentId === Bancontact::CODE) {
+            $request->setDevice((new DeviceDetect)->getDeviceType());
+        }
+
         // Parameters for Klarna
-        if ($paymentMethod &&
-            in_array($paymentMethod->getId(), [
-                Klarna::CODE,
+        // @see https://epayments-support.ingenico.com/en/payment-methods/alternative-payment-methods/klarna
+        if (in_array($paymentId, [
                 KlarnaBankTransfer::CODE,
                 KlarnaDirectDebit::CODE,
                 KlarnaFinancing::CODE,
@@ -128,18 +250,53 @@ trait HostedCheckout
                 KlarnaPayNow::CODE,
             ])
         ) {
-            $request->setCuid($order->getCustomerRegistrationNumber())
-                ->setCivility($order->getCustomerCivility())
-                ->setEcomConsumerGender($order->getCustomerGender())
+            if (is_string($order->getCustomerDob())) {
+                $order->setCustomerDob((new \DateTime($order->getCustomerDob()))->getTimestamp());
+            }
+
+            $request->setEcomConsumerGender($order->getCustomerGender())
                 ->setEcomShiptoPostalNamePrefix($order->getShippingCustomerTitle())
                 ->setEcomShiptoDob(
-                    $order->getCustomerDob() ? date('d/m/Y', $order->getCustomerDob()) : null
+                    $order->getCustomerDob() ? date('Y-m-d', $order->getCustomerDob()) : null
                 )
                 ->setEcomShiptoTelecomFaxNumber($order->getShippingFax())
                 ->setEcomShiptoTelecomPhoneNumber($order->getShippingPhone())
                 ->setEcomBilltoPostalStreetNumber($order->getBillingStreetNumber())
                 ->setEcomShiptoPostalStreetNumber($order->getShippingStreetNumber())
-                ->setEcomShiptoPostalState($order->getShippingState())
+                ->setEcomBilltoCompany($order->getCompanyName())
+                ->setEcomShiptoCompany($order->getCompanyName());
+
+            // Shipping details (recommended)
+            //if (!$order->getIsVirtual()) {
+            //    $request->setOrdershipmeth($order->getShippingMethod())
+            //            ->setOrdershipcost(bcmul($order->getShippingAmount() - $order->getShippingTaxAmount(), 100))
+            //            ->setOrdershiptax(bcmul($order->getShippingTaxAmount(), 100))
+            //            ->setOrdershiptaxcode((int) $order->getShippingTaxCode() . '%');
+
+                // Don't pass shipping item. It uses Ordershipcost instead of.
+                /** @var OrderItem $item */
+            //    foreach ($items as $id => $item) {
+            //        if ($item->getType() === OrderItem::TYPE_SHIPPING) {
+            //            unset($items[$id]);
+            //        }
+            //    }
+            //}
+        }
+
+        // Parameters for Klarna (deprecated)
+        if ($paymentId === Klarna::CODE) {
+            $request->setEcomShiptoOnlineEmail($order->getBillingEmail())
+                ->setCuid($order->getCustomerRegistrationNumber())
+                ->setCivility($order->getCustomerCivility())
+                ->setEcomConsumerGender($order->getCustomerGender())
+                ->setEcomShiptoPostalNamePrefix($order->getShippingCustomerTitle())
+                ->setEcomShiptoDob(
+                    $order->getCustomerDob() ? date('Y-m-d', $order->getCustomerDob()) : null
+                )
+                ->setEcomShiptoTelecomFaxNumber($order->getShippingFax())
+                ->setEcomShiptoTelecomPhoneNumber($order->getShippingPhone())
+                ->setEcomBilltoPostalStreetNumber($order->getBillingStreetNumber())
+                ->setEcomShiptoPostalStreetNumber($order->getShippingStreetNumber())
                 //->setEcomBilltoCompany($order->getCompanyName())
                 ->setEcomShiptoCompany($order->getCompanyName()) // Not required
 
@@ -148,13 +305,8 @@ trait HostedCheckout
                 ->unsEcomShiptoPostalStreetLine3();
         }
 
-        // Parameters for Klarna (deprecated)
-        if ($paymentMethod && $paymentMethod->getId() === Klarna::CODE) {
-            $request->setEcomShiptoOnlineEmail($order->getBillingEmail());
-        }
-
         // Parameters for Afterpay
-        if ($paymentMethod && $paymentMethod->getId() === Afterpay::CODE) {
+        if ($paymentId === Afterpay::CODE) {
             $request->setEcomShiptoPostalNamePrefix($order->getShippingCustomerTitle())
                 ->setEcomShiptoOnlineEmail($order->getBillingEmail())
                 ->setEcomBilltoPostalStreetNumber($order->getBillingStreetNumber())
@@ -183,9 +335,46 @@ trait HostedCheckout
                 ->unsEcomShiptoPostalStreetLine3();
         }
 
+        // Parameters for Oney
+        // @see https://epayments-support.ingenico.com/en/payment-methods/alternative-payment-methods/limonetik
+        if (in_array($paymentId, [
+                FacilyPay3x::CODE,
+                FacilyPay3xnf::CODE,
+                FacilyPay4x::CODE,
+                FacilyPay4xnf::CODE
+            ])
+        ) {
+            $request->setEcomBilltoPostalNamePrefix($order->getBillingCustomerTitle())
+                ->setEcomBilltoPostalStreetNumber($order->getBillingStreetNumber())
+                ->setEcomBilltoTelecomPhoneNumber($order->getBillingPhone())
+                ->setEcomBilltoTelecomMobileNumber($order->getBillingPhone())
+                ->setEcomShiptoPostalNamePrefix($order->getShippingCustomerTitle())
+                ->setEcomShiptoPostalStreetNumber($order->getShippingStreetNumber())
+                ->setEcomShiptoTelecomPhoneNumber($order->getShippingPhone())
+                ->setEcomShiptoTelecomMobileNumber($order->getShippingPhone())
+                ->setRefCustomerid($order->getCustomerId())
+                ->setEcomShipmethod('Other')
+                ->setEcomShipmethoddetails('Standard')
+                ->setEcomEstimateddeliverydate(date('Y-m-d', strtotime('+3 days')))
+                ->setEcomShipmethodspeed(3 * 24);
+
+            $checkoutType = $order->getCheckoutType() ? $order->getCheckoutType() : Checkout::TYPE_B2C;
+            if ($checkoutType === Checkout::TYPE_B2B) {
+                $request->setEcomBilltoCompany($order->getCompanyName())
+                    ->setEcomShiptoCompany($order->getCompanyName());
+            }
+
+            // ITEMCATEGORYX is mandatory for Oney
+            /** @var OrderItem $item */
+            foreach ($items as $id => $item) {
+                // Parameters for Oney
+                $item->setCategory('Fashion');
+                $items[$id] = $item;
+            }
+        }
+
         // Shipping cost parameters for Klarna/Afterpay
-        if ($paymentMethod &&
-            in_array($paymentMethod->getId(), [
+        if (in_array($paymentId, [
                 Klarna::CODE,
                 Afterpay::CODE
             ])
@@ -194,30 +383,38 @@ trait HostedCheckout
                 ->setOrdershipcost(bcmul($order->getShippingAmount() - $order->getShippingTaxAmount(), 100))
                 ->setOrdershiptax(bcmul($order->getShippingTaxAmount(), 100))
                 ->setOrdershiptaxcode((int) $order->getShippingTaxCode() . '%');
-        }
 
-        if ($paymentMethod) {
-            // Generating the string with the list of items for the PMs that are requiring it (i.e. Open Invoice)
-            if ($paymentMethod->getOrderLineItemsRequired() && $items = (array) $order->getItems()) {
-                /** @var OrderItem $item */
-                foreach ($items as $id => $item) {
-                    // Don't pass shipping item for Klarna/Afterpay. It uses Ordershipcost instead of.
-                    if (in_array($paymentMethod->getId(), [
-                        Afterpay::CODE,
-                        Klarna::CODE,
-                    ])) {
-                        if ($item->getType() === OrderItem::TYPE_SHIPPING) {
-                            continue;
-                        }
-                    }
-
-                    $fields = $item->exchange();
-
-                    foreach ($fields as $key => $value) {
-                        $request->setData($key . ($id + 1), $value);
-                    }
+            // Don't pass shipping item for Klarna/Afterpay. It uses Ordershipcost instead of.
+            /** @var OrderItem $item */
+            foreach ($items as $id => $item) {
+                if ($item->getType() === OrderItem::TYPE_SHIPPING) {
+                    unset($items[$id]);
                 }
             }
+        }
+
+        // Generate the list of items for the PMs that are requiring it (i.e. Klarna)
+        if ($paymentMethod && $paymentMethod->getOrderLineItemsRequired()) {
+            /** @var OrderItem $item */
+            foreach ($items as $id => $item) {
+                $fields = $item->exchange();
+
+                foreach ($fields as $key => $value) {
+                    $request->setData($key . ($id + 1), $value);
+                }
+            }
+        }
+
+        // Override PM and BRAND for Blank payment method
+        $additionalData = (array) $order->getAdditionalData();
+        if (isset($additionalData['flex_pm']) && isset($additionalData['flex_brand'])) {
+            $request->setData('PM', $additionalData['flex_pm']);
+            $request->setData('BRAND', $additionalData['flex_brand']);
+        }
+
+        // Add ISSUERID for iDeal
+        if ($paymentMethod->getId() === Ideal::CODE && isset($additionalData['issuer_id'])) {
+            $request->setData('ISSUERID', $additionalData['issuer_id']);
         }
 
         // Validate
@@ -342,13 +539,13 @@ trait HostedCheckout
         //->setEcomShiptoPostalStreetLine3($order->getShippingAddress3());
 
         // Set owner address
-        $ownerAddress = implode(' ', [
-            $order->getBillingAddress1(),
-            $order->getBillingAddress2(),
-            $order->getBillingAddress3()
-        ]);
+        $ownerAddress = trim(implode(' ', [
+            trim($order->getBillingAddress1()),
+            trim($order->getBillingAddress2()),
+            trim($order->getBillingAddress3())
+        ]));
 
-        if (mb_strlen($ownerAddress, 'UTF-8') <= 50) {
+        if (mb_strlen($ownerAddress, 'UTF-8') <= 35) {
             $request->setOwnerAddress($ownerAddress);
         }
 

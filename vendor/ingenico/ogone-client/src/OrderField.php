@@ -48,6 +48,12 @@ class OrderField extends Data
     const HTTP_USER_AGENT = 'http_user_agent';
 
     const IS_SHIPPING_SAME = 'is_shipping_same';
+    const IS_VIRTUAL = 'is_virtual';
+
+    /**
+     * Additional data or meta data
+     */
+    const ADDITIONAL_DATA = 'additional_data';
 
     /**
      * Billing Address Fields
@@ -152,7 +158,7 @@ class OrderField extends Data
         }
 
         if ($this->getRequired() && empty($value)) {
-            throw new Exception('Value is required');
+            throw new Exception(sprintf('Value %s is required', $this->getLabel()));
         }
 
         if ($this->getLength() && mb_strlen($value, 'UTF-8') > $this->getLength()) {

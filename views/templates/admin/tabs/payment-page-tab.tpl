@@ -1,5 +1,5 @@
 {*
-* 2007-2019 Ingenico
+* 2007-2021 Ingenico
 *
 * NOTICE OF LICENSE
 *
@@ -12,7 +12,7 @@
 * to license@prestashop.com so we can send you a copy immediately.
 *
 *  @author Ingenico <contact@ingenico.com>
-*  @copyright  2007-2019 Ingenico
+*  @copyright  2007-2021 Ingenico
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 <div id="payment_page" class="tab-pane">
@@ -41,12 +41,12 @@
     <h2 class="col-lg-12">{l s='form.payment_page.label.template' mod='ingenico_epayments'}<span class="icon-span modal-link" data-modal-id="optional-customisation-modal"></span></h2>
     <h3 class="col-lg-12">{l s='form.payment_page.label.step1' mod='ingenico_epayments'}</h3>
     <div class="step1 redirect" {if $paymentpage_type === 'INLINE'}style="display: none"{/if}>
-        <a href="{$template_guid_ecom}" target="_blank">
+        <a href="{$template_guid_ecom|escape}" target="_blank">
             {l s='form.payment_page.label.readmore' mod='ingenico_epayments'}
         </a>
     </div>
     <div class="step1 inline" {if $paymentpage_type === 'REDIRECT'}style="display: none"{/if}>
-        <a href="{$template_guid_flex}" target="_blank">
+        <a href="{$template_guid_flex|escape}" target="_blank">
             {l s='form.payment_page.label.readmore' mod='ingenico_epayments'}
         </a>
     </div>
@@ -89,7 +89,7 @@
     <div class="radio-toggle paymentpage_templateINGENICO paymentpage_template" {if $paymentpage_template != 'INGENICO'}style="display: none"{/if}>
         <p>
             {l s='form.payment_page.label.upload_template' mod='ingenico_epayments'}
-            <a target="_blank" href="{$template_manager_url}">
+            <a target="_blank" href="{$template_manager_url nofilter}">
                 {l s='form.payment_page.label.template_manager' mod='ingenico_epayments'}
             </a>
 
@@ -97,14 +97,14 @@
             <span class="ppt redirect icon-span modal-link" data-modal-id="template-manager-redirect-modal" {if $paymentpage_type !== 'REDIRECT'}style="display: none"{/if}></span>
         </p>
         <div class="col-lg-12">
-            <input class="form-control" placeholder="{l s='form.payment_page.label.template_name' mod='ingenico_epayments'}" type="text" name="paymentpage_template_name" value="{$paymentpage_template_name}" {if $paymentpage_type === 'INLINE'}style="display: none"{/if}>
+            <input class="form-control" placeholder="{l s='form.payment_page.label.template_name' mod='ingenico_epayments'}" type="text" name="paymentpage_template_name" value="{$paymentpage_template_name|escape}" {if $paymentpage_type === 'INLINE'}style="display: none"{/if}>
         </div>
     </div>
 
     <div class="radio-toggle paymentpage_templateSTORE paymentpage_template" {if $paymentpage_template != 'STORE'}style="display: none"{/if}>
         <div class="col-lg-12">
             <label class="upload-label" for="upload-template">
-                {if isset($paymentpage_template_localfilename) && $paymentpage_template_localfilename}{$paymentpage_template_localfilename}{else}{l s='form.payment_page.label.browse' mod='ingenico_epayments'}{/if}
+                {if isset($paymentpage_template_localfilename) && $paymentpage_template_localfilename}{$paymentpage_template_localfilename|escape}{else}{l s='form.payment_page.label.browse' mod='ingenico_epayments'}{/if}
             </label>
             <input name="paymentpage_template_localfilename" type="file" id="upload-template" class="file-upload-field" value="">
             <button type="submit" class="upload-template" name="submitingenico_epayments">{l s='form.payment_page.button.upload' mod='ingenico_epayments'}</button>
@@ -113,7 +113,7 @@
 
     <div class="radio-toggle paymentpage_templateEXTERNAL paymentpage_template" {if $paymentpage_template != 'EXTERNAL'}style="display: none"{/if}>
         <div class="col-lg-12">
-            <input class="form-control" placeholder="{l s='form.payment_page.label.file_url' mod='ingenico_epayments'}" type="text" name="paymentpage_template_externalurl" value="{$paymentpage_template_externalurl}">
+            <input class="form-control" placeholder="{l s='form.payment_page.label.file_url' mod='ingenico_epayments'}" type="text" name="paymentpage_template_externalurl" value="{$paymentpage_template_externalurl|escape}">
         </div>
     </div>
 

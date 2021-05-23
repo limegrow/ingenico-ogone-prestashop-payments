@@ -1,5 +1,5 @@
 {*
-* 2007-2019 Ingenico
+* 2007-2021 Ingenico
 *
 * NOTICE OF LICENSE
 *
@@ -12,7 +12,7 @@
 * to license@prestashop.com so we can send you a copy immediately.
 *
 *  @author Ingenico <contact@ingenico.com>
-*  @copyright  2007-2019 Ingenico
+*  @copyright  2007-2021 Ingenico
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 <div id="installments" class="tab-pane">
@@ -47,12 +47,12 @@
             <h3>Split orders into</h3>
             <div class="installment-row">
                 <div class="installments_rules installments_rulesFIXED" {if $instalments_type === 'FLEX'}style="display: none"{/if}>
-                    <input class="form-control" type="number" size="5" name="instalments_fixed_instalments" value="{$instalments_fixed_instalments}">
+                    <input class="form-control" type="number" size="5" name="instalments_fixed_instalments" value="{$instalments_fixed_instalments|escape}">
                     <span class="suffix">instalments</span>
                 </div>
                 <div class="installments_rules installments_rulesFLEX" {if $instalments_type === 'FIXED'}style="display: none"{/if}>
-                    <input type="hidden" name="instalments_flex_instalments_min" value="{$instalments_flex_instalments_min}">
-                    <input type="hidden" name="instalments_flex_instalments_max" value="{$instalments_flex_instalments_max}">
+                    <input type="hidden" name="instalments_flex_instalments_min" value="{$instalments_flex_instalments_min|escape}">
+                    <input type="hidden" name="instalments_flex_instalments_max" value="{$instalments_flex_instalments_max|escape}">
                     <div class="range-bar" id="installments_amount_range"></div>
                     <span class="suffix">instalments</span>
                 </div>
@@ -62,12 +62,12 @@
             <h3>Period between each instalment</h3>
             <div class="installment-row">
                 <div class="installments_rules installments_rulesFIXED" {if $instalments_type === 'FLEX'}style="display: none"{/if}>
-                    <input class="form-control" type="number" size="5" name="instalments_fixed_period" value="{$instalments_fixed_period}">
+                    <input class="form-control" type="number" size="5" name="instalments_fixed_period" value="{$instalments_fixed_period|escape}">
                     <span class="suffix">days</span>
                 </div>
                 <div class="installments_rules installments_rulesFLEX" {if $instalments_type === 'FIXED'}style="display: none"{/if}>
-                    <input type="hidden" name="instalments_flex_period_min" value="{$instalments_flex_period_min}">
-                    <input type="hidden" name="instalments_flex_period_max" value="{$instalments_flex_period_max}">
+                    <input type="hidden" name="instalments_flex_period_min" value="{$instalments_flex_period_min|escape}">
+                    <input type="hidden" name="instalments_flex_period_max" value="{$instalments_flex_period_max|escape}">
                     <div class="range-bar" id="installments_period_range"></div>
                     <span class="suffix">days</span>
                 </div>
@@ -77,12 +77,12 @@
             <h3>First payment</h3>
             <div class="installment-row">
                 <div class="installments_rules installments_rulesFIXED" {if $instalments_type === 'FLEX'}style="display: none"{/if}>
-                    <input class="form-control" type="number" size="5" name="instalments_fixed_firstpayment" value="{$instalments_fixed_firstpayment}">
+                    <input class="form-control" type="number" size="5" name="instalments_fixed_firstpayment" value="{$instalments_fixed_firstpayment|escape}">
                     <span class="suffix">%</span>
                 </div>
                 <div class="installments_rules installments_rulesFLEX" {if $instalments_type === 'FIXED'}style="display: none"{/if}>
-                    <input type="hidden" name="instalments_flex_firstpayment_min" value="{$instalments_flex_firstpayment_min}">
-                    <input type="hidden" name="instalments_flex_firstpayment_max" value="{$instalments_flex_firstpayment_max}">
+                    <input type="hidden" name="instalments_flex_firstpayment_min" value="{$instalments_flex_firstpayment_min|escape}">
+                    <input type="hidden" name="instalments_flex_firstpayment_max" value="{$instalments_flex_firstpayment_max|escape}">
                     <div class="range-bar" id="installments_first_range"></div>
                     <span class="suffix">of the order total</span>
                 </div>
@@ -91,7 +91,7 @@
         <div class="form-group col-lg-12">
             <h3>Minimal payment</h3>
             <div class="installment-row">
-                <input class="form-control" type="number" size="5" name="instalments_fixed_minpayment" value="{$instalments_fixed_minpayment}">
+                <input class="form-control" type="number" size="5" name="instalments_fixed_minpayment" value="{$instalments_fixed_minpayment|escape}">
                 <span class="suffix">€</span>
             </div>
         </div>

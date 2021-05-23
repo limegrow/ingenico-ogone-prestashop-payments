@@ -14,25 +14,15 @@ use League\ISO3166\Exception\OutOfBoundsException;
 
 final class ISO3166 implements \Countable, \IteratorAggregate, ISO3166DataProvider
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     const KEY_ALPHA2 = 'alpha2';
-    /**
-     * @var string
-     */
+    /** @var string */
     const KEY_ALPHA3 = 'alpha3';
-    /**
-     * @var string
-     */
+    /** @var string */
     const KEY_NUMERIC = 'numeric';
-    /**
-     * @var string
-     */
+    /** @var string */
     const KEY_NAME = 'name';
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     private $keys = [self::KEY_ALPHA2, self::KEY_ALPHA3, self::KEY_NUMERIC, self::KEY_NAME];
 
     /**
@@ -171,7 +161,7 @@ final class ISO3166 implements \Countable, \IteratorAggregate, ISO3166DataProvid
      *
      * @var array[]
      */
-    protected $countries = [
+    private $countries = [
         [
             'name' => 'Afghanistan',
             'alpha2' => 'AF',
@@ -825,7 +815,7 @@ final class ISO3166 implements \Countable, \IteratorAggregate, ISO3166DataProvid
             'alpha3' => 'EST',
             'numeric' => '233',
             'currency' => [
-                'EEK',
+                'EUR',
             ],
         ],
         [
@@ -838,7 +828,7 @@ final class ISO3166 implements \Countable, \IteratorAggregate, ISO3166DataProvid
             ],
         ],
         [
-            'name' => 'Eswatini, the Kingdom of',
+            'name' => 'Eswatini',
             'alpha2' => 'SZ',
             'alpha3' => 'SWZ',
             'numeric' => '748',
@@ -1312,7 +1302,7 @@ final class ISO3166 implements \Countable, \IteratorAggregate, ISO3166DataProvid
             'alpha3' => 'LVA',
             'numeric' => '428',
             'currency' => [
-                'LVL',
+                'EUR',
             ],
         ],
         [
@@ -1389,7 +1379,7 @@ final class ISO3166 implements \Countable, \IteratorAggregate, ISO3166DataProvid
             ],
         ],
         [
-            'name' => 'Macedonia (the former Yugoslav Republic of)',
+            'name' => 'North Macedonia',
             'alpha2' => 'MK',
             'alpha3' => 'MKD',
             'numeric' => '807',

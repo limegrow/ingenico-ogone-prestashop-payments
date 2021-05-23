@@ -65,5 +65,4 @@ class DirectLinkTest extends TestCase
 
         return $configuration;
     }
-
 }

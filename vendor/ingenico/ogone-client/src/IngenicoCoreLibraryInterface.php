@@ -294,7 +294,17 @@ interface IngenicoCoreLibraryInterface
      * @param $shopUrl
      * @param $ingenicoLogo
      */
-    public function submitOnboardingRequest($companyName, $email, $countryCode, $eCommercePlatform, $pluginVersion, $shopName, $shopLogo, $shopUrl, $ingenicoLogo);
+    public function submitOnboardingRequest(
+        $companyName,
+        $email,
+        $countryCode,
+        $eCommercePlatform,
+        $pluginVersion,
+        $shopName,
+        $shopLogo,
+        $shopUrl,
+        $ingenicoLogo
+    );
 
     /**
      * Refund.
@@ -667,5 +677,4 @@ interface IngenicoCoreLibraryInterface
      * @return LoggerInterface|null
      */
     public function getLogger();
-
 }

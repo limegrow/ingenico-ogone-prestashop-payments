@@ -35,6 +35,7 @@ abstract class AbstractResponse implements Response, \ArrayAccess
         'BRAND',
         'CARDNO',
         'CCCTY',
+        'CH_AUTHENTICATION_INFO',
         'CN',
         'COLLECTOR_BIC',
         'COLLECTOR_IBAN',

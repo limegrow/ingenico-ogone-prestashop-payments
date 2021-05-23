@@ -24,7 +24,7 @@ msgid "checkout.payment_info"
 msgstr "Betaling is %status%. Status: %status_code%. PayID: %payment_id%."
 
 msgid "checkout.payment_cancelled"
-msgstr "Payment has been cancelled."
+msgstr "Uw betalingsproces is geannuleerd."
 
 msgid "exceptions.alias_none"
 msgstr "De alias bestaat niet."

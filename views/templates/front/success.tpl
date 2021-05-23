@@ -1,5 +1,5 @@
 {*
-* 2007-2019 Ingenico
+* 2007-2021 Ingenico
 *
 * NOTICE OF LICENSE
 *
@@ -12,12 +12,12 @@
 * to license@prestashop.com so we can send you a copy immediately.
 *
 *  @author Ingenico <contact@ingenico.com>
-*  @copyright  2007-2019 Ingenico
+*  @copyright  2007-2021 Ingenico
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery{$suffix}.js"></script>
-<script src="{$path}/views/js/front{$suffix}.js"></script>
-<link rel="stylesheet" href="{$path}/views/css/front{$suffix}.css" type="text/css" media="all">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery{$suffix nofilter}.js"></script>
+<script src="{$path|escape}/views/js/front{$suffix nofilter}.js"></script>
+<link rel="stylesheet" href="{$path|escape}/views/css/front{$suffix nofilter}.css" type="text/css" media="all">
 
 <div class="ingenico-return">
     <script>
@@ -41,8 +41,8 @@
                 <p>{l s='checkout.click_capture' mod='ingenico_epayments'}</p>
             </div>
             <div class="ingenico-info">
-                <img class="account-creation-done" src="{$path}/views/imgs/ic_done.svg">
-                <p>{$payment_status}</p>
+                <img class="account-creation-done" src="{$path|escape}/views/img/ic_done.svg">
+                <p>{$payment_status|escape}</p>
 
                 <button class="ingenico-button" onClick="ingenico_redirect('{$success_page nofilter}');">{l s='checkout.back_to_shop' mod='ingenico_epayments'}</button>
             </div>
@@ -50,7 +50,7 @@
             {* Redirect so success page immediately *}
             <div class="ingenico-info">
                 <div class="ingenico-loader">
-                    <img src="{$path}/views/imgs/loader.svg" alt="{l s='checkout.please_wait' mod='ingenico_epayments'}">
+                    <img src="{$path|escape}/views/img/loader.svg" alt="{l s='checkout.please_wait' mod='ingenico_epayments'}">
                 </div>
                 <script>
                     ingenico_redirect('{$success_page nofilter}');
@@ -61,7 +61,7 @@
         {* Redirect so success page immediately *}
         <div class="ingenico-info">
             <div class="ingenico-loader">
-                <img src="{$path}/views/imgs/loader.svg" alt="{l s='checkout.please_wait' mod='ingenico_epayments'}">
+                <img src="{$path|escape}/views/img/loader.svg" alt="{l s='checkout.please_wait' mod='ingenico_epayments'}">
             </div>
             <script>
                 ingenico_redirect('{$success_page nofilter}');

@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2019 Ingenico
+ * 2007-2021 Ingenico
  *
  * NOTICE OF LICENSE
  *
@@ -40,13 +40,16 @@ class Ingenico_EpaymentsAjaxModuleFrontController extends ModuleFrontController
                 $matching_countries = $this->module->filterCountries($query, $selected_countries_array);
                 $response = '';
                 foreach ($matching_countries as $iso_code => $matching_country) {
-                    $response .= '<li>
-                                <label class="label-container">
-                                    <input type="checkbox" name="payment_country[]" value="' . $iso_code . '">
-                                    <span class="checkmark"></span>
-                                    ' . $matching_country . '
-                                </label>
-                            </li>';
+                    // Assign data for Smarty
+                    $this->context->smarty->assign([
+                        'iso_code' => $iso_code,
+                        'country' => $matching_country,
+                    ]);
+
+                    // Render template
+                    $response .= $this->module->fetch(
+                        dirname(__FILE__) . '/../../views/templates/admin/ajax/payment_country.tpl'
+                    );
                 }
                 break;
             /** settings page payments filtering */
@@ -55,13 +58,16 @@ class Ingenico_EpaymentsAjaxModuleFrontController extends ModuleFrontController
                 $matching_methods = $this->module->filterPaymentMethods($query);
                 $response = '';
                 foreach ($matching_methods as $key => $matching_method) {
-                    $response .= '<li>
-                                <label class="label-container">
-                                    <input type="checkbox" name="payment_methods[]" value="' . $matching_method->getId() . '">
-                                    <span class="checkmark"></span>
-                                    ' . $matching_method->getName() . '
-                                </label>
-                            </li>';
+                    // Assign data for Smarty
+                    $this->context->smarty->assign([
+                        'payment_id' => $matching_method->getId(),
+                        'payment_name' => $matching_method->getName(),
+                    ]);
+
+                    // Render template
+                    $response .= $this->module->fetch(
+                        dirname(__FILE__) . '/../../views/templates/admin/ajax/payment_methods.tpl'
+                    );
                 }
                 break;
             case 'fetch_payment_methods':
@@ -152,6 +158,60 @@ class Ingenico_EpaymentsAjaxModuleFrontController extends ModuleFrontController
                     $response['status'] = 'failure';
                 }
 
+                break;
+            case 'flex_upload':
+                // Upload files
+                $files = $_FILES;
+                $image = null;
+
+                if (count($files) > 0) {
+                    $ext_img = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'svg'];
+                    $mime_img = ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/tiff', 'image/svg', 'image/svg+xml'];
+                    $target_dir = _PS_UPLOAD_DIR_ . '/ingenico/';
+                    if (!file_exists($target_dir)) {
+                        mkdir($target_dir);
+                    }
+
+                    $errors = [];
+                    foreach ($files as $file) {
+                        if (file_exists($file['tmp_name'][0]) &&
+                            is_uploaded_file($file['tmp_name'][0])
+                        ) {
+                            $target_file = $target_dir . basename($file['name'][0]);
+                            $file_ext = \Tools::strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+                            if (!in_array($file_ext, $ext_img)) {
+                                $errors[] = $this->trans('Invalid file extension', [], 'messages');
+                                unset($file['tmp_name']);
+                                continue;
+                            }
+
+                            $mime = mime_content_type($file['tmp_name'][0]);
+                            if (!in_array($mime, $mime_img)) {
+                                $errors[] = $this->trans('Invalid file mime type', [], 'messages');
+                                unset($file['tmp_name']);
+                                continue;
+                            }
+
+                            // Upload file
+                            if (!move_uploaded_file($file['tmp_name'][0], $target_file)) { //NOSONAR
+                                throw new \Exception($this->trans('exceptions.upload_filed', [], 'messages'));
+                            }
+
+                            $image = basename($target_file);
+                        }
+                    }
+
+                    if (count($errors) > 0) {
+                        $image = null;
+                    }
+                }
+
+                $response = [
+                    'title' => $_POST['title'],
+                    'pm' => $_POST['pm'],
+                    'brand' => $_POST['brand'],
+                    'img' => $image
+                ];
                 break;
             default:
                 break;

@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2019 Ingenico
+ * 2007-2021 Ingenico
  *
  * NOTICE OF LICENSE
  *

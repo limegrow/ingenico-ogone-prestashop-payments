@@ -1,5 +1,5 @@
 {*
-* 2007-2019 Ingenico
+* 2007-2021 Ingenico
 *
 * NOTICE OF LICENSE
 *
@@ -12,7 +12,7 @@
 * to license@prestashop.com so we can send you a copy immediately.
 *
 *  @author Ingenico <contact@ingenico.com>
-*  @copyright  2007-2019 Ingenico
+*  @copyright  2007-2021 Ingenico
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 <div id="direct-link-user-modal" class="ingenico-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">
@@ -37,7 +37,7 @@
                     <br>
                     <li>{l s='modal.directlink.label20' mod='ingenico_epayments'}</li>
                 </ul>
-                <img src="{$path}/views/imgs/directlink-user.png">
+                <img src="{$path|escape}/views/img/directlink-user.png">
             </div>
             <div class="modal-footer">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">

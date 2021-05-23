@@ -127,7 +127,7 @@ abstract class AbstractPaymentRequest extends AbstractRequest
 
     public function setOwnerAddress($owneraddress)
     {
-        if (mb_strlen($owneraddress, 'UTF-8') > 50) {
+        if (mb_strlen($owneraddress, 'UTF-8') > 35) {
             throw new InvalidArgumentException("Owner address is too long");
         }
         $this->parameters['owneraddress'] = $owneraddress;

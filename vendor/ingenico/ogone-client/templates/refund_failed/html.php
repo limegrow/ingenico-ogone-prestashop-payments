@@ -1,10 +1,12 @@
 <?php
+/** @phpcs:ignore Generic.Files.LineLength.TooLong */
 /** @var \IngenicoClient\MailTemplate $view */
 /** @var $shop_name */
 /** @var $shop_logo */
 /** @var $shop_url */
 /** @var $customer_name */
 /** @var $order_reference */
+/** @var $order_url */
 ?>
 <?php echo $view->__('refund_failed.dear', ['%name%' => '<span style="color: #306ba8">' . $customer_name . '</span>'], 'email'); ?>,
 <br/><br />

@@ -259,7 +259,8 @@ class Request implements \ArrayAccess
      * @param $name
      * @return bool
      */
-    public function hasParam($name) {
+    public function hasParam($name)
+    {
         return isset($this->data[$name]);
     }
 
@@ -377,5 +378,4 @@ class Request implements \ArrayAccess
 
         throw new Exception(sprintf('Invalid method %s::%s', get_class($this), $method));
     }
-
 }

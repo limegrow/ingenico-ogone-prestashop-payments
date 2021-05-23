@@ -5,6 +5,5 @@
 /** @var string $shop_name */
 /** @var string $ticket */
 /** @var string $description */
-?>
 
-<?php echo strip_tags($description); ?>
+echo strip_tags($description);

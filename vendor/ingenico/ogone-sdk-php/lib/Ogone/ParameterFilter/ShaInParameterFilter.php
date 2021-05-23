@@ -83,7 +83,12 @@ class ShaInParameterFilter implements ParameterFilter
         'ECOM_SHIPTO_TELECOM_FAX_NUMBER',
         'ECOM_SHIPTO_TELECOM_PHONE_NUMBER',
         'ORDERSHIPCOST', 'ORDERSHIPTAX', 'ORDERSHIPMETH', 'ORDERSHIPTAXCODE',
-        'DATEIN', 'REF_CUSTOMERREF'
+        'DATEIN', 'REF_CUSTOMERREF',
+        // Limonetik
+        // @see https://epayments-support.ingenico.com/en/payment-methods/alternative-payment-methods/limonetik
+        'ECOM_BILLTO_POSTAL_NAME_PREFIX', 'ECOM_BILLTO_TELECOM_PHONE_NUMBER',
+        'ECOM_BILLTO_TELECOM_MOBILE_NUMBER', 'ECOM_SHIPTO_TELECOM_MOBILE_NUMBER', 'ECOM_SHIPMETHOD',
+        'ECOM_SHIPMETHODDETAILS', 'ECOM_ESTIMATEDDELIVERYDATE', 'ECOM_SHIPMETHODSPEED'
     );
 
     public function filter(array $parameters)

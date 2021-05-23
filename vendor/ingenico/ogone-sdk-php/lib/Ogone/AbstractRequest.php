@@ -84,6 +84,12 @@ use Ogone\ShaComposer\ShaComposer;
  * @method mixed getEcomBilltoPostalStreetLine3()
  * @method $this setEcomBilltoPostalStreetNumber($value)
  * @method mixed getEcomBilltoPostalStreetNumber()
+ * @method $this setEcomBilltoTelecomPhoneNumber($value)
+ * @method mixed getEcomBilltoTelecomPhoneNumber()
+ * @method $this setEcomBilltoTelecomMobileNumber($value)
+ * @method mixed getEcomBilltoTelecomMobileNumber()
+ * @method $this setEcomBilltoCompany($value)
+ * @method mixed getEcomBilltoCompany()
  * @method $this setEcomShiptoPostalCity($value)
  * @method mixed getEcomShiptoPostalCity()
  * @method $this setEcomShiptoPostalCounty($value)
@@ -120,12 +126,23 @@ use Ogone\ShaComposer\ShaComposer;
  * @method mixed getEcomShiptoTelecomFaxNumber()
  * @method $this setEcomShiptoTelecomPhoneNumber($value)
  * @method mixed getEcomShiptoTelecomPhoneNumber()
+ * @method $this setEcomShiptoTelecomMobileNumber($value)
+ * @method mixed getEcomShiptoTelecomMobileNumber()
  * @method $this setEcomShiptoOnlineEmail($value)
  * @method mixed getEcomShiptoOnlineEmail()
  * @method $this setRefCustomerid($value)
  * @method mixed getRefCustomerid()
  * @method $this setCostcenter($value)
  * @method mixed getCostcenter()
+ * @method $this setDevice($value)
+ * @method mixed getDevice()
+ * @method $this setEcomShipmethoddetails($value)
+ * @method mixed getEcomShipmethoddetails()
+ * @method $this setEcomEstimateddeliverydate($value)
+ * @method mixed getEcomEstimateddeliverydate()
+ * @method $this setEcomShipmethodspeed($value)
+ * @method mixed getEcomShipmethodspeed()
+ *
  * @package Ogone
  */
 abstract class AbstractRequest implements Request
@@ -206,6 +223,11 @@ abstract class AbstractRequest implements Request
         'subscription_id', 'sub_amount', 'sub_com', 'sub_orderid', 'sub_period_unit',
         'sub_period_number', 'sub_period_moment', 'sub_startdate', 'sub_enddate',
         'sub_status', 'sub_comment',
+        // Limonetik
+        // @see https://epayments-support.ingenico.com/en/payment-methods/alternative-payment-methods/limonetik
+        'ecom_billto_postal_name_prefix', 'ecom_billto_telecom_phone_number',
+        'ecom_billto_telecom_mobile_number', 'ecom_shipto_telecom_mobile_number', 'ecom_shipmethod',
+        'ecom_shipmethoddetails', 'ecom_estimateddeliverydate', 'ecom_shipmethodspeed'
     );
 
     /**

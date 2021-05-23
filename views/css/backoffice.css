@@ -232,7 +232,7 @@
     #content.bootstrap .ingenico-settings h2.block-title.without-desc {
       margin-bottom: 0; }
     #content.bootstrap .ingenico-settings h2 .icon-span {
-      background: url(../imgs/help.svg);
+      background: url(../img/help.svg);
       cursor: pointer;
       margin: 0px 16px -4px; }
   #content.bootstrap .ingenico-settings h3 {
@@ -245,7 +245,7 @@
     line-height: normal;
     height: initial; }
     #content.bootstrap .ingenico-settings h3 .icon-span {
-      background: url(../imgs/help.svg);
+      background: url(../img/help.svg);
       margin: -7px 15px;
       cursor: pointer; }
   #content.bootstrap .ingenico-settings h4 {
@@ -263,10 +263,10 @@
       position: absolute;
       right: -60px;
       margin-top: 15px;
-      background: url(../imgs/warning.svg); }
+      background: url(../img/warning.svg); }
     #content.bootstrap .ingenico-settings .icon-span.inline-store-cards {
       position: absolute;
-      background: url(../imgs/warning.svg);
+      background: url(../img/warning.svg);
       margin: -7px 15px;
       cursor: pointer; }
   #content.bootstrap .ingenico-settings .disclaimer {
@@ -285,7 +285,7 @@
       float: left;
       padding: 0; }
     #content.bootstrap .ingenico-settings .disclaimer .icon-span {
-      background: url(../imgs/warning.svg); }
+      background: url(../img/warning.svg); }
   #content.bootstrap .ingenico-settings .tab-content {
     padding-bottom: 50px; }
     #content.bootstrap .ingenico-settings .tab-content p {
@@ -307,7 +307,7 @@
       #content.bootstrap .ingenico-settings .tab-content p .icon-span {
         float: right;
         cursor: pointer;
-        background: url(../imgs/help.svg); }
+        background: url(../img/help.svg); }
   #content.bootstrap .ingenico-settings .webhook {
     margin-bottom: 10px;
     display: inline-block; }
@@ -564,7 +564,7 @@
       #content.bootstrap .ingenico-settings #payment_methods ul li#paypal-warn .icon-span {
         position: relative;
         margin: auto;
-        background: url(../imgs/warning.svg);
+        background: url(../img/warning.svg);
         cursor: pointer; }
     #content.bootstrap .ingenico-settings #payment_methods ul li#paypal-warn:hover {
       background: inherit; }
@@ -674,7 +674,7 @@
     background-color: #fff; }
   #content.bootstrap .ingenico-settings #support .cloud {
     display: inline;
-    background: url(../imgs/cloud.svg) center no-repeat;
+    background: url(../img/cloud.svg) center no-repeat;
     padding: 10px; }
   #content.bootstrap .ingenico-settings #support .import-export strong {
     font-size: 20px;
@@ -685,9 +685,9 @@
     color: #000; }
 
 .ingenico-modal {
-  position: absolute;
-  overflow: initial;
-  overflow-y: initial; }
+  /* position: absolute; */
+  /* overflow: initial; */
+  /* overflow-y: initial; */ }
   .ingenico-modal .modal-dialog {
     width: 960px;
     margin: 20px auto; }

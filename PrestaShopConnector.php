@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2019 Ingenico
+ * 2007-2021 Ingenico
  *
  * NOTICE OF LICENSE
  *
@@ -32,9 +32,6 @@ use Monolog\Handler\GelfHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\WebProcessor;
-use Psr\Log\LoggerInterface;
-use Ingenico\Setup\Migration;
-use Ingenico\Utils;
 use Ingenico\Model\Reminder;
 use Ingenico\Model\Total;
 use Ingenico\Model\Payment;
@@ -42,7 +39,6 @@ use Ingenico\Model\Alias;
 use IngenicoClient\Connector;
 use IngenicoClient\IngenicoCoreLibrary;
 use IngenicoClient\ConnectorInterface;
-use IngenicoClient\LoggerBuilder;
 use IngenicoClient\PaymentMethod\PaymentMethod;
 use IngenicoClient\OrderItem;
 use IngenicoClient\OrderField;
@@ -327,6 +323,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
         $billingAddress = new \Address((int) $order->id_address_invoice);
         $shippingAddress = new \Address((int) $order->id_address_delivery);
         $customer = new \Customer((int) $billingAddress->id_customer);
+        $gender = new \Gender((int) $customer->id_gender, (int) $customer->id_lang);
 
         // Calculate refunded, cancelled, and captured totals
         $totalAmount = (float) \Tools::ps_round($order->total_paid_tax_incl, 2);
@@ -416,10 +413,11 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             OrderField::CREATED_AT => $order->date_add, // Y-m-d H:i:s
             OrderField::HTTP_ACCEPT => isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : null,
             OrderField::HTTP_USER_AGENT => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null,
+            OrderField::BILLING_CUSTOMER_TITLE => $gender->name,
             OrderField::BILLING_COUNTRY => \Country::getNameById($order->id_lang, $billingAddress->id_country),
             OrderField::BILLING_COUNTRY_CODE => \Country::getIsoById($billingAddress->id_country),
             OrderField::BILLING_ADDRESS1 => $billingAddress->address1,
-            OrderField::BILLING_ADDRESS2 => $billingAddress->address2,
+            OrderField::BILLING_ADDRESS2 => !empty($billingAddress->address2) ? $billingAddress->address2 : '.',
             OrderField::BILLING_ADDRESS3 => null,
             OrderField::BILLING_CITY => $billingAddress->city,
             OrderField::BILLING_STATE => \State::getNameById($billingAddress->id_state),
@@ -429,10 +427,11 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             OrderField::BILLING_FIRST_NAME => $billingAddress->firstname,
             OrderField::BILLING_LAST_NAME => $billingAddress->lastname,
             OrderField::IS_SHIPPING_SAME => false,
+            OrderField::SHIPPING_CUSTOMER_TITLE => $gender->name,
             OrderField::SHIPPING_COUNTRY => \Country::getNameById($order->id_lang, $shippingAddress->id_country),
             OrderField::SHIPPING_COUNTRY_CODE => \Country::getIsoById($shippingAddress->id_country),
             OrderField::SHIPPING_ADDRESS1 => $shippingAddress->address1,
-            OrderField::SHIPPING_ADDRESS2 => $shippingAddress->address2,
+            OrderField::SHIPPING_ADDRESS2 => !empty($shippingAddress->address2) ? $shippingAddress->address2 : '.',
             OrderField::SHIPPING_ADDRESS3 => null,
             OrderField::SHIPPING_CITY => $shippingAddress->city,
             OrderField::SHIPPING_STATE => \State::getNameById($shippingAddress->id_state),
@@ -443,7 +442,9 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             OrderField::SHIPPING_LAST_NAME => $shippingAddress->lastname,
             OrderField::CUSTOMER_ID => (int) $order->id_customer,
             OrderField::CUSTOMER_IP => \Tools::getRemoteAddr(),
-            OrderField::CUSTOMER_DOB => ($customer->birthday === '0000-00-00') ? null : strtotime($customer->birthday),
+            OrderField::CUSTOMER_DOB => ($customer->birthday === '0000-00-00') ? null : strtotime($customer->birthday),  //null or timestamp
+            OrderField::CUSTOMER_GENDER => $gender->type == 1 ? 'F' : 'M',
+            OrderField::IS_VIRTUAL => $order->isVirtual(false),
             OrderField::ITEMS => $items,
             OrderField::LOCALE => $this->getLocale($orderId),
             OrderField::SHIPPING_METHOD => $shippingTitle,
@@ -453,6 +454,8 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             OrderField::COMPANY_NAME => $billingAddress->company,
             OrderField::COMPANY_VAT => $billingAddress->vat_number,
             OrderField::CHECKOUT_TYPE => \IngenicoClient\Checkout::TYPE_B2C,
+            OrderField::BILLING_STREET_NUMBER => null,
+            OrderField::SHIPPING_STREET_NUMBER => null,
         ];
     }
 
@@ -477,6 +480,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
         $billingAddress = new \Address((int) $cart->id_address_invoice);
         $shippingAddress = new \Address((int) $cart->id_address_delivery);
         $customer = new \Customer((int) $cart->id_customer);
+        $gender = new \Gender((int) $customer->id_gender, (int) $customer->id_lang);
         $locale = str_replace('-', '_', \Language::getLocaleByIso(\Language::getIsoById((int) $cart->id_lang)));
 
         // Get Shipping Details
@@ -577,6 +581,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             OrderField::CREATED_AT => $cart->date_add, // Y-m-d H:i:s
             OrderField::HTTP_ACCEPT => isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : null,
             OrderField::HTTP_USER_AGENT => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null,
+            OrderField::BILLING_CUSTOMER_TITLE => $gender->name,
             OrderField::BILLING_COUNTRY => \Country::getNameById($cart->id_lang, $billingAddress->id_country),
             OrderField::BILLING_COUNTRY_CODE => \Country::getIsoById($billingAddress->id_country),
             OrderField::BILLING_ADDRESS1 => $billingAddress->address1,
@@ -590,6 +595,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             OrderField::BILLING_FIRST_NAME => $billingAddress->firstname,
             OrderField::BILLING_LAST_NAME => $billingAddress->lastname,
             OrderField::IS_SHIPPING_SAME => false,
+            OrderField::SHIPPING_CUSTOMER_TITLE => $gender->name,
             OrderField::SHIPPING_COUNTRY => \Country::getNameById($cart->id_lang, $shippingAddress->id_country),
             OrderField::SHIPPING_COUNTRY_CODE => \Country::getIsoById($shippingAddress->id_country),
             OrderField::SHIPPING_ADDRESS1 => $shippingAddress->address1,
@@ -604,8 +610,9 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             OrderField::SHIPPING_LAST_NAME => $shippingAddress->lastname,
             OrderField::CUSTOMER_ID => (int) $cart->id_customer,
             OrderField::CUSTOMER_IP => \Tools::getRemoteAddr(),
-            OrderField::CUSTOMER_DOB => ($customer->birthday === '0000-00-00') ? null :
-                date('dmY', strtotime($customer->birthday)),
+            OrderField::CUSTOMER_DOB => ($customer->birthday === '0000-00-00') ? null : strtotime($customer->birthday),  //null or timestamp
+            OrderField::CUSTOMER_GENDER => $gender->type == 1 ? 'F' : 'M',
+            OrderField::IS_VIRTUAL => $cart->isVirtualCart(),
             OrderField::ITEMS => $items,
             OrderField::LOCALE => $locale,
             OrderField::SHIPPING_METHOD => $shippingTitle,
@@ -619,6 +626,39 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
     }
 
     /**
+     * Get Payment Method Code of Order.
+     *
+     * @param mixed $orderId
+     *
+     * @return string|false
+     */
+    public function getOrderPaymentMethod($orderId)
+    {
+        $order = new \Order($orderId);
+        if (!$order->reference) {
+            return false;
+        }
+
+        $payment = $this->payment->getIngenicoPaymentLog($orderId);
+        $method = \IngenicoClient\PaymentMethod::getPaymentMethodByBrand($payment['brand']);
+
+        return $method ? $method::CODE : false;
+
+    }
+
+    /**
+     * Get Payment Method Code of Quote/Cart.
+     *
+     * @param mixed $quoteId
+     *
+     * @return string|false
+     */
+    public function getQuotePaymentMethod($quoteId = null)
+    {
+        return false;
+    }
+
+    /**
      * Get Field Label
      *
      * @param string $field
@@ -626,16 +666,17 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
      */
     public function getOrderFieldLabel($field)
     {
-        // @todo Set labels for fields
-
         // Typical fields of address
         $map = [
-            'billing_address1' => $this->trans('Billing address', [], 'messages') . ' 1',
-            'billing_address2' => $this->trans('Billing address', [], 'messages') . ' 2',
-            'billing_address3' => $this->trans('Billing address', [], 'messages') . ' 3',
-            'shipping_address1' => $this->trans('Shipping address', [], 'messages') . ' 1',
-            'shipping_address2' => $this->trans('Shipping address', [], 'messages') . ' 2',
-            'shipping_address3' => $this->trans('Shipping address', [], 'messages') . ' 3',
+            OrderField::CUSTOMER_DOB => $this->trans('Date of Birth', [], 'messages'),
+            OrderField::BILLING_ADDRESS1 => $this->trans('Billing address', [], 'messages') . ' 1',
+            OrderField::BILLING_ADDRESS2 => $this->trans('Billing address', [], 'messages') . ' 2',
+            OrderField::BILLING_ADDRESS3 => $this->trans('Billing address', [], 'messages') . ' 3',
+            OrderField::SHIPPING_ADDRESS1 => $this->trans('Shipping address', [], 'messages') . ' 1',
+            OrderField::SHIPPING_ADDRESS2 => $this->trans('Shipping address', [], 'messages') . ' 2',
+            OrderField::SHIPPING_ADDRESS3 => $this->trans('Shipping address', [], 'messages') . ' 3',
+            OrderField::BILLING_CUSTOMER_TITLE => $this->trans('Billing customer title', [], 'messages'),
+            OrderField::SHIPPING_CUSTOMER_TITLE => $this->trans('Shipping customer title', [], 'messages')
         ];
 
         if (isset($map[$field])) {
@@ -1177,7 +1218,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
                         Connector::PARAM_NAME_CUSTOMER_NAME => sprintf('%s %s', $customer->firstname, $customer->lastname),
                         Connector::PARAM_NAME_ORDER_REFERENCE => $order->getUniqReference(),
                         'path_uri' => $this->getPathUri(),
-                        Connector::PARAM_NAME_INGENICO_LOGO => $this->getPath(true) . 'views/imgs/logo.png',
+                        Connector::PARAM_NAME_INGENICO_LOGO => $this->getPath(true) . 'views/img/logo.png',
                         Connector::PARAM_NAME_ORDER_VIEW_URL => $this->getOrderViewUrl($orderId)
                     ],
                     $this->getLocale()
@@ -1270,7 +1311,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
                 Connector::PARAM_NAME_ORDER_REFERENCE => $order->getUniqReference(),
                 Connector::PARAM_NAME_ORDER_VIEW_URL => $this->getOrderViewUrl($orderId),
                 'path_uri' => $this->getPath(true),
-                Connector::PARAM_NAME_INGENICO_LOGO => $this->getPath(true) . 'views/imgs/logo.png'
+                Connector::PARAM_NAME_INGENICO_LOGO => $this->getPath(true) . 'views/img/logo.png'
             ],
             $locale
         );
@@ -1385,7 +1426,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
                         Connector::PARAM_NAME_CUSTOMER_NAME => sprintf('%s %s', $customer->firstname, $customer->lastname),
                         Connector::PARAM_NAME_ORDER_REFERENCE => $order->getUniqReference(),
                         'path_uri' => $this->getPathUri(),
-                        Connector::PARAM_NAME_INGENICO_LOGO => $this->getPath(true) . 'views/imgs/logo.png'
+                        Connector::PARAM_NAME_INGENICO_LOGO => $this->getPath(true) . 'views/img/logo.png'
                     ],
                     $this->getLocale()
                 );
@@ -1503,7 +1544,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             return [];
         }
 
-        return IngenicoCoreLibrary::getPaymentMethods();
+        return $this->coreLibrary->getPaymentMethods();
     }
 
     /**
@@ -1655,6 +1696,13 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             $create_account_countries['NO']
         );
 
+        // Blank payment methods
+        $flex_methods = Utils::getConfig('FLEX_METHODS');
+        json_decode($flex_methods);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $flex_methods = '[]';
+        }
+
         // Assign Smarty values
         $this->smarty->assign(
             array_merge(
@@ -1686,7 +1734,11 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
                     'ticket_placeholder' => $this->coreLibrary->getWhiteLabelsData()->getSupportTicketPlaceholder(),
                     'template_guid_ecom' => $this->coreLibrary->getWhiteLabelsData()->getTemplateGuidEcom(),
                     'template_guid_flex' => $this->coreLibrary->getWhiteLabelsData()->getTemplateGuidFlex(),
-                    'template_guid_paypal' => $this->coreLibrary->getWhiteLabelsData()->getTemplateGuidPaypal()
+                    'template_guid_paypal' => $this->coreLibrary->getWhiteLabelsData()->getTemplateGuidPaypal(),
+
+                    // Blank payment methods
+                    'flex_methods' => $flex_methods,
+                    'uploads_dir' => $this->context->link->getBaseLink() . '/upload/ingenico/'
                 ]
             )
         );
@@ -1836,6 +1888,12 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
 
         // Save mode flag
         Utils::updateConfig('mode', \Tools::getValue('mode'));
+
+        $flex_methods = \Tools::getValue('flex_methods');
+        json_decode($flex_methods);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            Utils::updateConfig('FLEX_METHODS', $flex_methods);
+        }
     }
 
     /**
@@ -2212,7 +2270,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             \Configuration::get('PS_SHOP_NAME'),
             _PS_IMG_DIR_ . \Configuration::get('PS_LOGO'),
             \Context::getContext()->link->getPageLink('index', true),
-            $this->getPath(true) . 'views/imgs/logo.png',
+            $this->getPath(true) . 'views/img/logo.png',
             $this->getLocale()
         );
     }
@@ -2607,6 +2665,11 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
      */
     public function processOpenInvoicePayment($orderId, \IngenicoClient\Alias $alias, array $fields = [])
     {
+        // Convert the date to timestamp
+        if (isset($fields['customer_dob'])) {
+            $fields['customer_dob'] = strtotime($fields['customer_dob']);
+        }
+
         try {
             $this->coreLibrary->initiateOpenInvoicePayment($orderId, $alias, $fields);
         } catch (\Exception $e) {

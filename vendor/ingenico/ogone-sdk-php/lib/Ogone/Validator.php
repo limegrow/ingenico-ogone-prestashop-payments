@@ -130,7 +130,7 @@ class Validator
         // https://payment-services.ingenico.com/int/en/ogone/support/guides/integration%20guides/klarna
         'owneraddress' => [
             'format' => self::TYPE_ALPHANUMERIC,
-            'size' => 50,
+            'size' => 35,
             // @todo (Klarna accepts max. 35)
         ],
         'ownerzip' => [
@@ -143,7 +143,7 @@ class Validator
         ],
         'ownertown' => [
             'format' => self::TYPE_ALPHANUMERIC,
-            'size' => 25,
+            'size' => 40,
         ],
         'ownertelno' => [
             'format' => self::TYPE_ALPHANUMERIC,
@@ -302,6 +302,16 @@ class Validator
             'size' => 20,
         ],
 
+        // Limonetik
+        // @see https://epayments-support.ingenico.com/en/payment-methods/alternative-payment-methods/limonetik
+        'ecom_shipmethod' => [
+            'format' => self::TYPE_ALPHANUMERIC
+        ],
+        'ecom_shipmethoddetails' => [
+            'format' => self::TYPE_ALPHANUMERIC,
+            'size' => 50,
+        ],
+
         // 2.3 Order details
         // Optional integration data: Order data ("ITEM" parameters).
         // https://payment-services.ingenico.com/int/en/ogone/support/guides/integration%20guides/additional-data/order-data
@@ -366,6 +376,10 @@ class Validator
             //'format' => self::TYPE_NUMERIC,
             'format' => self::TYPE_ALPHANUMERIC,
             'values' => [0, 1, '']
+        ],
+        // @see https://epayments-support.ingenico.com/en/payment-methods/alternative-payment-methods/bancontact
+        'device' => [
+            'vales' => ['computer', 'tablet', 'mobile', false]
         ],
     ];
 
