@@ -63,8 +63,17 @@ class DirectLink
         $amount,
         $isPartially
     ) {
-        $operation = $isPartially ? MaintenanceOperation::OPERATION_REFUND_PARTIAL : MaintenanceOperation::OPERATION_REFUND_LAST_OR_FULL;
-        return $this->createMaintenanceRequest($configuration, $orderId, $payId, $amount, [], new MaintenanceOperation($operation));
+        $operation = $isPartially ?
+            MaintenanceOperation::OPERATION_REFUND_PARTIAL : MaintenanceOperation::OPERATION_REFUND_LAST_OR_FULL;
+
+        return $this->createMaintenanceRequest(
+            $configuration,
+            $orderId,
+            $payId,
+            $amount,
+            [],
+            new MaintenanceOperation($operation)
+        );
     }
 
     /**
@@ -85,8 +94,17 @@ class DirectLink
         $amount,
         $isPartially
     ) {
-        $operation = $isPartially ? MaintenanceOperation::OPERATION_CAPTURE_PARTIAL : MaintenanceOperation::OPERATION_CAPTURE_LAST_OR_FULL;
-        return $this->createMaintenanceRequest($configuration, $orderId, $payId, $amount, [], new MaintenanceOperation($operation));
+        $operation = $isPartially ?
+            MaintenanceOperation::OPERATION_CAPTURE_PARTIAL : MaintenanceOperation::OPERATION_CAPTURE_LAST_OR_FULL;
+
+        return $this->createMaintenanceRequest(
+            $configuration,
+            $orderId,
+            $payId,
+            $amount,
+            [],
+            new MaintenanceOperation($operation)
+        );
     }
 
     /**
@@ -107,8 +125,18 @@ class DirectLink
         $amount,
         $isPartially
     ) {
-        $operation = $isPartially ? MaintenanceOperation::OPERATION_AUTHORISATION_DELETE : MaintenanceOperation::OPERATION_AUTHORISATION_DELETE_AND_CLOSE;
-        return $this->createMaintenanceRequest($configuration, $orderId, $payId, $amount, [], new MaintenanceOperation($operation));
+        $operation = $isPartially ?
+            MaintenanceOperation::OPERATION_AUTHORISATION_DELETE :
+            MaintenanceOperation::OPERATION_AUTHORISATION_DELETE_AND_CLOSE;
+
+        return $this->createMaintenanceRequest(
+            $configuration,
+            $orderId,
+            $payId,
+            $amount,
+            [],
+            new MaintenanceOperation($operation)
+        );
     }
 
     /**

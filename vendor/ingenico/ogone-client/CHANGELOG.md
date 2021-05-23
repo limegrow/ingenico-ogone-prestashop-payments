@@ -1,4 +1,49 @@
 # Changelog
+## [5.3.0] - 2021-05-18
+### Added
+- Implemented Oney payment method
+- Implemented `Order::isVirtual()`
+- Add Generic Ingenico payment method
+- Rounding issue workaround
+
+## Changed
+- Klarna api updates
+- Improved order cancellation code
+- Rename "Bank transfer" to "Bank Transfer"
+
+## [5.2.1] - 2021-05-03
+## Changed
+- Trim owneraddress
+
+## [5.2.0] - 2021-04-18
+### Added
+- Implemented PMLISTTYPE option
+- Added ConfigurationInterface
+- ConnectorInterface: `getOrderPaymentMethod()`
+- ConnectorInterface: `getQuotePaymentMethod()`
+
+## Changed
+- Klarna: don't require ECOM_SHIPTO_POSTAL_STATE
+- Klarna: changed DoB format
+- Carte Bancaire fixes
+
+## [5.1.0] - 2021-03-25
+### Added
+- Implemented bank selection for iDeal
+- Implemented additional order metadata feature
+- Allows to use custom PM and BRAND using additional order metadata
+
+### Changed
+- Klarna: Fix street field issues
+
+## [5.0.2] - 2020-12-01
+### Added
+- Added Sofort payment methods
+
+## [5.0.1] - 2020-11-27
+### Changed
+- Fixed alias saving in the inline payment page mode
+
 ## [5.0.0] - 2020-11-03
 
 ### Added

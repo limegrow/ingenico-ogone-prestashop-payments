@@ -1,5 +1,5 @@
 {*
-* 2007-2019 Ingenico
+* 2007-2021 Ingenico
 *
 * NOTICE OF LICENSE
 *
@@ -12,23 +12,23 @@
 * to license@prestashop.com so we can send you a copy immediately.
 *
 *  @author Ingenico <contact@ingenico.com>
-*  @copyright  2007-2019 Ingenico
+*  @copyright  2007-2021 Ingenico
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 <form action="{$action|escape}" method="POST" id="ingenico-payment-form">
     <ul>
         {foreach $payment_methods as $key => $method}
-            <img src="{$method->getEmbeddedLogo()}" height="30">
+            <img src="{$method->getEmbeddedLogo()|escape}" height="30">
         {/foreach}
     </ul>
 
     <div>
         {if $one_click_payment == true}
             {foreach $aliases as $index => $alias}
-                <label for="alias_{$alias->getId()}">
-                    <input type="radio" id="alias_{$alias->getId()}" name="alias" value="{$alias->getId()}" {if $index == 0} checked {/if}>
-                    <img src="{$alias->getEmbeddedLogo()}" width="50">
-                    {$alias->getName()}
+                <label for="alias_{$alias->getId()|escape}">
+                    <input type="radio" id="alias_{$alias->getId()|escape}" name="alias" value="{$alias->getId()|escape}" {if $index == 0} checked {/if}>
+                    <img src="{$alias->getEmbeddedLogo() nofilter}" width="50">
+                    {$alias->getName()|escape}
                 </label>
                 <br />
             {/foreach}

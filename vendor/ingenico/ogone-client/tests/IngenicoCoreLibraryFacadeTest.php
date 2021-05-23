@@ -176,7 +176,6 @@ class IngenicoCoreLibraryFacadeTest extends TestCase
      */
     public function updateOrderStatus($order_id, $statusCode)
     {
-
     }
 
     /**

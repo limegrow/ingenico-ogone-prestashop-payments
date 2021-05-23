@@ -119,10 +119,10 @@ class Payment extends Data
 
         // Workaround for order_id, pay_id, pay_sub_id
         foreach (['order_id', 'pay_id', 'pay_id_sub'] as $key) {
-            if (isset($data[$key])) {{
+            if (isset($data[$key])) {
                 $keyName = array_search(strtoupper(str_replace('_', '', $key)), $constants);
                 $this->setData(strtolower(str_replace('FIELD_', '', $keyName)), $data[$key]);
-            }}
+            }
         }
     }
 
@@ -164,10 +164,6 @@ class Payment extends Data
      */
     public function getStatus()
     {
-        if (!$this->hasData(strtolower(self::FIELD_STATUS))) {
-            //return false;
-        }
-
         return (int) $this->getData(strtolower(self::FIELD_STATUS));
     }
 

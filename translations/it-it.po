@@ -882,16 +882,19 @@ msgid "Billing state"
 msgstr "Paese di fatturazione"
 
 msgid "Billing address"
-msgstr "Billing address"
+msgstr "Indirizzo di fatturazione"
 
 msgid "Billing street number"
 msgstr "Indirizzo di fatturazione"
+
+msgid "Billing customer title"
+msgstr "Titolo cliente di fatturazione"
 
 msgid "Shipping state"
 msgstr "Paese di spedizione"
 
 msgid "Shipping address"
-msgstr "Shipping address"
+msgstr "Indirizzo di spedizione"
 
 msgid "Shipping street number"
 msgstr "Indirizzo di spedizione"
@@ -934,3 +937,12 @@ msgstr "Paga in sicurezza nella pagina successiva con Ingenico utilizzando il tu
 
 msgid "%brand% ends with %cardno%, expires on %month%/%year%"
 msgstr "Il %brand% scade con %cardno%, scade il %month%/%year%"
+
+msgid "Date of Birth"
+msgstr "Data di nascita"
+
+msgid "Credit Cards"
+msgstr "Carte di credito"
+
+msgid "Bank Transfer"
+msgstr "Trasferimento Bancario"

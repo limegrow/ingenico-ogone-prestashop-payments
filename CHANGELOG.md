@@ -1,4 +1,26 @@
 # Changelog
+## [4.0.0] - 2021-05-18
+### Added
+- Implemented Blank payment methods
+- Implement Oney payment method
+- Klarna: use title and gender fields
+- Add Generic Ingenico payment method
+- Implemented Order::isVirtual()
+- Hide CC iframe if ToS is unchecked
+
+### Changed
+- Updated translations
+- Move images to /views/img/ directory
+- Klarna api updates
+
+### Fixed
+- Improved logic of hiding/showing iframe and order submission button
+- Remove category title on Klarna intermediate page
+- Fixed DOB field
+- Bancontact fixes
+- Use html code in tpl instead of php files
+- Escape the chars in tpl files
+
 ## [3.0.0] - 2020-11-03
 
 ### Added

@@ -1,5 +1,5 @@
 {*
-* 2007-2019 Ingenico
+* 2007-2021 Ingenico
 *
 * NOTICE OF LICENSE
 *
@@ -12,7 +12,7 @@
 * to license@prestashop.com so we can send you a copy immediately.
 *
 *  @author Ingenico <contact@ingenico.com>
-*  @copyright  2007-2019 Ingenico
+*  @copyright  2007-2021 Ingenico
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 <div id="connection" class="tab-pane active">
@@ -34,14 +34,14 @@
                 <label class="col-lg-12">
                     {l s='form.connection.label.pspid' mod='ingenico_epayments'}
                 </label>
-                <input class="form-control " type="text" size="5" name="connection_test_pspid" value="{$connection_test_pspid}" {if !$connection_mode}required{/if}>
+                <input class="form-control " type="text" size="5" name="connection_test_pspid" value="{$connection_test_pspid|escape}" {if !$connection_mode}required{/if}>
                 <a href="#" class="modal-link" data-modal-id="pspid-modal-test">{l s='form.connection.label.where' mod='ingenico_epayments'}</a>
             </div>
             <div class="form-group">
                 <label class="col-lg-12">
                     {l s='form.connection.label.signature' mod='ingenico_epayments'}
                 </label>
-                <input class="form-control" type="password" size="5" name="connection_test_signature" value="{$connection_test_signature}" {if !$connection_mode}required{/if}>
+                <input class="form-control" type="password" size="5" name="connection_test_signature" value="{$connection_test_signature|escape}" {if !$connection_mode}required{/if}>
                 <span toggle="connection_test_signature" class="form-btn mask"
                       data-show="{l s='form.connection.button.show' mod='ingenico_epayments'}"
                       data-hide="{l s='form.connection.button.hide' mod='ingenico_epayments'}">
@@ -57,18 +57,18 @@
             <div class="webhook">
                 <h3 class="col-lg-12">{l s='form.connection.label.webhook_settings' mod='ingenico_epayments'}</h3>
                 {if $connection_test_webhook == null}
-                    <input name="connection_test_webhook" type="hidden" value="{$webhook_url}">
+                    <input name="connection_test_webhook" type="hidden" value="{$webhook_url|escape}">
                     <p class="col-lg-12">
-                        <a class="webhook-url" onclick="Ogone.copyLink('{$webhook_url}', 'test-webhook')">{$webhook_url}</a>
+                        <a class="webhook-url" onclick="Ogone.copyLink('{$webhook_url nofilter}', 'test-webhook')">{$webhook_url|escape}</a>
                     </p>
                 {else}
                     <p class="col-lg-12">
-                        <a class="webhook-url" onclick="Ogone.copyLink('{$connection_test_webhook}', 'test-webhook')">{$connection_test_webhook}</a>
+                        <a class="webhook-url" onclick="Ogone.copyLink('{$connection_test_webhook nofilter}', 'test-webhook')">{$connection_test_webhook|escape}</a>
                     </p>
                 {/if}
                 <div class="copy-response" data-copy="test-webhook">{l s='form.connection.label.copied' mod='ingenico_epayments'}</div>
                 <div class="col-lg-12">
-                    <a class="copy-link" onclick="Ingenico.copyLink('{$webhook_url}', 'test-webhook')">{l s='form.connection.button.copy_link' mod='ingenico_epayments'}</a>
+                    <a class="copy-link" onclick="Ingenico.copyLink('{$webhook_url nofilter}', 'test-webhook')">{l s='form.connection.button.copy_link' mod='ingenico_epayments'}</a>
                     <a class="modal-link modal-link-how-to" data-modal-id="webhook-modal">{l s='form.connection.label.howto' mod='ingenico_epayments'}</a>
                 </div>
             </div>
@@ -94,7 +94,7 @@
                 <label class="col-lg-12">
                     {l s='form.connection.label.user' mod='ingenico_epayments'}
                 </label>
-                <input class="form-control " type="text" size="5" name="connection_test_dl_user" value="{$connection_test_dl_user}" {if !$connection_mode}required{/if}>
+                <input class="form-control " type="text" size="5" name="connection_test_dl_user" value="{$connection_test_dl_user|escape}" {if !$connection_mode}required{/if}>
                 <a href="#" class="modal-link" data-modal-id="direct-link-user-modal">{l s='form.connection.label.where' mod='ingenico_epayments'}</a>
                 <div class="copy-response" data-copy="test-directlink-user">{l s='form.connection.label.copied' mod='ingenico_epayments'}</div>
                 <div class="col-lg-12">
@@ -106,7 +106,7 @@
                 <label class="col-lg-12">
                     {l s='form.connection.label.password' mod='ingenico_epayments'}
                 </label>
-                <input class="form-control" type="password" size="5" name="connection_test_dl_password" value="{$connection_test_dl_password}" {if !$connection_mode}required{/if}>
+                <input class="form-control" type="password" size="5" name="connection_test_dl_password" value="{$connection_test_dl_password|escape}" {if !$connection_mode}required{/if}>
                 <span toggle="connection_test_dl_password" class="form-btn mask"
                       data-show="{l s='form.connection.button.show' mod='ingenico_epayments'}"
                       data-hide="{l s='form.connection.button.hide' mod='ingenico_epayments'}">
@@ -138,14 +138,14 @@
                 <label class="col-lg-12">
                     {l s='form.connection.label.pspid' mod='ingenico_epayments'}
                 </label>
-                <input class="form-control " type="text" size="5" name="connection_live_pspid" value="{$connection_live_pspid}" {if $connection_mode}required{/if}>
+                <input class="form-control " type="text" size="5" name="connection_live_pspid" value="{$connection_live_pspid|escape}" {if $connection_mode}required{/if}>
                 <a href="#" class="modal-link" data-modal-id="pspid-modal">{l s='form.connection.label.where' mod='ingenico_epayments'}</a>
             </div>
             <div class="form-group">
                 <label class="col-lg-12">
                     {l s='form.connection.label.signature' mod='ingenico_epayments'}
                 </label>
-                <input class="form-control" type="password" size="5" name="connection_live_signature" value="{$connection_live_signature}" {if $connection_mode}required{/if}>
+                <input class="form-control" type="password" size="5" name="connection_live_signature" value="{$connection_live_signature|escape}" {if $connection_mode}required{/if}>
                 <span toggle="connection_live_signature" class="form-btn mask"
                       data-show="{l s='form.connection.button.show' mod='ingenico_epayments'}"
                       data-hide="{l s='form.connection.button.hide' mod='ingenico_epayments'}">
@@ -161,18 +161,18 @@
             <div class="webhook">
                 <h3 class="col-lg-12">{l s='form.connection.label.webhook_settings' mod='ingenico_epayments'}</h3>
                 {if $connection_live_webhook == null}
-                    <input name="connection_live_webhook" type="hidden" value="{$webhook_url}">
+                    <input name="connection_live_webhook" type="hidden" value="{$webhook_url|escape}">
                     <p class="col-lg-12">
-                        <a class="webhook-url" onclick="Ogone.copyLink('{$webhook_url}', 'live-webhook')">{$webhook_url}</a>
+                        <a class="webhook-url" onclick="Ogone.copyLink('{$webhook_url nofilter}', 'live-webhook')">{$webhook_url|escape}</a>
                     </p>
                 {else}
                     <p class="col-lg-12">
-                        <a class="webhook-url" onclick="Ogone.copyLink('{$connection_live_webhook}', 'live-webhook')">{$connection_live_webhook}</a>
+                        <a class="webhook-url" onclick="Ogone.copyLink('{$connection_live_webhook nofilter}', 'live-webhook')">{$connection_live_webhook|escape}</a>
                     </p>
                 {/if}
                 <div class="copy-response" data-copy="live-webhook">{l s='form.connection.label.copied' mod='ingenico_epayments'}</div>
                 <div class="col-lg-12">
-                    <a class="copy-link" onclick="Ingenico.copyLink('{$webhook_url}', 'live-webhook')">{l s='form.connection.button.copy_link' mod='ingenico_epayments'}</a>
+                    <a class="copy-link" onclick="Ingenico.copyLink('{$webhook_url nofilter}', 'live-webhook')">{l s='form.connection.button.copy_link' mod='ingenico_epayments'}</a>
                     <a class="modal-link modal-link-how-to" data-modal-id="webhook-modal">{l s='form.connection.label.howto' mod='ingenico_epayments'}</a>
                 </div>
             </div>
@@ -198,7 +198,7 @@
                 <label class="col-lg-12">
                     {l s='form.connection.label.user' mod='ingenico_epayments'}
                 </label>
-                <input class="form-control " type="text" size="5" name="connection_live_dl_user" value="{$connection_live_dl_user}" {if $connection_mode}required{/if}>
+                <input class="form-control " type="text" size="5" name="connection_live_dl_user" value="{$connection_live_dl_user|escape}" {if $connection_mode}required{/if}>
                 <a href="#" class="modal-link" data-modal-id="direct-link-user-modal">{l s='form.connection.label.where' mod='ingenico_epayments'}</a>
                 <div class="copy-response" data-copy="live-directlink-user">{l s='form.connection.label.copied' mod='ingenico_epayments'}</div>
                 <div class="col-lg-12">
@@ -210,7 +210,7 @@
                 <label class="col-lg-12">
                     {l s='form.connection.label.password' mod='ingenico_epayments'}
                 </label>
-                <input class="form-control" type="password" size="5" name="connection_live_dl_password" value="{$connection_live_dl_password}" {if $connection_mode}required{/if}>
+                <input class="form-control" type="password" size="5" name="connection_live_dl_password" value="{$connection_live_dl_password|escape}" {if $connection_mode}required{/if}>
                 <span toggle="connection_live_dl_password" class="form-btn mask"
                       data-show="{l s='form.connection.button.show' mod='ingenico_epayments'}"
                       data-hide="{l s='form.connection.button.hide' mod='ingenico_epayments'}">

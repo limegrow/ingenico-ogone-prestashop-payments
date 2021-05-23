@@ -1,6 +1,6 @@
 <?php
 /**
- * 2007-2019 Ingenico
+ * 2007-2021 Ingenico
  *
  * NOTICE OF LICENSE
  *
@@ -46,7 +46,7 @@ class Ingenico_Epayments extends PrestaShopConnector
     {
         $this->name = 'ingenico_epayments';
         $this->tab = 'payments_gateways';
-        $this->version = '3.0.0';
+        $this->version = '4.0.0';
         $this->author = 'Ingenico Group';
         $this->need_instance = 0;
         $this->bootstrap = 1;
@@ -178,10 +178,25 @@ class Ingenico_Epayments extends PrestaShopConnector
                 $this->context->controller->addJS($this->getPath(true) . 'views/js/async.js');
                 $this->context->controller->addJS($this->getPath(true) . 'views/js/backoffice.js');
                 $this->context->controller->addCSS($this->getPath(true) . 'views/css/backoffice.css');
+
+                $this->context->controller->addCSS($this->getPath(true) . 'views/jsgrid/jsgrid.css');
+                $this->context->controller->addCSS($this->getPath(true) . 'views/jsgrid/jsgrid-theme.css');
+                $this->context->controller->addJS($this->getPath(true) . 'views/jsgrid/jsgrid.js');
             } else {
                 $this->context->controller->addJS($this->getPath(true) . 'views/js/async.min.js');
                 $this->context->controller->addJS($this->getPath(true) . 'views/js/backoffice.min.js');
                 $this->context->controller->addCSS($this->getPath(true) . 'views/css/backoffice.min.css');
+
+                $this->context->controller->addCSS($this->getPath(true) . 'views/jsgrid/jsgrid.min.css');
+                $this->context->controller->addCSS($this->getPath(true) . 'views/jsgrid/jsgrid-theme.min.css');
+                $this->context->controller->addJS($this->getPath(true) . 'views/jsgrid/jsgrid.min.js');
+            }
+
+            $locale = \Context::getContext()->language->iso_code;
+            if (file_exists(dirname(__FILE__) . '/views/jsgrid/i18n/jsgrid-' . $locale . '.js')) {
+                $this->context->controller->addJS(
+                    $this->getPath(true) . 'views/jsgrid/i18n/jsgrid-' . $locale . '.js'
+                );
             }
 
             // ViewOrder Page
@@ -385,7 +400,47 @@ class Ingenico_Epayments extends PrestaShopConnector
                 'cn' => $data->getCn(),
             ]);
 
-            echo $this->display(__FILE__, 'views/templates/admin/admin-order.tpl');
+            if (version_compare(_PS_VERSION_, '1.7.7.0', '>=')) {
+                // Temporary fix for PS v1.7.7
+                ob_start();
+                ?>
+                <style type="text/css">
+                    #ingenicoOrder {
+                        display: none;
+                    }
+                </style>
+                <div class="card mt-2" id="view_order_payments_block">
+                    <div class="card-header">
+                        <h3 class="card-header-title">
+                            Ingenico payment info
+                        </h3>
+                    </div>
+
+                    <div class="card-body">
+                        <?php echo $this->display(__FILE__, 'views/templates/admin/admin-order.tpl'); ?>
+                    </div>
+                </div>
+
+                <div class="card mt-2" id="view_order_payments_block">
+                    <div class="card-header">
+                        <h3 class="card-header-title">
+                            Ingenico payment actions
+                        </h3>
+                    </div>
+
+                    <div class="card-body">
+                        <?php $this->hookDisplayBackOfficeOrderActions($params); ?>
+                    </div>
+                </div>
+                <?php
+
+                $result = ob_get_contents();
+                ob_end_clean();
+
+                return $result;
+            } else {
+                echo $this->display(__FILE__, 'views/templates/admin/admin-order.tpl');
+            }
         }
     }
 
@@ -431,11 +486,14 @@ class Ingenico_Epayments extends PrestaShopConnector
 
         /** @var \IngenicoClient\PaymentMethod\PaymentMethod $paymentMethod */
         foreach ($selectedPaymentMethods as $paymentMethod) {
-            $paymentMethodsText[$paymentMethod->getId()] = $paymentMethod->getName();
+            $paymentMethodsText[$paymentMethod->getId()] = $this->trans(
+                $paymentMethod->getName(),
+                [],
+                'messages'
+            );
 
             switch ($paymentMethod->getId()) {
                 case \IngenicoClient\PaymentMethod\Amex::CODE:
-                case \IngenicoClient\PaymentMethod\Bancontact::CODE:
                 case \IngenicoClient\PaymentMethod\CarteBancaire::CODE:
                 case \IngenicoClient\PaymentMethod\DinersClub::CODE:
                 case \IngenicoClient\PaymentMethod\Discover::CODE:
@@ -463,7 +521,7 @@ class Ingenico_Epayments extends PrestaShopConnector
 
                     $paymentOption = new PaymentOption();
                     $paymentOption->setModuleName($this->name)
-                        ->setCallToActionText($paymentMethod->getName())
+                        ->setCallToActionText($this->trans($paymentMethod->getName(), [], 'messages'))
                         ->setLogo($paymentMethod->getEmbeddedLogo())
                         ->setAction($this->context->link->getModuleLink(
                             $this->name,
@@ -478,6 +536,50 @@ class Ingenico_Epayments extends PrestaShopConnector
 
                         $paymentOptions[] = $paymentOption;
                     break;
+                case \IngenicoClient\PaymentMethod\FacilyPay3x::CODE:
+                case \IngenicoClient\PaymentMethod\FacilyPay3xnf::CODE:
+                case \IngenicoClient\PaymentMethod\FacilyPay4x::CODE:
+                case \IngenicoClient\PaymentMethod\FacilyPay4xnf::CODE:
+                    $paymentOption = new PaymentOption();
+                    $paymentOption->setModuleName($this->name)
+                        ->setCallToActionText($this->trans($paymentMethod->getName(), [], 'messages'))
+                        ->setLogo($paymentMethod->getEmbeddedLogo())
+                        ->setAction($this->context->link->getModuleLink(
+                            $this->name,
+                        'open_invoice',
+                            [
+                                'payment_id' => $paymentMethod->getId(),
+                                'pm' => $paymentMethod->getPM(),
+                                'brand' => $paymentMethod->getBrand()
+                            ],
+                            true
+                        ));
+
+                    $paymentOptions[] = $paymentOption;
+                    break;
+                case \IngenicoClient\PaymentMethod\Ingenico::CODE:
+                    // Add Generic method
+                    $paymentOption = new PaymentOption();
+                    $paymentOption->setModuleName($this->name)
+                        ->setCallToActionText($this->trans('Pay with Ingenico ePayments', [], 'messages'))
+                        ->setAdditionalInformation(
+                            $this->trans(
+                                'Pay safely on the next page with Ingenico using your preferred payment method',
+                                [],
+                                'messages'
+                            )
+                        )
+                        ->setLogo($this->getPathUri() . '/views/img/ingenico.gif')
+                        ->setAction($this->context->link->getModuleLink(
+                            $this->name,
+                            'payment',
+                            [],
+                            true
+                        ));
+
+                    $paymentOptions[] = $paymentOption;
+                    break;
+
                 default:
                     $paymentOption = new PaymentOption();
                     $paymentOption->setModuleName($this->name)
@@ -509,13 +611,14 @@ class Ingenico_Epayments extends PrestaShopConnector
             if ($oneClickPayments && $customerId > 0) {
                 $aliases = $this->coreLibrary->getCustomerAliases($customerId);
                 foreach ($aliases as $alias) {
-                    $alias->setTranslatedName($this->trans('%brand% ends with %cardno%, expires on %month%/%year%', [
-                        '%brand%' => $alias->getBrand(),
-                        '%cardno%' => substr($alias->getCardno(),-4,4),
-                        '%month%' => substr($alias->getEd(), 0, 2),
-                        '%year%' => substr($alias->getEd(), 2, 4),
-
-                    ], 'messages'));
+                    $alias->setTranslatedName(
+                        $this->trans('%brand% ends with %cardno%, expires on %month%/%year%', [
+                            '%brand%' => $alias->getBrand(),
+                            '%cardno%' => substr($alias->getCardno(),-4,4),
+                            '%month%' => substr($alias->getEd(), 0, 2),
+                            '%year%' => substr($alias->getEd(), 2, 4),
+                        ], 'messages')
+                    );
                 }
             }
 
@@ -544,7 +647,7 @@ class Ingenico_Epayments extends PrestaShopConnector
             $paymentOption = new PaymentOption();
             $paymentOption->setModuleName($this->name)
                 ->setCallToActionText($this->trans('Credit Cards', [], 'messages'))
-                ->setLogo($this->getPathUri() . '/views/imgs/card-logo-unknown.svg')
+                ->setLogo($this->getPathUri() . '/views/img/card-logo-unknown.svg')
                 ->setAction($this->context->link->getModuleLink(
                     $this->name,
                     'payment',
@@ -562,24 +665,32 @@ class Ingenico_Epayments extends PrestaShopConnector
             $paymentOptions[] = $paymentOption;
         }
 
-        // Add Generic method
-        if ($this->coreLibrary->getConfiguration()->getPaymentpageType() === 'REDIRECT') {
+        // Add Blank payment methods
+        $flex_methods = Utils::getConfig('FLEX_METHODS');
+        $flex_methods = json_decode($flex_methods, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $flex_methods = [];
+        }
+
+        foreach ($flex_methods as $flex_method) {
             $paymentOption = new PaymentOption();
             $paymentOption->setModuleName($this->name)
-                ->setCallToActionText($this->trans('Pay with Ingenico ePayments', [], 'messages'))
-                ->setAdditionalInformation(
-                    $this->trans('Pay safely on the next page with Ingenico using your preferred payment method',
-                        [],
-                        'messages'
-                    )
-                )
-                ->setLogo($this->getPathUri() . '/views/imgs/ingenico.gif')
+                ->setCallToActionText($flex_method['title'])
                 ->setAction($this->context->link->getModuleLink(
                     $this->name,
                     'payment',
-                    [],
+                    [
+                        'pm' => $flex_method['pm'],
+                        'brand' => $flex_method['brand']
+                    ],
                     true
                 ));
+
+            if ($flex_method['img']) {
+                $paymentOption->setLogo(
+                    $this->context->link->getBaseLink() . '/upload/ingenico/' . $flex_method['img']
+                );
+            }
 
             $paymentOptions[] = $paymentOption;
         }

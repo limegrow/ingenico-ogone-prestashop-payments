@@ -296,7 +296,7 @@ $color-grey: #afafaf;
         margin-bottom: 0;
       }
       .icon-span {
-        background: url(../imgs/help.svg);
+        background: url(../img/help.svg);
         cursor: pointer;
         margin: 0px 16px -4px;
       }
@@ -311,7 +311,7 @@ $color-grey: #afafaf;
       line-height: normal;
       height: initial;
       .icon-span {
-        background: url(../imgs/help.svg);
+        background: url(../img/help.svg);
         margin: -7px 15px;
         cursor: pointer;
       }
@@ -332,11 +332,11 @@ $color-grey: #afafaf;
         position: absolute;
         right: -60px;
         margin-top: 15px;
-        background: url(../imgs/warning.svg);
+        background: url(../img/warning.svg);
       }
       &.inline-store-cards {
         position: absolute;
-        background: url(../imgs/warning.svg);
+        background: url(../img/warning.svg);
         margin: -7px 15px;
         cursor: pointer;
       }
@@ -359,7 +359,7 @@ $color-grey: #afafaf;
         padding: 0;
       }
       .icon-span {
-        background: url(../imgs/warning.svg);
+        background: url(../img/warning.svg);
       }
     }
 
@@ -387,7 +387,7 @@ $color-grey: #afafaf;
         .icon-span {
           float: right;
           cursor: pointer;
-          background: url(../imgs/help.svg);
+          background: url(../img/help.svg);
         }
       }
     }
@@ -720,7 +720,7 @@ $color-grey: #afafaf;
           .icon-span {
             position: relative;
             margin: auto;
-            background: url(../imgs/warning.svg);
+            background: url(../img/warning.svg);
             cursor: pointer;
           }
         }
@@ -870,7 +870,7 @@ $color-grey: #afafaf;
 
       .cloud {
         display: inline;
-        background: url(../imgs/cloud.svg) center no-repeat;
+        background: url(../img/cloud.svg) center no-repeat;
         padding: 10px;
       }
 
@@ -890,9 +890,9 @@ $color-grey: #afafaf;
   }
 }
 .ingenico-modal {
-  position: absolute;
-  overflow: initial;
-  overflow-y: initial;
+  /* position: absolute; */
+  /* overflow: initial; */
+  /* overflow-y: initial; */
   .modal-dialog {
     width: 960px;
     margin: 20px auto;

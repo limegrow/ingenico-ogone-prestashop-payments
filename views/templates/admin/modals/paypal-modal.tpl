@@ -1,5 +1,5 @@
 {*
-* 2007-2019 Ingenico
+* 2007-2021 Ingenico
 *
 * NOTICE OF LICENSE
 *
@@ -12,7 +12,7 @@
 * to license@prestashop.com so we can send you a copy immediately.
 *
 *  @author Ingenico <contact@ingenico.com>
-*  @copyright  2007-2019 Ingenico
+*  @copyright  2007-2021 Ingenico
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 <div id="paypal-modal" class="ingenico-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">
@@ -34,11 +34,11 @@
                         {l s='modal.paypal.label3' mod='ingenico_epayments'}
                     </li>
                 </ul>
-                <img src="{$module_dir}views/imgs/paypal.png">
+                <img src="{$module_dir|escape}views/img/paypal.png">
                 <ul>
                     <li>{l s='modal.paypal.label4' mod='ingenico_epayments'}</a></li>
                 </ul>
-                <img src="{$module_dir}views/imgs/paypal2.png">
+                <img src="{$module_dir|escape}views/img/paypal2.png">
                 <ul>
                     <li>{l s='modal.paypal.label5' mod='ingenico_epayments'}</a></li>
                 </ul>
@@ -47,7 +47,7 @@
                 </div>
                 <div class="info-box green-info-box">
                     {l s='modal.paypal.label7' mod='ingenico_epayments'}
-                    <a target="_blank" href="{$template_guid_paypal}">
+                    <a target="_blank" href="{$template_guid_paypal nofilter}">
                         {l s='modal.paypal.label8' mod='ingenico_epayments'}
                     </a>
                 </div>

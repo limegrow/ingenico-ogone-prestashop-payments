@@ -29,7 +29,14 @@ trait OpenInvoice
 
         // Order items are required
         if (count((array) $order->getItems()) === 0) {
-            $this->logger->debug(__CLASS__ . '::' . __METHOD__ . ' Open Invoice requires order items', [$order->getData(), $paymentMethod, $fields]);
+            $this->logger->debug(__CLASS__ . '::' . __METHOD__ . ' Open Invoice requires order items',
+                [
+                    $order->getData(),
+                    $paymentMethod,
+                    $fields
+                ]
+            );
+
             throw new Exception('Open Invoice requires order items');
         }
 
@@ -37,7 +44,8 @@ trait OpenInvoice
         $orderFields = array_merge($order->getData(), $fields);
 
         // Get Expected Fields
-        $checkoutType = $order->getCheckoutType() ? $order->getCheckoutType() : PaymentMethod\PaymentMethod::CHECKOUT_B2C;
+        $checkoutType = $order->getCheckoutType() ? $order->getCheckoutType()
+            : PaymentMethod\PaymentMethod::CHECKOUT_B2C;
         $expectedFields = (array) $paymentMethod->getExpectedFields($checkoutType);
 
         // Get Missing or Invalid parameters
@@ -165,6 +173,7 @@ trait OpenInvoice
         $additionalFields = $this->getSessionValue(
             $paymentMethod->getId() . '_' . self::PARAM_NAME_OPEN_INVOICE_FIELDS
         );
+
         if (!$additionalFields) {
             // Get Additional fields
             $additionalFields = $this->getMissingOrderFields($orderId, $paymentMethod, $previousFields);
@@ -196,8 +205,8 @@ trait OpenInvoice
             throw new Exception(sprintf(
                 'Unable to use %s as Open Invoice method. Use %s::initiateRedirectPayment() instead of.',
                 $alias->getPaymentId(),
-                __CLASS__)
-            );
+                __CLASS__
+            ));
         }
 
         // Check Saved Order ID in Session
@@ -230,8 +239,7 @@ trait OpenInvoice
             $this->logger->debug(__CLASS__ . '::' . __METHOD__ . ' Open Invoice requires order items', [
                 $order->getData(),
                 $alias->getData(),
-                $fields]
-            );
+                $fields]);
 
             throw new Exception('Open Invoice requires order items');
         }

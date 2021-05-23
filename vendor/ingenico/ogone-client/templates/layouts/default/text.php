@@ -12,5 +12,5 @@
 ?>
 <?php echo $shop_url; ?>
 
-<?php echo $contents; ?>
+<?php echo $contents;
 

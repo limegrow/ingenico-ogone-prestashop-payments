@@ -5,6 +5,5 @@
 /** @var string $shop_name */
 /** @var string $ticket */
 /** @var string $description */
-?>
 
-<?php echo nl2br($description); ?>
+echo nl2br($description);

@@ -4,7 +4,7 @@
         window.onload = function() {
             top.jQuery("body").trigger(
                 "ingenico:inline:failure",
-                ["{$message nofilter}", "{$aliasId}", "{$cardBrand}", "{$iFrameUrl nofilter}"]
+                ["{$message nofilter}", "{$aliasId|escape}", "{$cardBrand|escape}", "{$iFrameUrl nofilter}"]
             );
         };
     </script>

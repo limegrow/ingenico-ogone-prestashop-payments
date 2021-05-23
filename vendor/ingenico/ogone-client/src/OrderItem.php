@@ -74,7 +74,7 @@ class OrderItem extends Data
     /**
      * Mapping: Ingenico's field => OrderItem's field
      */
-    static $map = [
+    private static $map = [
         'ITEMATTRIBUTES' => self::ITEM_ATTRIBUTES,
         'ITEMCATEGORY' => self::ITEM_CATEGORY,
         'ITEMCOMMENTS' => self::ITEM_COMMENTS,
@@ -120,7 +120,7 @@ class OrderItem extends Data
                     case self::ITEM_UNIT_PRICE:
                     case self::ITEM_UNIT_VAT:
                         // Round Price
-                        $result[$key] = round($result[$key], 2);
+                        $result[$key] = sprintf("%.2f", $result[$key]);
                         break;
                     case self::ITEM_VATCODE:
                         // Add Percent Suffix
@@ -151,6 +151,7 @@ class OrderItem extends Data
                         break;
                     case self::ITEM_VAT_INCLUDED:
                         $result[$key] = !in_array((int) $result[$key], [0, 1]) ? 0 : $result[$key];
+                        break;
                     default:
                         // no break
                 }

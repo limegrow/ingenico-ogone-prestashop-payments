@@ -57,10 +57,4 @@ class CarteBancaire extends PaymentMethod implements PaymentMethodInterface
      * @var bool
      */
     protected $is_security_mandatory = true;
-
-    /**
-     * Is support Redirect only
-     * @var bool
-     */
-    protected $is_redirect_only = true;
 }

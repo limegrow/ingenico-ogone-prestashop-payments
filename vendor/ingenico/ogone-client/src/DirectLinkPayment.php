@@ -7,7 +7,8 @@ use Ogone\DirectLink\DirectLinkPaymentResponse;
 use Ogone\DirectLink\Eci;
 use Ogone\DirectLink\PaymentOperation;
 
-trait DirectLinkPayment {
+trait DirectLinkPayment
+{
 
     /**
      * Create Direct Link payment request.
@@ -137,6 +138,3 @@ trait DirectLinkPayment {
         return $request;
     }
 }
-
-
-

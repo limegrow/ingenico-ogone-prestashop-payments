@@ -28,6 +28,7 @@ class ShaOutParameterFilter implements ParameterFilter
         'BRAND',
         'CARDNO',
         'CCCTY',
+        'CH_AUTHENTICATION_INFO',
         'CN',
         'COLLECTOR_BIC',
         'COLLECTOR_IBAN',

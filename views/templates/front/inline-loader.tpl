@@ -1,5 +1,5 @@
 {*
-* 2007-2019 Ingenico
+* 2007-2021 Ingenico
 *
 * NOTICE OF LICENSE
 *
@@ -12,16 +12,16 @@
 * to license@prestashop.com so we can send you a copy immediately.
 *
 *  @author Ingenico <contact@ingenico.com>
-*  @copyright  2007-2019 Ingenico
+*  @copyright  2007-2021 Ingenico
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery{$suffix}.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery{$suffix nofilter}.js"></script>
 <script src="{$module_dir}/views/js/front{$suffix}.js"></script>
-<link rel="stylesheet" href="{$module_dir}/views/css/front{$suffix}.css" type="text/css" media="all">
+<link rel="stylesheet" href="{$module_dir}/views/css/front{$suffix nofilter}.css" type="text/css" media="all">
 
 <div class="ingenico-return">
     <div class="ingenico-loader">
-        <img src="{$module_dir}/views/imgs/loader.svg" alt="{l s='checkout.please_wait' mod='ingenico_epayments'}">
+        <img src="{$module_dir|escape}/views/img/loader.svg" alt="{l s='checkout.please_wait' mod='ingenico_epayments'}">
     </div>
 
     <script>
@@ -41,10 +41,10 @@
                 url: '{$ajax_url nofilter}',
                 data: {
                     method: 'charge_payment',
-                    token: '{$token}',
-                    order_id: '{$order_id}',
-                    alias_id: '{$alias_id}',
-                    card_brand: '{$card_brand}',
+                    token: '{$token|escape}',
+                    order_id: '{$order_id|escape}',
+                    alias_id: '{$alias_id|escape}',
+                    card_brand: '{$card_brand|escape}',
                 },
                 dataType: 'json'
             }).always(function(response) {

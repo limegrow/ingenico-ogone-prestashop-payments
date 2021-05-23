@@ -86,7 +86,13 @@ class MailTemplate
 
             $filename = $info['filename'];
             list($domain, $locale) = explode('.', $filename);
-            $this->translator->addResource('po', $directory . DIRECTORY_SEPARATOR . $info['basename'], $locale, $domain);
+
+            $this->translator->addResource(
+                'po',
+                $directory . DIRECTORY_SEPARATOR . $info['basename'],
+                $locale,
+                $domain
+            );
         }
     }
 
@@ -119,7 +125,12 @@ class MailTemplate
             throw new Exception('Wrong type argument');
         }
 
-        return $this->renderTemplate($includeLayout ? $this->layout : false, $this->template, $type, $this->fields);
+        return $this->renderTemplate(
+            $includeLayout ? $this->layout : false,
+            $this->template,
+            $type,
+            $this->fields
+        );
     }
 
     /**
@@ -167,6 +178,7 @@ class MailTemplate
 
         // Check template in custom directory
         if (!empty($this->templates_directory) && is_dir($this->templates_directory)) {
+            // @phpcs:ignore Generic.Files.LineLength.TooLong
             $templateFile = $this->templates_directory . DIRECTORY_SEPARATOR . $template . DIRECTORY_SEPARATOR . $type . '.php';
             if (file_exists($templateFile)) {
                 return $templateFile;
@@ -199,6 +211,7 @@ class MailTemplate
 
         // Check layout in custom directory
         if (!empty($this->templates_directory) && is_dir($this->templates_directory)) {
+            // @phpcs:ignore Generic.Files.LineLength.TooLong
             $templateFile = $this->templates_directory . DIRECTORY_SEPARATOR . 'layouts' . DIRECTORY_SEPARATOR . $layout . DIRECTORY_SEPARATOR . $type . '.php';
             if (file_exists($templateFile)) {
                 return $templateFile;

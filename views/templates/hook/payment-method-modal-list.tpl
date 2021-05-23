@@ -1,5 +1,5 @@
 {*
-* 2007-2019 Ingenico
+* 2007-2021 Ingenico
 *
 * NOTICE OF LICENSE
 *
@@ -12,7 +12,7 @@
 * to license@prestashop.com so we can send you a copy immediately.
 *
 *  @author Ingenico <contact@ingenico.com>
-*  @copyright  2007-2019 Ingenico
+*  @copyright  2007-2021 Ingenico
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 {if (isset($payment_methods) && $payment_methods)}
@@ -25,12 +25,12 @@
                 {foreach $payment_methods as $key => $method}
                     <li>
                         <label class="label-container">
-                            <input type="checkbox" name="payment_methods[]" value="{$method->getId()}">
+                            <input type="checkbox" name="payment_methods[]" value="{$method->getId()|escape}">
                             <span class="checkmark"></span>
                             {if $method->getId() === 'klarna'}
                                 Klarna (deprecated)
                             {else}
-                                {$method->getName()}
+                                {$method->getName()|escape}
                             {/if}
                         </label>
                     </li>

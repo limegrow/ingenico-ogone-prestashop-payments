@@ -887,6 +887,9 @@ msgstr "Billing state"
 msgid "Billing street number"
 msgstr "Billing street number"
 
+msgid "Billing customer title"
+msgstr "Billing customer title"
+
 msgid "Shipping state"
 msgstr "Shipping state"
 
@@ -934,3 +937,12 @@ msgstr "Pay safely on the next page with Ingenico using your preferred payment m
 
 msgid "%brand% ends with %cardno%, expires on %month%/%year%"
 msgstr "%brand% ends with %cardno%, expires on %month%/%year%"
+
+msgid "Date of Birth"
+msgstr "Date of Birth"
+
+msgid "Credit Cards"
+msgstr "Credit Cards"
+
+msgid "Bank Transfer"
+msgstr "Bank Transfer"

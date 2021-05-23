@@ -51,6 +51,8 @@ use Ogone\ParameterFilter\ShaInParameterFilter;
  * @method $this setPaymentpageTemplateExternalurl($value)
  * @method mixed getPaymentpageTemplateLocalfilename()
  * @method $this setPaymentpageTemplateLocalfilename($value)
+ * @method mixed getPaymentpageListType()
+ * @method $this setPaymentpageListType($value)
  * @method mixed getInstalmentsType()
  * @method $this setInstalmentsType($value)
  * @method mixed getInstalmentsFixedInstalments()
@@ -99,92 +101,61 @@ use Ogone\ParameterFilter\ShaInParameterFilter;
  *
  * @package IngenicoClient
  */
-class Configuration extends Data
+class Configuration extends Data implements ConfigurationInterface
 {
-    /**
-     * Mode
-     */
-    const MODE_PRODUCTION = true;
-    const MODE_TEST = false;
-
-    /**
-     * Hash Algorithm
-     */
-    const HASH_SHA1 = 'sha1';
-    const HASH_SHA256 = 'sha256';
-    const HASH_SHA512 = 'sha512';
-
-    /**
-     * Payment Page Types
-     */
-    const PAYMENT_TYPE_REDIRECT = 'REDIRECT';
-    const PAYMENT_TYPE_INLINE = 'INLINE';
-
-    /**
-     * Payment Page Templates
-     */
-    const PAYMENT_PAGE_TEMPLATE_INGENICO = 'INGENICO';
-    const PAYMENT_PAGE_TEMPLATE_STORE = 'STORE';
-    const PAYMENT_PAGE_TEMPLATE_EXTERNAL = 'EXTERNAL';
-
-    /**
-     * Installments Types
-     */
-    const INSTALMENTS_TYPE_FIXED = 'FIXED';
-    const INSTALMENTS_TYPE_FLEXIBLE = 'FLEXIBLE';
-
     /**
      * Default Settings
      * @var array
      */
     private static $default_settings = [
-        'connection_mode' => self::MODE_TEST,
-        'connection_test_algorithm' => self::HASH_SHA512,
-        'connection_test_pspid' => null,
-        'connection_test_signature' => null,
-        'connection_test_dl_user' => null,
-        'connection_test_dl_password' => null,
-        'connection_test_webhook' => null,
-        'connection_live_algorithm' => self::HASH_SHA512,
-        'connection_live_pspid' => null,
-        'connection_live_signature' => null,
-        'connection_live_dl_user' => null,
-        'connection_live_dl_password' => null,
-        'connection_live_webhook' => null,
-        'settings_orderfreeze_days' => 3,
-        'settings_reminderemail_days' => 2,
-        'fraud_notifications_email' => null,
-        'direct_sale_email' => null,
-        'paymentpage_type' => self::PAYMENT_TYPE_REDIRECT,
-        'paymentpage_template' => self::PAYMENT_PAGE_TEMPLATE_INGENICO,
-        'paymentpage_template_name' => null,
-        'paymentpage_template_externalurl' => null,
-        'paymentpage_template_localfilename' => null,
-        'instalments_type' => self::INSTALMENTS_TYPE_FIXED,
-        'instalments_fixed_instalments' => 3,
-        'instalments_fixed_period' => 30,
-        'instalments_fixed_firstpayment' => 20,
-        'instalments_fixed_minpayment' => 50,
-        'instalments_flex_instalments_min' => 2,
-        'instalments_flex_instalments_max' => 5,
-        'instalments_flex_period_min' => 30,
-        'instalments_flex_period_max' => 90,
-        'instalments_flex_firstpayment_min' => 10,
-        'instalments_flex_firstpayment_max' => 50,
-        'settings_advanced' => false,
-        'settings_tokenisation' => true,
-        'settings_oneclick' => true,
-        'settings_skip3dscvc' => true,
-        'settings_skipsecuritycheck' => true,
-        'secure' => true,
-        'settings_directsales' => true,
-        'settings_orderfreeze' => true,
-        'settings_reminderemail' => true,
-        'fraud_notifications' => true,
-        'direct_sale_email_option' => false,
-        'instalments_enabled' => false,
-        'selected_payment_methods' => [],
-        'generic_country' => null,
+        self::CONF_CONNECTION_MODE => self::MODE_TEST,
+        self::CONF_CONNECTION_TEST_ALGORITHM => self::HASH_SHA512,
+        self::CONF_CONNECTION_TEST_PSPID => null,
+        self::CONF_CONNECTION_TEST_SIGNATURE => null,
+        self::CONF_CONNECTION_TEST_DL_USER => null,
+        self::CONF_CONNECTION_TEST_DL_PASSWORD => null,
+        self::CONF_CONNECTION_TEST_WEBHOOK => null,
+        self::CONF_CONNECTION_LIVE_ALGORITHM => self::HASH_SHA512,
+        self::CONF_CONNECTION_LIVE_PSPID => null,
+        self::CONF_CONNECTION_LIVE_SIGNATURE => null,
+        self::CONF_CONNECTION_LIVE_DL_USER => null,
+        self::CONF_CONNECTION_LIVE_DL_PASSWORD => null,
+        self::CONF_CONNECTION_LIVE_WEBHOOK => null,
+        self::CONF_SETTINGS_ORDERFREEZE_DAYS => 3,
+        self::CONF_SETTINGS_REMINDEREMAIL_DAYS => 2,
+        self::CONF_FRAUD_NOTIFICATIONS_EMAIL => null,
+        self::CONF_DIRECT_SALE_EMAIL => null,
+        self::CONF_PAYMENTPAGE_TYPE => self::PAYMENT_TYPE_REDIRECT,
+        self::CONF_PAYMENTPAGE_TEMPLATE => self::PAYMENT_PAGE_TEMPLATE_INGENICO,
+        self::CONF_PAYMENTPAGE_TEMPLATE_NAME => null,
+        self::CONF_PAYMENTPAGE_TEMPLATE_EXTERNALURL => null,
+        self::CONF_PAYMENTPAGE_TEMPLATE_LOCALFILENAME => null,
+        self::CONF_PAYMENTPAGE_LIST_TYPE => null,
+        self::CONF_INSTALMENTS_TYPE => self::INSTALMENTS_TYPE_FIXED,
+        self::CONF_INSTALMENTS_FIXED_INSTALMENTS => 3,
+        self::CONF_INSTALMENTS_FIXED_PERIOD => 30,
+        self::CONF_INSTALMENTS_FIXED_FIRSTPAYMENT => 20,
+        self::CONF_INSTALMENTS_FIXED_MINPAYMENT => 50,
+        self::CONF_INSTALMENTS_FLEX_INSTALMENTS_MIN => 2,
+        self::CONF_INSTALMENTS_FLEX_INSTALMENTS_MAX => 5,
+        self::CONF_INSTALMENTS_FLEX_PERIOD_MIN => 30,
+        self::CONF_INSTALMENTS_FLEX_PERIOD_MAX => 90,
+        self::CONF_INSTALMENTS_FLEX_FIRSTPAYMENT_MIN => 10,
+        self::CONF_INSTALMENTS_FLEX_FIRSTPAYMENT_MAX => 50,
+        self::CONF_SETTINGS_ADVANCED => false,
+        self::CONF_SETTINGS_TOKENIZATION => true,
+        self::CONF_SETTINGS_ONECLICK => true,
+        self::CONF_SETTINGS_SKIP3DSCVC => true,
+        self::CONF_SETTINGS_SKIPSECURITYCHECK => true,
+        self::CONF_SETTINGS_SECURE => true,
+        self::CONF_SETTINGS_DIRECTSALES => true,
+        self::CONF_SETTINGS_ORDERFREEZE => true,
+        self::CONF_SETTINGS_REMINDEREMAIL => true,
+        self::CONF_FRAUD_NOTIFICATIONS => true,
+        self::CONF_DIRECT_SALE_EMAIL_OPTION => false,
+        self::CONF_INSTALMENTS_ENABLED => false,
+        self::CONF_SELECTED_PAYMENT_METHODS => [],
+        self::CONF_GENERIC_COUNTRY => null,
     ];
 
     /** @var ConnectorInterface */
@@ -217,7 +188,8 @@ class Configuration extends Data
      * @param mixed|null $value
      * @return $this
      */
-    public function setData($key, $value = null) {
+    public function setData($key, $value = null)
+    {
         if (is_string($key)) {
             $key = str_replace('.', '_', strtolower($key));
         }
@@ -466,7 +438,7 @@ class Configuration extends Data
      */
     public function getSettingsOneclick()
     {
-        return (bool) $this->getData('settings_oneclick');
+        return (bool) $this->getData(self::CONF_SETTINGS_ONECLICK);
     }
 
     /**
@@ -485,39 +457,39 @@ class Configuration extends Data
                 return $this->coreLibrary->__('validator.instalments.negative_values');
             }
 
-            if ($fieldKey === 'instalments_fixed_instalments' && $fieldValue > 24) {
+            if ($fieldKey === self::CONF_INSTALMENTS_FIXED_INSTALMENTS && $fieldValue > 24) {
                 // Order can be split up to 24 instalment.
                 return $this->coreLibrary->__('validator.instalments.too_much');
             }
 
-            if ($fieldKey === 'instalments_fixed_period' && $fieldValue > 90) {
+            if ($fieldKey === self::CONF_INSTALMENTS_FIXED_PERIOD && $fieldValue > 90) {
                 // Maximum period between each instalment is 90 days.
                 return $this->coreLibrary->__('validator.instalments.maximum_period');
             }
-            if ($fieldKey === 'instalments_fixed_firstpayment' && ($fieldValue < 1 || $fieldValue > 99)) {
-                if ( $fieldValue < 1 || $fieldValue > 99 ) {
+            if ($fieldKey === self::CONF_INSTALMENTS_FIXED_FIRSTPAYMENT && ($fieldValue < 1 || $fieldValue > 99)) {
+                if ($fieldValue < 1 || $fieldValue > 99) {
                     // First payment must be between 1% - 99%.
                     return $this->coreLibrary->__('validator.instalments.first_payment');
                 }
             }
         }
 
-        if (in_array($fieldKey, ['connection_test_signature', 'connection_live_signature'])) {
-            if (!empty($fieldValue) && strlen($fieldValue) < 40 ) {
+        if (in_array($fieldKey, [self::CONF_CONNECTION_TEST_SIGNATURE, self::CONF_CONNECTION_LIVE_SIGNATURE])) {
+            if (!empty($fieldValue) && strlen($fieldValue) < 40) {
                 return $this->coreLibrary->__('validator.short_signature');
             }
         }
 
         /** Validate template url */
-        if ($fieldKey === 'paymentpage_template_externalurl') {
-            $url = strpos($fieldValue, 'http' ) !== 0 ? "http://{$fieldValue}" : $fieldValue;
+        if ($fieldKey === self::CONF_PAYMENTPAGE_TEMPLATE_EXTERNALURL) {
+            $url = strpos($fieldValue, 'http') !== 0 ? "http://{$fieldValue}" : $fieldValue;
             if (!empty($fieldValue) && !filter_var($url, FILTER_VALIDATE_URL)) {
                 // Template file URL is not valid.
                 return $this->coreLibrary->__('validator.template_url_invalid');
             }
         }
 
-        if ($fieldKey === 'settings_reminderemail_days') {
+        if ($fieldKey === self::CONF_SETTINGS_REMINDEREMAIL_DAYS) {
             if ($fieldValue < 0) {
                 // Reminder negative values are not valid.
                 return $this->coreLibrary->__('validator.settings.reminderemail.negative_values');
@@ -549,7 +521,6 @@ class Configuration extends Data
                 } catch (\Exception $e) {
                     $errors[] = $e->getMessage();
                 }
-
             }
         }
 
@@ -574,8 +545,9 @@ class Configuration extends Data
         // Copy values
         foreach ($testConf->getData() as $fieldKey => $fieldValue) {
             if (in_array($fieldKey, [
-                    'connection_test_pspid', 'connection_test_dl_user',
-                    'connection_test_dl_password', 'connection_test_signature', 'connection_test_algorithm']
+                    self::CONF_CONNECTION_TEST_PSPID, self::CONF_CONNECTION_TEST_DL_USER,
+                    self::CONF_CONNECTION_TEST_DL_PASSWORD, self::CONF_CONNECTION_TEST_SIGNATURE,
+                    self::CONF_CONNECTION_TEST_ALGORITHM]
             )) {
                 $testConf->setData(str_replace('test', 'live', $fieldKey), $fieldValue);
             }
@@ -606,18 +578,16 @@ class Configuration extends Data
 
         // Remove sensitive data
         foreach (['test', 'production'] as $mode) {
-            foreach (
-                [
-                    'connection_test_pspid',
-                    'connection_test_signature',
-                    'connection_test_dl_user',
-                    'connection_test_dl_password',
-                    'connection_live_pspid',
-                    'connection_live_signature',
-                    'connection_live_dl_user',
-                    'connection_live_dl_password',
-                ] as $key)
-            {
+            foreach ([
+                    self::CONF_CONNECTION_TEST_PSPID,
+                    self::CONF_CONNECTION_TEST_SIGNATURE,
+                    self::CONF_CONNECTION_TEST_DL_USER,
+                    self::CONF_CONNECTION_TEST_DL_PASSWORD,
+                    self::CONF_CONNECTION_LIVE_PSPID,
+                    self::CONF_CONNECTION_LIVE_SIGNATURE,
+                    self::CONF_CONNECTION_LIVE_DL_USER,
+                    self::CONF_CONNECTION_LIVE_DL_PASSWORD,
+                ] as $key) {
                 unset($conf[$mode][$key]);
             }
         }
@@ -648,7 +618,7 @@ class Configuration extends Data
         }
 
         // Set active mode
-        $mode = $data['production']['connection_mode'];
+        $mode = $data['production'][self::CONF_CONNECTION_MODE];
         $conf = new Configuration($this->extension, $this->coreLibrary);
         $conf->setData($this->extension->requestSettings($mode));
         $conf->setConnectionMode($mode);

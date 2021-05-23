@@ -11,6 +11,7 @@ abstract class Klarna extends PaymentMethod
      * Common fields
      * @var array
      * @SuppressWarnings("Duplicates")
+     * @see https://epayments-support.ingenico.com/en/payment-methods/alternative-payment-methods/klarna
      */
     protected $common_fields = [
         OrderField::BILLING_COUNTRY => [
@@ -37,11 +38,6 @@ abstract class Klarna extends PaymentMethod
             'required' => true,
             'field_type' => PaymentMethod::TYPE_TEXT,
             'length' => 25
-        ],
-        OrderField::BILLING_STATE => [
-            'required' => false,
-            'field_type' => PaymentMethod::TYPE_TEXT,
-            'length' => 2
         ],
         OrderField::BILLING_POSTCODE => [
             'required' => true,
@@ -84,7 +80,7 @@ abstract class Klarna extends PaymentMethod
             'length' => 2
         ],
         OrderField::SHIPPING_ADDRESS1 => [
-            'required' => true,
+            'required' => false,
             'field_type' => PaymentMethod::TYPE_TEXT,
             //'length' => 35
         ],
@@ -98,11 +94,6 @@ abstract class Klarna extends PaymentMethod
             'field_type' => PaymentMethod::TYPE_TEXT,
             'length' => 25
         ],
-        OrderField::SHIPPING_STATE => [
-            'required' => false,
-            'field_type' => PaymentMethod::TYPE_TEXT,
-            'length' => 2
-        ],
         OrderField::SHIPPING_POSTCODE => [
             'required' => false,
             'field_type' => PaymentMethod::TYPE_TEXT,
@@ -114,7 +105,7 @@ abstract class Klarna extends PaymentMethod
             'length' => 20
         ],
         OrderField::SHIPPING_EMAIL => [
-            'required' => true,
+            'required' => false,
             'field_type' => PaymentMethod::TYPE_TEXT,
             'length' => 50
         ],

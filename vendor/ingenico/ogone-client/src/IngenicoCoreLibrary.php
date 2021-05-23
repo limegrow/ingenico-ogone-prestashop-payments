@@ -2,13 +2,16 @@
 
 namespace IngenicoClient;
 
+use IngenicoClient\PaymentMethod\CarteBancaire;
 use IngenicoClient\PaymentMethod\Afterpay;
 use IngenicoClient\PaymentMethod\Klarna;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\Loader\PoFileLoader;
+use VIISON\AddressSplitter\AddressSplitter;
 
-class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
+class IngenicoCoreLibrary implements
+    IngenicoCoreLibraryInterface,
     SessionInterface,
     OpenInvoiceInterface,
     HostedCheckoutInterface,
@@ -116,7 +119,7 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
     /**
      * Account creation link language mapping
      */
-    static $accountCreationLangCodes = [
+    public static $accountCreationLangCodes = [
         'en' => 1,
         'fr' => 2,
         'nl' => 3,
@@ -129,7 +132,7 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
      * Allowed languages
      * @var array
      */
-    static $allowedLanguages = [
+    public static $allowedLanguages = [
         'en_US' => 'English', 'cs_CZ' => 'Czech', 'de_DE' => 'German',
         'dk_DK' => 'Danish', 'el_GR' => 'Greek', 'es_ES' => 'Spanish',
         'fr_FR' => 'French', 'it_IT' => 'Italian', 'ja_JP' => 'Japanese',
@@ -142,7 +145,7 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
      * Ingenico Error Codes
      * @var array
      */
-    static $errorCodes = [
+    public static $errorCodes = [
         '0020001001' => "Authorization failed, please retry",
         '0020001002' => "Authorization failed, please retry",
         '0020001003' => "Authorization failed, please retry",
@@ -744,7 +747,12 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
 
             $filename = $info['filename'];
             list($domain, $locale) = explode('.', $filename);
-            $this->translator->addResource('po', $directory . DIRECTORY_SEPARATOR . $info['basename'], $locale, $domain);
+            $this->translator->addResource(
+                'po',
+                $directory . DIRECTORY_SEPARATOR . $info['basename'],
+                $locale,
+                $domain
+            );
         }
 
         // Load environment
@@ -989,8 +997,10 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
 
         switch ($returnState) {
             case self::RETURN_STATE_ACCEPT:
-                // When "Skip security check (CVV & 3D Secure)" is enabled then we process saved Alias on the plugin (merchant) side.
-                // If payment gateway requested 3DSecure then we should use common method (Redirect) to pass 3DSecure validation.
+                // When "Skip security check (CVV & 3D Secure)" is enabled then
+                // we process saved Alias on the plugin (merchant) side.
+                // If payment gateway requested 3DSecure then we should use common method (Redirect)
+                // to pass 3DSecure validation.
                 // Workaround for 3DSecure mode and Inline method
                 if ($paymentMode === self::PAYMENT_MODE_INLINE && $this->request->hasComplus()) {
                     $paymentMode = self::PAYMENT_MODE_REDIRECT;
@@ -1007,16 +1017,25 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
                 if ($paymentMode === self::PAYMENT_MODE_REDIRECT) {
                     $this->processReturnRedirect();
                 } else {
-                    // Charge using Alias and final order payment validation. Used for Alias payments and Inline (Flex Checkout).
+                    // Charge using Alias and final order payment validation.
+                    // Uses for Alias payments and Inline (Flex Checkout).
                     $this->processReturnInline();
                 }
                 break;
             case self::RETURN_STATE_CANCEL:
             case self::RETURN_STATE_BACK:
                 // Or customer wants cancel.
+                $this->logger->debug(sprintf(
+                    '%s %s Order #%s triggered to be cancelled by customer.',
+                    __METHOD__,
+                    __LINE__,
+                    $_REQUEST['order_id']
+                ));
+
                 $this->extension->showCancellationTemplate(
                     [
-                        'order_id' => $_REQUEST['order_id']
+                        Connector::PARAM_NAME_ORDER_ID => $_REQUEST['order_id'],
+                        Connector::PARAM_NAME_MESSAGE => $this->__('checkout.payment_cancelled', [], 'messages')
                     ],
                     new Payment([
                         Payment::FIELD_ORDER_ID => $_REQUEST['order_id'],
@@ -1043,9 +1062,9 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
                 if (!$payment->getPayId()) {
                     $this->extension->showPaymentErrorTemplate(
                         [
-                            'order_id' => null,
-                            'pay_id' => null,
-                            'message' => $this->__('checkout.payment_cancelled', [], 'messages')
+                            Connector::PARAM_NAME_ORDER_ID => null,
+                            Connector::PARAM_NAME_PAY_ID => null,
+                            Connector::PARAM_NAME_MESSAGE => $this->__('checkout.payment_cancelled', [], 'messages')
                         ],
                         $payment
                     );
@@ -1054,8 +1073,8 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
                 }
 
                 // Debug log
-                $this->logger->debug(sprintf('%s::%s %s An error occurred. PaymentID: %s. Status: %s. Details: %s %s.',
-                    __CLASS__,
+                $this->logger->debug(sprintf(
+                    '%s %s An error occurred. PaymentID: %s. Status: %s. Details: %s %s.',
                     __METHOD__,
                     __LINE__,
                     $payment->getPayId(),
@@ -1066,9 +1085,9 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
 
                 $this->extension->showPaymentErrorTemplate(
                     [
-                        'order_id' => $payment->getOrderId(),
-                        'pay_id' => $payment->getPayId(),
-                        'message' => $this->__('checkout.error', [
+                        Connector::PARAM_NAME_ORDER_ID => $payment->getOrderId(),
+                        Connector::PARAM_NAME_PAY_ID => $payment->getPayId(),
+                        Connector::PARAM_NAME_MESSAGE => $this->__('checkout.error', [
                             '%payment_id%' => (int) $payment->getPayId(),
                             '%status%' => $payment->getStatus(),
                             '%code%' => $payment->getErrorCode(),
@@ -1117,15 +1136,22 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
 
         // Save Alias
         if ($this->configuration->getSettingsOneclick()) {
-            $this->processAlias($orderId, [
-                'ALIAS' => $paymentResult->getAlias(),
-                'BRAND' => $paymentResult->getBrand(),
-                'CARDNO' => $paymentResult->getCardNo(),
-                'CN' => $paymentResult->getCn(),
-                'BIN' => $paymentResult->getBin(),
-                'PM' => $paymentResult->getPm(),
-                'ED' => $paymentResult->getEd(),
-            ]);
+            $aliasData = [
+                'ALIAS' => $_REQUEST[Payment::FIELD_ALIAS] ?? '',
+                'BRAND' => $_REQUEST[Payment::FIELD_BRAND] ?? '',
+                'CARDNO' => $_REQUEST[Payment::FIELD_CARD_NO] ?? '',
+                'CN' => $_REQUEST[Payment::FIELD_CN] ?? '',
+                'BIN' => $_REQUEST[Payment::FIELD_BIN] ?? '',
+                'PM' => $_REQUEST[Payment::FIELD_PM] ?? '',
+                'ED' => $_REQUEST[Payment::FIELD_ED] ?? '',
+            ];
+
+            // Patch Alias data for Carte Bancaire
+            if ($this->extension->getOrderPaymentMethod($orderId) === CarteBancaire::CODE) {
+                $aliasData['BRAND'] = 'CB';
+            }
+
+            $this->processAlias($orderId, $aliasData);
         }
 
         // Check is Payment Successful
@@ -1154,8 +1180,9 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
             // Show "Order cancelled" page
             $this->extension->showCancellationTemplate(
                 [
-                    'order_id' => $orderId,
-                    'pay_id' => $payId,
+                    Connector::PARAM_NAME_ORDER_ID => $orderId,
+                    Connector::PARAM_NAME_PAY_ID => $payId,
+                    Connector::PARAM_NAME_MESSAGE => $this->__('checkout.payment_cancelled', [], 'messages')
                 ],
                 $paymentResult
             );
@@ -1164,9 +1191,9 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
             // Payment error or declined.
             $this->extension->showPaymentErrorTemplate(
                 [
-                    'order_id' => $orderId,
-                    'pay_id' => $payId,
-                    'message' => $this->__('checkout.error', [
+                    Connector::PARAM_NAME_ORDER_ID => $orderId,
+                    Connector::PARAM_NAME_PAY_ID => $payId,
+                    Connector::PARAM_NAME_MESSAGE => $this->__('checkout.error', [
                         '%payment_id%' => (int) $paymentResult->getPayId(),
                         '%status%' => $paymentResult->getStatus(),
                         '%code%' => $paymentResult->getErrorCode(),
@@ -1204,15 +1231,33 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
 
         // Save Alias
         if ($this->configuration->getSettingsOneclick()) {
-            $this->processAlias($orderId, [
-                'ALIAS' => $_REQUEST[self::ALIAS_ID] ?? '',
-                'BRAND' => $_REQUEST[self::CARD_BRAND] ?? '',
-                'CARDNO' => $_REQUEST[self::CARD_NUMBER] ?? '',
-                'CN' => $_REQUEST[self::CARD_CN] ?? '',
-                'BIN' => $_REQUEST[self::CARD_BIN] ?? '',
-                'PM' => 'CreditCard',
-                'ED' => $_REQUEST[self::CARD_EXPIRY_DATE] ?? '',
-            ]);
+            if (isset($_REQUEST[self::ALIAS_ID]) &&
+                $_REQUEST[self::ALIAS_STOREPERMANENTLY] === 'Y' &&
+                in_array($_REQUEST[self::ALIAS_STATUS], [self::ALIAS_STATUS_OK, self::ALIAS_STATUS_UPDATED])
+            ) {
+                $aliasData = [
+                    'ALIAS' => $_REQUEST[self::ALIAS_ID] ?? '',
+                    'BRAND' => $_REQUEST[self::CARD_BRAND] ?? '',
+                    'CARDNO' => $_REQUEST[self::CARD_NUMBER] ?? '',
+                    'CN' => $_REQUEST[self::CARD_CN] ?? '',
+                    'BIN' => $_REQUEST[self::CARD_BIN] ?? '',
+                    'PM' => 'CreditCard',
+                    'ED' => $_REQUEST[self::CARD_EXPIRY_DATE] ?? '',
+                ];
+
+                // Patch Alias data for Carte Bancaire
+                if ($this->extension->isOrderCreated($orderId)) {
+                    if ($this->extension->getOrderPaymentMethod($orderId) === CarteBancaire::CODE) {
+                        $aliasData['BRAND'] = 'CB';
+                    }
+                } else {
+                    if ($this->extension->getQuotePaymentMethod(null) === CarteBancaire::CODE) {
+                        $aliasData['BRAND'] = 'CB';
+                    }
+                }
+
+                $this->processAlias($orderId, $aliasData);
+            }
         }
 
         // Save Alias parameters to session to future usage in the "finishReturnInline" method
@@ -1320,8 +1365,8 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
             ], 'messages');
 
             $this->logger->debug(
-                sprintf('%s::%s %s Error: An error occurred. PaymentID: %s. Status: %s. Details: %s %s.',
-                    __CLASS__,
+                sprintf(
+                    '%s %s Error: An error occurred. PaymentID: %s. Status: %s. Details: %s %s.',
                     __METHOD__,
                     __LINE__,
                     $paymentResult->getPayId(),
@@ -1418,8 +1463,7 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
         // When "Skip security check (CVV & 3D Secure)" is enabled then process saved Alias on Merchant side.
         if ($this->configuration->getSettingsOneclick() &&
             $this->configuration->getSettingsSkipsecuritycheck() &&
-            $aliasId && !empty($aliasId) && $aliasId !== self::ALIAS_CREATE_NEW)
-        {
+            $aliasId && !empty($aliasId) && $aliasId !== self::ALIAS_CREATE_NEW) {
             $payment_mode = self::PAYMENT_MODE_ALIAS;
         }
 
@@ -1449,7 +1493,7 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
      */
     public function processPaymentRedirect($orderId, $aliasId = null, $forceAliasSave = false)
     {
-         if ($this->configuration->getSettingsOneclick()) {
+        if ($this->configuration->getSettingsOneclick()) {
             // Customer chose the saved alias
             $aliasUsage = $this->__('core.authorization_usage');
             if (!empty($aliasId) && $aliasId !== self::ALIAS_CREATE_NEW) {
@@ -1474,8 +1518,8 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
                     ->setUsage($aliasUsage);
             }
         } else {
-             $alias = new Alias();
-             $alias->setIsPreventStoring(true);
+            $alias = new Alias();
+            $alias->setIsPreventStoring(true);
         }
 
         if ($forceAliasSave && !$alias->getIsShouldStoredPermanently()) {
@@ -1570,7 +1614,8 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
             Connector::PARAM_NAME_ORDER_ID => $orderId,
             Connector::PARAM_NAME_CATEGORIES => $this->getPaymentCategories(),
             Connector::PARAM_NAME_METHODS => $inlineMethods,
-            Connector::PARAM_NAME_CC_URL => $this->getInlineIFrameUrl($orderId,
+            Connector::PARAM_NAME_CC_URL => $this->getInlineIFrameUrl(
+                $orderId,
                 $alias->setPm('CreditCard')->setBrand('')
             )
         ]);
@@ -1646,8 +1691,8 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
             ], 'messages');
 
             $this->logger->debug(
-                sprintf('%s::%s %s Error: An error occurred. PaymentID: %s. Status: %s. Details: %s %s.',
-                    __CLASS__,
+                sprintf(
+                    '%s %s Error: An error occurred. PaymentID: %s. Status: %s. Details: %s %s.',
                     __METHOD__,
                     __LINE__,
                     $paymentResult->getPayId(),
@@ -1676,6 +1721,7 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
                     Connector::PARAM_NAME_ORDER_ID => $orderId,
                     Connector::PARAM_NAME_PAY_ID => $payId,
                     Connector::PARAM_NAME_PAYMENT_STATUS => $paymentResult->getPaymentStatus(),
+                    // @phpcs:ignore Generic.Files.LineLength.TooLong
                     Connector::PARAM_NAME_IS_SHOW_WARNING => $paymentResult->getPaymentStatus() === self::STATUS_AUTHORIZED &&
                         $this->configuration->isTestMode()
                 ],
@@ -1687,6 +1733,7 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
                 [
                     Connector::PARAM_NAME_ORDER_ID => $orderId,
                     Connector::PARAM_NAME_PAY_ID => $payId,
+                    Connector::PARAM_NAME_MESSAGE => $this->__('checkout.payment_cancelled', [], 'messages')
                 ],
                 $paymentResult
             );
@@ -1789,7 +1836,9 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
         $paymentResult = $directLink->createStatusRequest($this->configuration, $orderId, $payId);
         if ($paymentResult) {
             // Set payment status using IngenicoCoreLibarary::getPaymentStatus()
-            $paymentResult->setPaymentStatus($this->getPaymentStatus($paymentResult->getBrand(), $paymentResult->getStatus()));
+            $paymentResult->setPaymentStatus(
+                $this->getPaymentStatus($paymentResult->getBrand(), $paymentResult->getStatus())
+            );
         }
 
         return $paymentResult;
@@ -1806,7 +1855,7 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
      */
     public function webhookListener()
     {
-        /** @see https://payment-services.ingenico.com/int/en/ogone/support/guides/integration%20guides/e-commerce/transaction-feedback */
+        // Implements Transaction feedback
         $this->logger->debug('Incoming POST:', $_POST);
 
         try {
@@ -1815,7 +1864,7 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
                 throw new Exception('WebHook: Validation failed');
             }
 
-            // if ($_POST['NCERROR'] !== '0') { // replaced by Konstantin on 06.07 as Ingenico now returns empty NCERROR if no errors found
+            // Ingenico now returns empty NCERROR if no errors found
             if (!empty($_POST['NCERROR'])) {
                 $details = isset($_POST['NCERRORPLUS']) ? $_POST['NCERRORPLUS'] : '';
                 throw new Exception(sprintf('NCERROR: %s. NCERRORPLUS: %s', $_POST['NCERROR'], $details));
@@ -1847,7 +1896,9 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
                         $this->finaliseOrderPayment($orderId, $paymentResult);
                     } catch (\Exception $e) {
                         // No refund possible
-                        $this->logger->debug(sprintf('%s::%s %s %s', __CLASS__, __METHOD__, __LINE__, $e->getMessage()));
+                        $this->logger->debug(
+                            sprintf('%s %s %s',  __METHOD__, __LINE__, $e->getMessage())
+                        );
                     }
                     break;
 
@@ -1856,14 +1907,16 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
                         // Save payment results and update order status
                         $this->finaliseOrderPayment($orderId, $paymentResult);
                     } catch (\Exception $e) {
-                        $this->logger->debug(sprintf('%s::%s %s %s', __CLASS__, __METHOD__, __LINE__, $e->getMessage()));
+                        $this->logger->debug(
+                            sprintf('%s %s %s', __METHOD__, __LINE__, $e->getMessage())
+                        );
                     }
 
                     // Process Alias if payment is successful
                     if ($this->configuration->getSettingsOneclick() &&
                         $paymentResult->isPaymentSuccessful()
                     ) {
-                        $this->processAlias($orderId, [
+                        $aliasData = [
                             'ALIAS' => $paymentResult->getAlias(),
                             'BRAND' => $paymentResult->getBrand(),
                             'CARDNO' => $paymentResult->getCardNo(),
@@ -1871,7 +1924,14 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
                             'BIN' => $paymentResult->getBin(),
                             'PM' => $paymentResult->getPm(),
                             'ED' => $paymentResult->getEd(),
-                        ]);
+                        ];
+
+                        // Patch Alias data for Carte Bancaire
+                        if ($this->extension->getOrderPaymentMethod($orderId) === CarteBancaire::CODE) {
+                            $aliasData['BRAND'] = 'CB';
+                        }
+
+                        $this->processAlias($orderId, $aliasData);
                     }
 
                     // Notify that order status changed from "cancelled" to "paid" order
@@ -1883,7 +1943,11 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
             }
 
             http_response_code(200);
-            $this->logger->debug(sprintf('WebHook: Success. OrderID: %s. Status: %s', $orderId, $paymentResult->getStatus()));
+            $this->logger->debug(sprintf(
+                'WebHook: Success. OrderID: %s. Status: %s',
+                $orderId,
+                $paymentResult->getStatus()
+            ));
         } catch (\Exception $e) {
             http_response_code(400);
             $this->logger->debug(sprintf('WebHook: Error: %s', $e->getMessage()));
@@ -1904,25 +1968,50 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
         }
 
         $info = $this->extension->requestOrderInfo($orderId);
+        if (!$info) {
+            return false;
+        }
 
         // Word-wrap of street address
         if (mb_strlen($info[OrderField::BILLING_ADDRESS1]) > 35) {
             $billingAddress1 = $info[OrderField::BILLING_ADDRESS1];
             $info[OrderField::BILLING_ADDRESS1] = mb_substr($billingAddress1, 0, 35, 'UTF-8');
-            $info[OrderField::BILLING_ADDRESS2] = trim(
+            $info[OrderField::BILLING_ADDRESS2] = mb_substr(trim(
                 mb_substr($billingAddress1, 35, null, 'UTF-8') . ' ' . $info[OrderField::BILLING_ADDRESS2]
-            );
+            ), 0, 35, 'UTF-8');
         }
 
         if (mb_strlen($info[OrderField::SHIPPING_ADDRESS1]) > 35) {
             $shippingAddress1 = $info[OrderField::SHIPPING_ADDRESS1];
             $info[OrderField::SHIPPING_ADDRESS1] = mb_substr($shippingAddress1, 0, 35, 'UTF-8');
-            $info[OrderField::SHIPPING_ADDRESS2] = trim(
+            $info[OrderField::SHIPPING_ADDRESS2] = mb_substr(trim(
                 mb_substr($shippingAddress1, 35, null, 'UTF-8') . ' ' . $info[OrderField::SHIPPING_ADDRESS2]
-            );
+            ), 0, 35, 'UTF-8');
         }
 
-        return $info ? new Order($info) : false;
+        // Substitute steet number
+        if (empty($info[OrderField::BILLING_STREET_NUMBER]) && !empty($info[OrderField::BILLING_ADDRESS1])) {
+            // @todo Split address automatically
+            try {
+                //$result = AddressSplitter::splitAddress($info[OrderField::BILLING_ADDRESS1]);
+                //$info[OrderField::BILLING_STREET_NUMBER] = $result['houseNumber'];
+            } catch (\Exception $e) {
+                // Ignore it
+            }
+        }
+
+        // Substitute steet number
+        if (empty($info[OrderField::SHIPPING_STREET_NUMBER]) && !empty($info[OrderField::SHIPPING_ADDRESS1])) {
+            // @todo Split address automatically
+            try {
+                //$result = AddressSplitter::splitAddress($info[OrderField::SHIPPING_ADDRESS1]);
+                //$info[OrderField::SHIPPING_STREET_NUMBER] = $result['houseNumber'];
+            } catch (\Exception $e) {
+                // Ignore it
+            }
+        }
+
+        return new Order($info);
     }
 
     /**
@@ -1936,25 +2025,50 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
     private function getOrderBeforePlaceOrder($reservedOrderId)
     {
         $info = $this->extension->requestOrderInfoBeforePlaceOrder($reservedOrderId);
+        if (!$info) {
+            return false;
+        }
 
         // Word-wrap of street address
         if (mb_strlen($info[OrderField::BILLING_ADDRESS1]) > 35) {
             $billingAddress1 = $info[OrderField::BILLING_ADDRESS1];
             $info[OrderField::BILLING_ADDRESS1] = mb_substr($billingAddress1, 0, 35, 'UTF-8');
-            $info[OrderField::BILLING_ADDRESS2] = trim(
+            $info[OrderField::BILLING_ADDRESS2] = mb_substr(trim(
                 mb_substr($billingAddress1, 35, null, 'UTF-8') . ' ' . $info[OrderField::BILLING_ADDRESS2]
-            );
+            ), 0, 35, 'UTF-8');
         }
 
         if (mb_strlen($info[OrderField::SHIPPING_ADDRESS1]) > 35) {
             $shippingAddress1 = $info[OrderField::SHIPPING_ADDRESS1];
             $info[OrderField::SHIPPING_ADDRESS1] = mb_substr($shippingAddress1, 0, 35, 'UTF-8');
-            $info[OrderField::SHIPPING_ADDRESS2] = trim(
+            $info[OrderField::SHIPPING_ADDRESS2] = mb_substr(trim(
                 mb_substr($shippingAddress1, 35, null, 'UTF-8') . ' ' . $info[OrderField::SHIPPING_ADDRESS2]
-            );
+            ), 0, 35, 'UTF-8');
         }
 
-        return $info ? new Order($info) : false;
+        // Substitute steet number
+        if (empty($info[OrderField::BILLING_STREET_NUMBER]) && !empty($info[OrderField::BILLING_ADDRESS1])) {
+            // @todo Split address automatically
+            try {
+                //$result = AddressSplitter::splitAddress($info[OrderField::BILLING_ADDRESS1]);
+                //$info[OrderField::BILLING_STREET_NUMBER] = $result['houseNumber'];
+            } catch (\Exception $e) {
+                // Ignore it
+            }
+        }
+
+        // Substitute steet number
+        if (empty($info[OrderField::SHIPPING_STREET_NUMBER]) && !empty($info[OrderField::SHIPPING_ADDRESS1])) {
+            // @todo Split address automatically
+            try {
+                //$result = AddressSplitter::splitAddress($info[OrderField::SHIPPING_ADDRESS1]);
+                //$info[OrderField::SHIPPING_STREET_NUMBER] = $result['houseNumber'];
+            } catch (\Exception $e) {
+                // Ignore it
+            }
+        }
+
+        return new Order($info);
     }
 
     /**
@@ -2231,7 +2345,14 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
                 null,
                 null,
                 null,
-                $this->__('onboarding_request.subject', ['%platform%' => $eCommercePlatform, '%country%' => $countryCode], 'email', $locale),
+                $this->__('onboarding_request.subject',
+                    [
+                        '%platform%' => $eCommercePlatform,
+                        '%country%' => $countryCode
+                    ],
+                    'email',
+                    $locale
+                ),
                 [
                     Connector::PARAM_NAME_EPLATFORM => $eCommercePlatform,
                     Connector::PARAM_NAME_COMPANY => $companyName,
@@ -2329,20 +2450,6 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
     {
         $paymentMethod = PaymentMethod::getPaymentMethodByBrand($brand, $this);
         if ($paymentMethod) {
-            //if (!$this->configuration->getSettingsDirectsales()) {
-            //    if (in_array($statusCode, $paymentMethod->getAuthModeSuccessCode())) {
-            //        return self::STATUS_AUTHORIZED;
-            //    } elseif (in_array($statusCode, $paymentMethod->getDirectSalesSuccessCode())) {
-            //        throw new Exception('Impossible to handle SAL transaction when Direct Sales disabled by settings.');
-            //    }
-            //} else {
-            //    if (in_array($statusCode, $paymentMethod->getDirectSalesSuccessCode())) {
-            //        return self::STATUS_CAPTURED;
-            //    } elseif (in_array($statusCode, $paymentMethod->getAuthModeSuccessCode())) {
-            //        throw new Exception('Impossible to handle RES transaction when Direct Sales enabled by settings.');
-            //    }
-            //}
-
             $status = self::getStatusByCode($statusCode);
 
             // Twint doesn't support the Two phase flow. So if status is "authorized" then assume "captured"
@@ -2357,13 +2464,6 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
             if (in_array($statusCode, $paymentMethod->getDirectSalesSuccessCode())) {
                 return self::STATUS_CAPTURED;
             }
-
-            // Payment status is refunded, cancelled?
-            //if (in_array($status, [self::STATUS_AUTHORIZED, self::STATUS_CAPTURED])) {
-                // Success transaction indicates getAuthModeSuccessCode() and getDirectSalesSuccessCode();
-                // So we're return error status for safe
-                //return self::STATUS_ERROR;
-            //}
 
             return $status;
         }
@@ -2386,8 +2486,15 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
 
         // Payment result must have status
         if (!$paymentResult->getStatus()) {
-            $this->logger->debug(__CLASS__ . '::' . __METHOD__ . ' No status field.', $paymentResult->toArray());
-            throw new Exception('An error occurred. Please try to place the order again.');
+            // There's can be problems if wrong credentials of DirectLink user.
+            $this->logger->debug(__METHOD__ . ' No status field.', $paymentResult->toArray());
+            $message = 'An error occurred. Please try to place the order again.';
+            $error = $paymentResult->getNcErrorPlus();
+            if (empty($error)) {
+                $message .= ' (' . $error . ')';
+            }
+
+            throw new Exception($message);
         }
 
         // Get Payment Status depend on Brand and Status Number
@@ -2436,10 +2543,10 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
                 ], 'messages');
 
                 $paymentResult->setMessage($message);
-                $this->logger->debug(__CLASS__ . '::' . __METHOD__ . ' Error: ' . $message, $paymentResult->toArray());
+                $this->logger->debug(__METHOD__ . ' Error: ' . $message, $paymentResult->toArray());
                 break;
             case self::STATUS_UNKNOWN:
-                $this->logger->debug(__CLASS__ . '::' . __METHOD__ . ' Unknown status', $paymentResult->toArray());
+                $this->logger->debug(__METHOD__ . ' Unknown status', $paymentResult->toArray());
                 break;
         }
 
@@ -2539,19 +2646,12 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
             $refundAmount = $order->getAmount();
         }
 
-        $this->logger->debug(__CLASS__ . '::' . __METHOD__ . ' $refundAmount before = '. $refundAmount);
         $refundAmount = (float)bcdiv($refundAmount, 1, 2);
-        $this->logger->debug(__CLASS__ . '::' . __METHOD__ . ' $refundAmount after = '. $refundAmount);
-        $this->logger->debug(__CLASS__ . '::' . __METHOD__ . ' $order->getAvailableAmountForRefund() = '. $order->getAvailableAmountForRefund());
-
         if ($refundAmount > $order->getAvailableAmountForRefund()) {
-            $this->logger->debug(__CLASS__ . '::' . __METHOD__ . ' false ');
             return false;
         }
 
-        $statusCode = $this->getPaymentInfo($orderId, $payId)->getStatus();
-        $this->logger->debug(__CLASS__ . '::' . __METHOD__ . ' $statusCode = '.$statusCode);
-        $this->logger->debug(__CLASS__ . '::' . __METHOD__ . ' $this->getStatusByCode($statusCode) = '.$this->getStatusByCode($statusCode));
+        //$statusCode = $this->getPaymentInfo($orderId, $payId)->getStatus();
         //return self::STATUS_CAPTURED === $this->getStatusByCode($statusCode);
         return true;
     }
@@ -2708,40 +2808,17 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
      */
     private function processAlias($orderId, array $data)
     {
-        $order = $this->extension->isOrderCreated($orderId) ? $this->getOrder($orderId) : $this->getOrderBeforePlaceOrder($orderId);
-        $mode = $this->configuration->getPaymentpageType();
-        switch ($mode) {
-            case self::PAYMENT_MODE_REDIRECT:
-                if (!empty($data['ALIAS'])) {
-                    // Build Alias instance and save
-                    $alias = new Alias($data);
-                    $alias->setCustomerId($order->getCustomerId());
-                    $this->saveAlias($alias);
-                }
-                break;
-            case self::PAYMENT_MODE_INLINE:
-                if (isset($_REQUEST[self::ALIAS_ID]) &&
-                    $_REQUEST[self::ALIAS_STOREPERMANENTLY] === 'Y' &&
-                    in_array($_REQUEST[self::ALIAS_STATUS], [self::ALIAS_STATUS_OK, self::ALIAS_STATUS_UPDATED])
-                ) {
-                    // Build Alias instance and save
-                    $alias = new Alias([
-                        'ALIAS' => $_REQUEST[self::ALIAS_ID] ?? '',
-                        'BRAND' => $_REQUEST[self::CARD_BRAND] ?? '',
-                        'CARDNO' => $_REQUEST[self::CARD_NUMBER] ?? '',
-                        'CN' => $_REQUEST[self::CARD_CN] ?? '',
-                        'BIN' => $_REQUEST[self::CARD_BIN] ?? '',
-                        'PM' => 'CreditCard',
-                        'ED' => $_REQUEST[self::CARD_EXPIRY_DATE] ?? '',
-                    ]);
-
-                    $alias->setCustomerId($order->getCustomerId());
-                    $this->saveAlias($alias);
-                }
-                break;
-            default:
-                throw new Exception('Unknown payment type.');
+        if (empty($data['ALIAS'])) {
+            return;
         }
+
+        $order = $this->extension->isOrderCreated($orderId) ?
+            $this->getOrder($orderId) : $this->getOrderBeforePlaceOrder($orderId);
+
+        // Build Alias instance and save
+        $alias = new Alias($data);
+        $alias->setCustomerId($order->getCustomerId());
+        $this->saveAlias($alias);
     }
 
     /**
@@ -2751,7 +2828,11 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
      * @param string       $from
      * @param string       $fromName
      * @param string       $subject
-     * @param array        $attachedFiles Array like [['name' => 'attached.txt', 'mime' => 'plain/text', 'content' => 'Body']]
+     * @param array $attachedFiles Array like [[
+     *                             'name' => 'attached.txt',
+     *                             'mime' => 'plain/text',
+     *                             'content' => 'Body'
+     *                             ]]
      *
      * @return bool
      *
@@ -3193,7 +3274,8 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
     public function saveAlias(Alias $alias)
     {
         // Don't save aliases for some brands
-        if (in_array($alias->getBrand(),
+        if (in_array(
+            $alias->getBrand(),
             [
                 'PostFinance Card',
                 'Direct Debits NL',
@@ -3251,7 +3333,13 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
                     try {
                         $this->extension->sendReminderNotificationEmail($orderId);
                     } catch (\Exception $e) {
-                        $this->logger->critical('sendReminderNotificationEmail failure', [$orderId, $e->getMessage(), $e->getTraceAsString()]);
+                        $this->logger->critical('sendReminderNotificationEmail failure',
+                            [
+                                $orderId,
+                                $e->getMessage(),
+                                $e->getTraceAsString()
+                            ]
+                        );
                     }
 
                     $this->extension->setReminderSent($orderId);
@@ -3285,7 +3373,8 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
 
                 // Get cancelled orders in latest 2 days
                 if (self::STATUS_CANCELLED === $order->getStatus() &&
-                    ((strtotime($order->getCreatedAt()) >= time()) && (strtotime($order->getCreatedAt()) <= strtotime("-{$days} days")))
+                    ((strtotime($order->getCreatedAt()) >= time()) &&
+                     (strtotime($order->getCreatedAt()) <= strtotime(sprintf('-%s days', $days))))
                 ) {
                     if (!$this->extension->isCartPaid($orderId)) {
                         $this->extension->enqueueReminder($orderId);
@@ -3294,5 +3383,4 @@ class IngenicoCoreLibrary implements IngenicoCoreLibraryInterface,
             }
         }
     }
-
 }

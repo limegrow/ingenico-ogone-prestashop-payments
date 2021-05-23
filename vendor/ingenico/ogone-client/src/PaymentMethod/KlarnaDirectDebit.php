@@ -30,7 +30,7 @@ class KlarnaDirectDebit extends KlarnaAbstract
      * Category
      * @var string
      */
-    protected $category = 'open_invoice';
+    protected $category = 'klarna';
 
     /**
      * Payment Method

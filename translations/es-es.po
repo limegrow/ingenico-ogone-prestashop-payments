@@ -879,7 +879,7 @@ msgid "modal.openinvoice.proceed"
 msgstr "Continuar"
 
 msgid "Billing address"
-msgstr "Billing address"
+msgstr "Dirección de Envio"
 
 msgid "Billing state"
 msgstr "Provincia de facturación"
@@ -887,11 +887,14 @@ msgstr "Provincia de facturación"
 msgid "Billing street number"
 msgstr "Número de domicilio de facturación"
 
+msgid "Billing customer title"
+msgstr "Título del cliente de facturación"
+
 msgid "Shipping state"
 msgstr "Provincia de envío"
 
 msgid "Shipping address"
-msgstr "Shipping address"
+msgstr "Dirección de Envío"
 
 msgid "Shipping street number"
 msgstr "Número de domicilio de envío"
@@ -935,3 +938,11 @@ msgstr "Pague de forma segura en la página siguiente con Ingenico utilizando su
 msgid "%brand% ends with %cardno%, expires on %month%/%year%"
 msgstr "%brand% termina en %cardno%, expira el %month%/%year%"
 
+msgid "Date of Birth"
+msgstr "Fecha de nacimiento"
+
+msgid "Credit Cards"
+msgstr "Tarjetas de crédito"
+
+msgid "Bank Transfer"
+msgstr "Transferencia Bancaria"

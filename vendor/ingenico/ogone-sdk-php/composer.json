@@ -1,7 +1,7 @@
 {
     "name": "ingenico/ogone-sdk-php",
     "description": "Ingenico SDK for PHP",
-    "version": "2.0.2",
+    "version": "3.1.0",
     "license": [
         "OSL"
     ],
@@ -30,6 +30,7 @@
         "ext-libxml": "*",
         "ext-simplexml": "*",
         "ext-intl": "*",
+        "ext-mbstring": "*",
         "monolog/monolog": "*"
     },
     "require-dev" : {

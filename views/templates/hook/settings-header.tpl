@@ -1,5 +1,5 @@
 {*
-* 2007-2019 Ingenico
+* 2007-2021 Ingenico
 *
 * NOTICE OF LICENSE
 *
@@ -12,17 +12,17 @@
 * to license@prestashop.com so we can send you a copy immediately.
 *
 *  @author Ingenico <contact@ingenico.com>
-*  @copyright  2007-2019 Ingenico
+*  @copyright  2007-2021 Ingenico
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 <script>
-    ingenico_ajax_url = '{$ingenico_ajax_url}';
-    installments_amount_min = "{$instalments_flex_instalments_min}";
-    installments_amount_max = "{$instalments_flex_instalments_max}";
-    installments_period_min = "{$instalments_flex_period_min}";
-    installments_period_max = "{$instalments_flex_period_max}";
-    installments_first_min = "{$instalments_flex_firstpayment_min}";
-    installments_first_max = "{$instalments_flex_firstpayment_max}";
+    ingenico_ajax_url = '{$ingenico_ajax_url nofilter}';
+    installments_amount_min = "{$instalments_flex_instalments_min|escape}";
+    installments_amount_max = "{$instalments_flex_instalments_max|escape}";
+    installments_period_min = "{$instalments_flex_period_min|escape}";
+    installments_period_max = "{$instalments_flex_period_max|escape}";
+    installments_first_min = "{$instalments_flex_firstpayment_min|escape}";
+    installments_first_max = "{$instalments_flex_firstpayment_max|escape}";
 
     window.addEventListener("DOMContentLoaded", function () {
         // Startup page
@@ -40,8 +40,8 @@
 <div class="panel ingenico-header  {if $installed}installed {else}install {/if}{if isset($connection_mode) && $connection_mode}live{else}test{/if}">
     <div class="row">
         <div class="col-md-2">
-            <a target="_blank" href="{$logo_url}">
-                <img src="{$path|escape:'htmlall':'UTF-8'}views/imgs/logo.png"/>
+            <a target="_blank" href="{$logo_url|escape}">
+                <img src="{$path|escape:'htmlall':'UTF-8'}views/img/logo.png"/>
             </a>
         </div>
         <div class="page-bar toolbarBox">

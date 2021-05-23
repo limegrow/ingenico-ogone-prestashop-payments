@@ -1,5 +1,5 @@
 {*
-* 2007-2019 Ingenico
+* 2007-2021 Ingenico
 *
 * NOTICE OF LICENSE
 *
@@ -12,14 +12,14 @@
 * to license@prestashop.com so we can send you a copy immediately.
 *
 *  @author Ingenico <contact@ingenico.com>
-*  @copyright  2007-2019 Ingenico
+*  @copyright  2007-2021 Ingenico
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 <div class="form-horizontal">
     <div class="panel ingenico-settings {if isset($installation) && $installation}installed {else}install {/if}{if isset($connection_mode) && $connection_mode}live{else}test{/if}" id="configuration_fieldset_settings">
         {include file="$template_dir/hook/migration.tpl"}
         {include file="$template_dir/hook/create-account.tpl"}
-        <form action="{$action}" id="configuration_form" method="post" enctype="multipart/form-data"  class="form-wrapper settings-form">
+        <form action="{$action|escape}" id="configuration_form" method="post" enctype="multipart/form-data"  class="form-wrapper settings-form">
             <ul class="nav nav-tabs">
                 <li class="active">
                     <a href="#connection" data-toggle="tab">{l s='tab.connection' mod='ingenico_epayments'}</a>
@@ -55,7 +55,7 @@
                 <input type="hidden" name="connection_mode" value="{if isset($connection_mode) && $connection_mode}on{else}off{/if}">
             </div>
             <div class="panel-footer">
-                <button type="submit" class="save-settings" name="submit{$module_name}">{l s='button.save' mod='ingenico_epayments'}</button>
+                <button type="submit" class="save-settings" name="submit{$module_name|escape}">{l s='button.save' mod='ingenico_epayments'}</button>
             </div>
         </form>
         {include file="$template_dir/admin/modals/credentials-live-validation-modal.tpl"}

@@ -1,5 +1,5 @@
 {*
-* 2007-2019 Ingenico
+* 2007-2021 Ingenico
 *
 * NOTICE OF LICENSE
 *
@@ -12,7 +12,7 @@
 * to license@prestashop.com so we can send you a copy immediately.
 *
 *  @author Ingenico <contact@ingenico.com>
-*  @copyright  2007-2019 Ingenico
+*  @copyright  2007-2021 Ingenico
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 <div id="settings" class="tab-pane">
@@ -95,7 +95,7 @@
              {if !$settings_directsales && $direct_sale_email_option}style="display: block" {else}style="display: none"{/if}>
             <input class="form-control" type="email" size="5" name="direct_sale_email"
                    placeholder="{l s='form.settings.email' mod='ingenico_epayments'}"
-                   value="{$direct_sale_email}">
+                   value="{$direct_sale_email|escape}">
         </div>
 
         <h3 class="col-lg-12">
@@ -118,7 +118,7 @@
              {if $notification_order_paid}style="display: block" {else}style="display: none"{/if}>
             <input class="form-control" type="email" size="5" name="notification_order_paid_email"
                    placeholder="{l s='form.settings.email' mod='ingenico_epayments'}"
-                   value="{$notification_order_paid_email}">
+                   value="{$notification_order_paid_email|escape}">
         </div>
 
         <div style="clear: both">&nbsp;</div>
@@ -137,7 +137,7 @@
              {if $notification_refund_failed}style="display: block" {else}style="display: none"{/if}>
             <input class="form-control" type="email" size="5" name="notification_refund_failed_email"
                    placeholder="{l s='form.settings.email' mod='ingenico_epayments'}"
-                   value="{$notification_refund_failed_email}">
+                   value="{$notification_refund_failed_email|escape}">
         </div>
 
 
@@ -162,7 +162,7 @@
             <div class="form-group">
                 <div class="col-lg-12">
                     <input class="form-control" type="number" size="5" name="settings_orderfreeze_days"
-                           value="{$settings_orderfreeze_days}">
+                           value="{$settings_orderfreeze_days|escape}">
                     <span class="suffix">days</span>
                 </div>
             </div>
@@ -188,7 +188,7 @@
         <div class="form-group">
             <div class="col-lg-12">
                 <input class="form-control" type="number" size="5" name="settings_reminderemail_days"
-                       value="{$settings_reminderemail_days}">
+                       value="{$settings_reminderemail_days|escape}">
                 <span class="suffix">{l s='form.settings.label.delay_in_days' mod='ingenico_epayments'}</span>
             </div>
         </div>
@@ -208,7 +208,7 @@
         <div class="form-group fraud_notifications_email col-lg-12"
              {if !$fraud_notifications}style="display: none"{/if}>
             <input class="form-control" type="email" size="5" name="fraud_notifications_email"
-                   value="{$fraud_notifications_email}">
+                   value="{$fraud_notifications_email|escape}">
         </div>
     </div>
     *}

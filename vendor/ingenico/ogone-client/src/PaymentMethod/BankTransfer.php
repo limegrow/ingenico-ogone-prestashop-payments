@@ -16,7 +16,7 @@ class BankTransfer extends PaymentMethod implements PaymentMethodInterface
      * Name
      * @var string
      */
-    protected $name = 'Bank transfer';
+    protected $name = 'Bank Transfer';
 
     /**
      * Logo

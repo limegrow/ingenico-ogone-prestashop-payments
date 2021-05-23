@@ -879,7 +879,7 @@ msgid "modal.openinvoice.proceed"
 msgstr "Vorgehen"
 
 msgid "Billing address"
-msgstr "Billing address"
+msgstr "Rechnungsadresse"
 
 msgid "Billing state"
 msgstr "Land der Rechnungsadresse"
@@ -887,11 +887,14 @@ msgstr "Land der Rechnungsadresse"
 msgid "Billing street number"
 msgstr "Hausnummer der Rechnungsadresse"
 
+msgid "Billing customer title"
+msgstr "Abrechnung des Kundentitels"
+
 msgid "Shipping state"
 msgstr "Land der Lieferadresse"
 
 msgid "Shipping address"
-msgstr "Shipping address"
+msgstr "Lieferanschrift"
 
 msgid "Shipping street number"
 msgstr "Hausnummer der Lieferadresse"
@@ -934,3 +937,12 @@ msgstr "Bezahlen Sie sicher auf der nächsten Seite mit Ingenico mit Ihrer bevor
 
 msgid "%brand% ends with %cardno%, expires on %month%/%year%"
 msgstr "Das %brand% endet mit %cardno% und läuft am %month%/%year% ab"
+
+msgid "Date of Birth"
+msgstr "Geburtsdatum"
+
+msgid "Credit Cards"
+msgstr "Kreditkarten"
+
+msgid "Bank Transfer"
+msgstr "Banküberweisung"

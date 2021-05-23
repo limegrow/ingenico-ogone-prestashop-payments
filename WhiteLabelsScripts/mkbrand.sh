@@ -208,14 +208,14 @@ find $MODULE_DIR/translations/ -iname *.po -type f|while read fname; do
 done
 
 # Replace logo
-cp -f "$SOURCE_DIR/WhiteLabelsScripts/resources/$BRAND_ID/logo.png" $MODULE_DIR/views/imgs/logo.png
+cp -f "$SOURCE_DIR/WhiteLabelsScripts/resources/$BRAND_ID/logo.png" $MODULE_DIR/views/img/logo.png
 
 # Replace icons
 cp -f "$SOURCE_DIR/WhiteLabelsScripts/resources/$BRAND_ID/icon.png" $MODULE_DIR/logo.png
 convert $MODULE_DIR/logo.png $MODULE_DIR/logo.gif
 
 # Replace images
-cp -f "$SOURCE_DIR/WhiteLabelsScripts/resources/$BRAND_ID/inline_off.png" $MODULE_DIR/views/imgs/inline_off.png
+cp -f "$SOURCE_DIR/WhiteLabelsScripts/resources/$BRAND_ID/inline_off.png" $MODULE_DIR/views/img/inline_off.png
 
 # Replace colors
 sed -i -e "s/#306ba8/$COLOR_MEDIUM_BLUE/g" $MODULE_DIR/views/css/backoffice.scss

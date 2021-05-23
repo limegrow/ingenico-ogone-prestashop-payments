@@ -1,4 +1,5 @@
 <?php
+/** @phpcs:ignore Generic.Files.LineLength.TooLong */
 /** @var \IngenicoClient\MailTemplate $view */
 /** @var string $subjects */
 /** @var string $shop_name */
@@ -7,6 +8,7 @@
 /** @var string $customer_name */
 /** @var array  $products */
 /** @var string $complete_payment_link */
+/** @var $order_total */
 ?>
 <?php echo $view->__('reminder.dear', ['%name%' => '<span style="color: #306ba8">' . $customer_name . '</span>'], 'email'); ?>,<br/>
 <?php echo $view->__('reminder.text1', ['%shop_name%' => '<br/><a href="' . $shop_url . '" style="text-decoration: none; color: #306ba8">' . $shop_name . '</a>'], 'email'); ?><br />
@@ -24,7 +26,7 @@
     </tr>
     </thead>
     <tbody>
-    <?php foreach ($products as $product): ?>
+    <?php foreach ($products as $product) : ?>
         <tr>
             <td style="padding: 6px 10px; line-height: 75px" width="90%">
                 <img style="float: left; margin-right: 10px" height="75px" src="<?php echo $product['image']; ?>" alt="<?php echo $shop_name; ?>"/>
@@ -40,7 +42,7 @@
             <?php echo $view->__('reminder.total', [], 'email'); ?>:
         </td>
         <td style="padding: 6px 10px; font-weight: 600; color: #000; text-align: right"width="10%;">
-            <?php echo $order_total?>
+            <?php echo $order_total; ?>
         </td>
     </tr>
     </tbody>

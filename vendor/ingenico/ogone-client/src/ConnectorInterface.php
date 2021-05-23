@@ -51,7 +51,8 @@ interface ConnectorInterface
     public function requestCustomerId();
 
     /**
-     * Returns callback URLs where Ingenico must call after the payment processing. Depends on the context of the callback.
+     * Returns callback URLs where Ingenico must call after the payment processing.
+     * Depends on the context of the callback.
      * Following cases are required:
      *  CONTROLLER_TYPE_PAYMENT
      *  CONTROLLER_TYPE_SUCCESS
@@ -60,6 +61,7 @@ interface ConnectorInterface
      *
      * @param $type
      * @param array $params
+     *
      * @return string
      */
     public function buildPlatformUrl($type, array $params = []);
@@ -67,7 +69,8 @@ interface ConnectorInterface
     /**
      * This method is a generic callback gate.
      * Depending on the URI it redirects to the corresponding action which is done already on the CL level.
-     * CL takes responsibility for the data processing and initiates rendering of the matching GUI (template, page etc.).
+     * CL takes responsibility for the data processing and initiates rendering of the matching GUI
+     * (template, page etc.).
      *
      * @return void
      */
@@ -75,7 +78,8 @@ interface ConnectorInterface
 
     /**
      * Executed on the moment when a buyer submits checkout form with an intention to start the payment process.
-     * Depending on the payment mode (Inline vs. Redirect) CL will initiate the right processes and render the corresponding GUI.
+     * Depending on the payment mode (Inline vs. Redirect) CL will initiate the right processes and render
+     * the corresponding GUI.
      *
      * @return void
      */
@@ -93,10 +97,11 @@ interface ConnectorInterface
 
     /**
      * Check if Shopping Cart has orders that were paid (via other payment integrations, i.e. PayPal module)
-     * It's to cover the case where payment was initiated through Ingenico but at the end, user went back and paid by other
-     * payment provider. In this case we know not to send order reminders etc.
+     * It's to cover the case where payment was initiated through Ingenico but at the end,
+     * user went back and paid by other payment provider. In this case we know not to send order reminders etc.
      *
      * @param $orderId
+     *
      * @return bool
      */
     public function isCartPaid($orderId);
@@ -121,6 +126,24 @@ interface ConnectorInterface
      * @return array
      */
     public function requestOrderInfo($orderId = null);
+
+    /**
+     * Get Payment Method Code of Order.
+     *
+     * @param mixed $orderId
+     *
+     * @return string|false
+     */
+    public function getOrderPaymentMethod($orderId);
+
+    /**
+     * Get Payment Method Code of Quote/Cart.
+     *
+     * @param mixed $quoteId
+     *
+     * @return string|false
+     */
+    public function getQuotePaymentMethod($quoteId = null);
 
     /**
      * Get Field Label
@@ -644,5 +667,4 @@ interface ConnectorInterface
      * @return string
      */
     public function getPlatformEnvironment();
-
 }

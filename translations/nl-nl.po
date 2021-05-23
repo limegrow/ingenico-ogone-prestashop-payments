@@ -876,22 +876,25 @@ msgid "modal.openinvoice.additional_data_required"
 msgstr "Geef aanvullende informatie op die voor deze betalingsmethode nodig is"
 
 msgid "modal.openinvoice.proceed"
-msgstr "Proceed"
+msgstr "Doorgaan"
 
 msgid "Billing state"
 msgstr "Staat/provincie facturering"
 
 msgid "Billing address"
-msgstr "Billing address"
+msgstr "Indirizzo di fatturazione"
 
 msgid "Billing street number"
 msgstr "Huisnummer facturering"
+
+msgid "Billing customer title"
+msgstr "Titel van klant voor facturering"
 
 msgid "Shipping state"
 msgstr "Staat/provincie verzending"
 
 msgid "Shipping address"
-msgstr "Shipping address"
+msgstr "Indirizzo di spedizione"
 
 msgid "Shipping street number"
 msgstr "Huisnummer verzending"
@@ -934,3 +937,9 @@ msgstr "Betaal veilig op de volgende pagina met Ingenico en gebruik uw favoriete
 
 msgid "%brand% ends with %cardno%, expires on %month%/%year%"
 msgstr "%brand% eindigt op %cardno%, vervalt op %month%-%year%"
+
+msgid "Credit Cards"
+msgstr "Kredietkaarten"
+
+msgid "Bank Transfer"
+msgstr "Overschrijving"

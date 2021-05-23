@@ -17,7 +17,7 @@ use IngenicoClient\Exception;
  *
  * @package IngenicoClient\PaymentMethod
  */
-class PaymentMethod  implements \ArrayAccess, PaymentMethodInterface
+class PaymentMethod implements \ArrayAccess, PaymentMethodInterface
 {
     /**
      * Checkout Types
@@ -490,7 +490,7 @@ class PaymentMethod  implements \ArrayAccess, PaymentMethodInterface
      */
     public function getDataUsingMethod($key, $args = null)
     {
-        $method = 'get' . $this->_camelize($key);
+        $method = 'get' . $this->camelize($key);
         return $this->$method($args);
     }
 
@@ -513,19 +513,19 @@ class PaymentMethod  implements \ArrayAccess, PaymentMethodInterface
     public function __call($method, $args)
     {
         switch (substr($method, 0, 3)) {
-            case 'get' :
-                $key = $this->_underscore(substr($method,3));
+            case 'get':
+                $key = $this->underscore(substr($method, 3));
                 return property_exists($this, $key) ? $this->$key : null;
-            case 'set' :
-                $key = $this->_underscore(substr($method,3));
+            case 'set':
+                $key = $this->underscore(substr($method, 3));
                 $this->$key = isset($args[0]) ? $args[0] : null;
                 return $this;
-            case 'uns' :
-                $key = $this->_underscore(substr($method,3));
+            case 'uns':
+                $key = $this->underscore(substr($method, 3));
                 unset($this->$key);
                 return $this;
-            case 'has' :
-                $key = $this->_underscore(substr($method,3));
+            case 'has':
+                $key = $this->underscore(substr($method, 3));
                 return property_exists($this, $key);
         }
 
@@ -593,10 +593,9 @@ class PaymentMethod  implements \ArrayAccess, PaymentMethodInterface
      * @param string $name
      * @return string
      */
-    protected function _underscore($name)
+    protected function underscore($name)
     {
-        $result = strtolower(preg_replace('/(.)([A-Z])/', "$1_$2", $name));
-        return $result;
+        return strtolower(preg_replace('/(.)([A-Z])/', "$1_$2", $name));
     }
 
     /**
@@ -606,9 +605,9 @@ class PaymentMethod  implements \ArrayAccess, PaymentMethodInterface
      * @param $name
      * @return string
      */
-    protected function _camelize($name)
+    protected function camelize($name)
     {
-        return $this->uc_words($name, '');
+        return $this->ucWords($name, '');
     }
 
     /**
@@ -621,9 +620,8 @@ class PaymentMethod  implements \ArrayAccess, PaymentMethodInterface
      * @param string $srcSep
      * @return string
      */
-    protected function uc_words($str, $destSep='_', $srcSep='_')
+    protected function ucWords($str, $destSep = '_', $srcSep = '_')
     {
         return str_replace(' ', $destSep, ucwords(str_replace($srcSep, ' ', $str)));
     }
 }
-

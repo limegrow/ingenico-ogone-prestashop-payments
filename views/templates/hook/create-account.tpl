@@ -1,5 +1,5 @@
 {*
-* 2007-2019 Ingenico
+* 2007-2021 Ingenico
 *
 * NOTICE OF LICENSE
 *
@@ -12,13 +12,13 @@
 * to license@prestashop.com so we can send you a copy immediately.
 *
 *  @author Ingenico <contact@ingenico.com>
-*  @copyright  2007-2019 Ingenico
+*  @copyright  2007-2021 Ingenico
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 <div class="account-creation-progress">
     <div class="progress-half"></div>
 </div>
-<form id="create-account-frm" action="{$action}" method="post" class="form-wrapper installation-view installation-form">
+<form id="create-account-frm" action="{$action|escape}" method="post" class="form-wrapper installation-view installation-form">
     <div class="col-lg-12 installation-options">
         <h1 class="col-lg-12">{l s='form.create_account.title' mod='ingenico_epayments'}</h1>
         <div id="create-account" class="installation-button" onclick="Ingenico.createAccount()">{l s='form.create_account.button.create_account' mod='ingenico_epayments'}</div>
@@ -40,7 +40,7 @@
                 <select name="business_country" required>
                     <option value="">{l s='form.create_account.label.business_country' mod='ingenico_epayments'}</option>
                     {foreach $create_account_countries as $iso_code => $country}
-                        <option value="{$iso_code}">{$country}</option>
+                        <option value="{$iso_code|escape}">{$country|escape}</option>
 
                     {/foreach}
                 </select>
@@ -68,7 +68,7 @@
     </div>
 </form>
 <div class="registration-complete">
-    <img class="account-creation-done" src="{$module_dir}/views/imgs/ic_done.svg">
+    <img class="account-creation-done" src="{$module_dir|escape}/views/img/ic_done.svg">
     <p>{l s='form.create_account.label.done.label1' mod='ingenico_epayments'}</p>
     <p>{l s='form.create_account.label.done.label2' mod='ingenico_epayments'}</p>
     <p>{l s='form.create_account.label.done.label3' mod='ingenico_epayments'}</p>
