@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /*
  * This file is part of the Monolog package.
@@ -12,8 +12,6 @@
 namespace Monolog\Handler;
 
 use Monolog\Logger;
-use Monolog\ResettableInterface;
-use Monolog\Formatter\FormatterInterface;
 
 /**
  * Simple handler wrapper that filters records based on a list of levels
@@ -23,10 +21,8 @@ use Monolog\Formatter\FormatterInterface;
  * @author Hennadiy Verkh
  * @author Jordi Boggiano <j.boggiano@seld.be>
  */
-class FilterHandler extends Handler implements ProcessableHandlerInterface, ResettableInterface, FormattableHandlerInterface
+class FilterHandler extends AbstractHandler
 {
-    use ProcessableHandlerTrait;
-
     /**
      * Handler or factory callable($record, $this)
      *
@@ -49,14 +45,12 @@ class FilterHandler extends Handler implements ProcessableHandlerInterface, Rese
     protected $bubble;
 
     /**
-     * @psalm-param HandlerInterface|callable(?array, HandlerInterface): HandlerInterface $handler
-     *
-     * @param callable|HandlerInterface $handler        Handler or factory callable($record|null, $filterHandler).
+     * @param callable|HandlerInterface $handler        Handler or factory callable($record, $this).
      * @param int|array                 $minLevelOrList A list of levels to accept or a minimum level if maxLevel is provided
-     * @param int|string                $maxLevel       Maximum level to accept, only used if $minLevelOrList is not an array
+     * @param int                       $maxLevel       Maximum level to accept, only used if $minLevelOrList is not an array
      * @param bool                      $bubble         Whether the messages that are handled can bubble up the stack or not
      */
-    public function __construct($handler, $minLevelOrList = Logger::DEBUG, $maxLevel = Logger::EMERGENCY, bool $bubble = true)
+    public function __construct($handler, $minLevelOrList = Logger::DEBUG, $maxLevel = Logger::EMERGENCY, $bubble = true)
     {
         $this->handler  = $handler;
         $this->bubble   = $bubble;
@@ -67,7 +61,10 @@ class FilterHandler extends Handler implements ProcessableHandlerInterface, Rese
         }
     }
 
-    public function getAcceptedLevels(): array
+    /**
+     * @return array
+     */
+    public function getAcceptedLevels()
     {
         return array_flip($this->acceptedLevels);
     }
@@ -76,7 +73,7 @@ class FilterHandler extends Handler implements ProcessableHandlerInterface, Rese
      * @param int|string|array $minLevelOrList A list of levels to accept or a minimum level or level name if maxLevel is provided
      * @param int|string       $maxLevel       Maximum level or level name to accept, only used if $minLevelOrList is not an array
      */
-    public function setAcceptedLevels($minLevelOrList = Logger::DEBUG, $maxLevel = Logger::EMERGENCY): self
+    public function setAcceptedLevels($minLevelOrList = Logger::DEBUG, $maxLevel = Logger::EMERGENCY)
     {
         if (is_array($minLevelOrList)) {
             $acceptedLevels = array_map('Monolog\Logger::toMonologLevel', $minLevelOrList);
@@ -88,14 +85,12 @@ class FilterHandler extends Handler implements ProcessableHandlerInterface, Rese
             }));
         }
         $this->acceptedLevels = array_flip($acceptedLevels);
-
-        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function isHandling(array $record): bool
+    public function isHandling(array $record)
     {
         return isset($this->acceptedLevels[$record['level']]);
     }
@@ -103,17 +98,27 @@ class FilterHandler extends Handler implements ProcessableHandlerInterface, Rese
     /**
      * {@inheritdoc}
      */
-    public function handle(array $record): bool
+    public function handle(array $record)
     {
         if (!$this->isHandling($record)) {
             return false;
         }
 
-        if ($this->processors) {
-            $record = $this->processRecord($record);
+        // The same logic as in FingersCrossedHandler
+        if (!$this->handler instanceof HandlerInterface) {
+            $this->handler = call_user_func($this->handler, $record, $this);
+            if (!$this->handler instanceof HandlerInterface) {
+                throw new \RuntimeException("The factory callable should return a HandlerInterface");
+            }
         }
 
-        $this->getHandler($record)->handle($record);
+        if ($this->processors) {
+            foreach ($this->processors as $processor) {
+                $record = call_user_func($processor, $record);
+            }
+        }
+
+        $this->handler->handle($record);
 
         return false === $this->bubble;
     }
@@ -121,69 +126,15 @@ class FilterHandler extends Handler implements ProcessableHandlerInterface, Rese
     /**
      * {@inheritdoc}
      */
-    public function handleBatch(array $records): void
+    public function handleBatch(array $records)
     {
-        $filtered = [];
+        $filtered = array();
         foreach ($records as $record) {
             if ($this->isHandling($record)) {
                 $filtered[] = $record;
             }
         }
 
-        if (count($filtered) > 0) {
-            $this->getHandler($filtered[count($filtered) - 1])->handleBatch($filtered);
-        }
-    }
-
-    /**
-     * Return the nested handler
-     *
-     * If the handler was provided as a factory callable, this will trigger the handler's instantiation.
-     *
-     * @return HandlerInterface
-     */
-    public function getHandler(array $record = null)
-    {
-        if (!$this->handler instanceof HandlerInterface) {
-            $this->handler = ($this->handler)($record, $this);
-            if (!$this->handler instanceof HandlerInterface) {
-                throw new \RuntimeException("The factory callable should return a HandlerInterface");
-            }
-        }
-
-        return $this->handler;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setFormatter(FormatterInterface $formatter): HandlerInterface
-    {
-        $handler = $this->getHandler();
-        if ($handler instanceof FormattableHandlerInterface) {
-            $handler->setFormatter($formatter);
-
-            return $this;
-        }
-
-        throw new \UnexpectedValueException('The nested handler of type '.get_class($handler).' does not support formatters.');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getFormatter(): FormatterInterface
-    {
-        $handler = $this->getHandler();
-        if ($handler instanceof FormattableHandlerInterface) {
-            return $handler->getFormatter();
-        }
-
-        throw new \UnexpectedValueException('The nested handler of type '.get_class($handler).' does not support formatters.');
-    }
-
-    public function reset()
-    {
-        $this->resetProcessors();
+        $this->handler->handleBatch($filtered);
     }
 }

@@ -11,11 +11,8 @@
 
 namespace Gelf\Transport;
 
-use Gelf\Encoder\EncoderInterface;
-use Gelf\Encoder\NoNullByteEncoderInterface;
 use Gelf\MessageInterface as Message;
 use Gelf\Encoder\JsonEncoder as DefaultEncoder;
-use InvalidArgumentException;
 
 /**
  * TcpTransport allows the transfer of GELF-messages (with SSL/TLS support)
@@ -75,7 +72,7 @@ class TcpTransport extends AbstractTransport
 
         $this->sslOptions = $sslOptions;
 
-        $this->setMessageEncoder(new DefaultEncoder());
+        $this->messageEncoder = new DefaultEncoder();
         $this->socketClient = new StreamSocketClient(
             $this->getScheme(),
             $this->host,
@@ -139,16 +136,5 @@ class TcpTransport extends AbstractTransport
     public function getConnectTimeout()
     {
         return $this->socketClient->getConnectTimeout();
-    }
-
-    public function setMessageEncoder(EncoderInterface $encoder)
-    {
-        if (!$encoder instanceof NoNullByteEncoderInterface) {
-            throw new InvalidArgumentException(
-                "TcpTransport only works with NoNullByteEncoderInterface encoders"
-            );
-        }
-
-        return parent::setMessageEncoder($encoder);
     }
 }

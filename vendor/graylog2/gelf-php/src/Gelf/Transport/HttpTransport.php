@@ -212,7 +212,7 @@ class HttpTransport extends AbstractTransport
         $request[] = ""; // blank line to separate headers from body
         $request[] = $rawMessage;
 
-        $request = implode("\r\n", $request);
+        $request = implode($request, "\r\n");
 
         $byteCount = $this->socketClient->write($request);
         $headers = $this->readResponseHeaders();

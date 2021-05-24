@@ -18,7 +18,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Translation\Exception\InvalidArgumentException;
 use Symfony\Component\Translation\Util\XliffUtils;
 
 /**
@@ -53,16 +52,16 @@ class XliffLintCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Lint an XLIFF file and outputs encountered errors')
-            ->addArgument('filename', InputArgument::IS_ARRAY, 'A file, a directory or "-" for reading from STDIN')
+            ->setDescription('Lints a XLIFF file and outputs encountered errors')
+            ->addArgument('filename', InputArgument::IS_ARRAY, 'A file or a directory or STDIN')
             ->addOption('format', null, InputOption::VALUE_REQUIRED, 'The output format', 'txt')
             ->setHelp(<<<EOF
-The <info>%command.name%</info> command lints an XLIFF file and outputs to STDOUT
+The <info>%command.name%</info> command lints a XLIFF file and outputs to STDOUT
 the first encountered syntax error.
 
 You can validates XLIFF contents passed from STDIN:
 
-  <info>cat filename | php %command.full_name% -</info>
+  <info>cat filename | php %command.full_name%</info>
 
 You can also validate the syntax of a file:
 
@@ -85,19 +84,12 @@ EOF
         $this->format = $input->getOption('format');
         $this->displayCorrectFiles = $output->isVerbose();
 
-        if (['-'] === $filenames) {
-            return $this->display($io, [$this->validate(file_get_contents('php://stdin'))]);
-        }
-
-        // @deprecated to be removed in 5.0
-        if (!$filenames) {
-            if (0 !== ftell(\STDIN)) {
+        if (0 === \count($filenames)) {
+            if (!$stdin = $this->getStdin()) {
                 throw new RuntimeException('Please provide a filename or pipe file content to STDIN.');
             }
 
-            @trigger_error('Piping content from STDIN to the "lint:xliff" command without passing the dash symbol "-" as argument is deprecated since Symfony 4.4.', \E_USER_DEPRECATED);
-
-            return $this->display($io, [$this->validate(file_get_contents('php://stdin'))]);
+            return $this->display($io, [$this->validate($stdin)]);
         }
 
         $filesInfo = [];
@@ -114,7 +106,7 @@ EOF
         return $this->display($io, $filesInfo);
     }
 
-    private function validate(string $content, string $file = null): array
+    private function validate($content, $file = null)
     {
         $errors = [];
 
@@ -123,18 +115,16 @@ EOF
             return ['file' => $file, 'valid' => true];
         }
 
-        $internal = libxml_use_internal_errors(true);
+        libxml_use_internal_errors(true);
 
         $document = new \DOMDocument();
         $document->loadXML($content);
 
         if (null !== $targetLanguage = $this->getTargetLanguageFromFile($document)) {
-            $normalizedLocalePattern = sprintf('(%s|%s)', preg_quote($targetLanguage, '/'), preg_quote(str_replace('-', '_', $targetLanguage), '/'));
+            $normalizedLocale = preg_quote(str_replace('-', '_', $targetLanguage), '/');
             // strict file names require translation files to be named '____.locale.xlf'
             // otherwise, both '____.locale.xlf' and 'locale.____.xlf' are allowed
-            // also, the regexp matching must be case-insensitive, as defined for 'target-language' values
-            // http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html#target-language
-            $expectedFilenamePattern = $this->requireStrictFileNames ? sprintf('/^.*\.(?i:%s)\.(?:xlf|xliff)/', $normalizedLocalePattern) : sprintf('/^(?:.*\.(?i:%s)|(?i:%s)\..*)\.(?:xlf|xliff)/', $normalizedLocalePattern, $normalizedLocalePattern);
+            $expectedFilenamePattern = $this->requireStrictFileNames ? sprintf('/^.*\.%s\.xlf/', $normalizedLocale) : sprintf('/^(.*\.%s\.xlf|%s\..*\.xlf)/', $normalizedLocale, $normalizedLocale);
 
             if (0 === preg_match($expectedFilenamePattern, basename($file))) {
                 $errors[] = [
@@ -152,9 +142,6 @@ EOF
                 'message' => $xmlError['message'],
             ];
         }
-
-        libxml_clear_errors();
-        libxml_use_internal_errors($internal);
 
         return ['file' => $file, 'valid' => 0 === \count($errors), 'messages' => $errors];
     }
@@ -209,12 +196,12 @@ EOF
             }
         });
 
-        $io->writeln(json_encode($filesInfo, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES));
+        $io->writeln(json_encode($filesInfo, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
         return min($errors, 1);
     }
 
-    private function getFiles(string $fileOrDirectory)
+    private function getFiles($fileOrDirectory)
     {
         if (is_file($fileOrDirectory)) {
             yield new \SplFileInfo($fileOrDirectory);
@@ -231,7 +218,21 @@ EOF
         }
     }
 
-    private function getDirectoryIterator(string $directory)
+    private function getStdin()
+    {
+        if (0 !== ftell(STDIN)) {
+            return;
+        }
+
+        $inputs = '';
+        while (!feof(STDIN)) {
+            $inputs .= fread(STDIN, 1024);
+        }
+
+        return $inputs;
+    }
+
+    private function getDirectoryIterator($directory)
     {
         $default = function ($directory) {
             return new \RecursiveIteratorIterator(
@@ -247,7 +248,7 @@ EOF
         return $default($directory);
     }
 
-    private function isReadable(string $fileOrDirectory)
+    private function isReadable($fileOrDirectory)
     {
         $default = function ($fileOrDirectory) {
             return is_readable($fileOrDirectory);
