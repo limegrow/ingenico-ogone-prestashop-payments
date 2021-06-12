@@ -17,9 +17,9 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
-namespace Ingenico\Setup;
+namespace Ingenico\Payment;
 
-use Ingenico\Utils;
+use Ingenico\Payment\Utils;
 use Module;
 use Configuration;
 use Exception;

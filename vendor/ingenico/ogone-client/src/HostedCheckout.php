@@ -5,6 +5,7 @@ namespace IngenicoClient;
 use IngenicoClient\PaymentMethod\Afterpay;
 use IngenicoClient\PaymentMethod\Bancontact;
 use IngenicoClient\PaymentMethod\Ideal;
+use IngenicoClient\PaymentMethod\Ingenico;
 use IngenicoClient\PaymentMethod\Klarna;
 use IngenicoClient\PaymentMethod\KlarnaBankTransfer;
 use IngenicoClient\PaymentMethod\KlarnaDirectDebit;
@@ -41,7 +42,7 @@ trait HostedCheckout
         $params['SHASIGN'] = $paymentRequest->getShaSign();
 
         if ($this->logger) {
-            $this->logger->debug(__CLASS__. '::' . __METHOD__, $params);
+            $this->logger->debug(__METHOD__, $params);
         }
 
         return (new Data())->setUrl($paymentRequest->getOgoneUri())
@@ -58,6 +59,11 @@ trait HostedCheckout
      */
     public function getHostedCheckoutPaymentRequest(Order $order, Alias $alias)
     {
+        // Convert customer dob to timestamp if needs
+        if ($order->hasCustomerDob() && is_string($order->getCustomerDob())) {
+            $order->setCustomerDob((new \DateTime($order->getCustomerDob()))->getTimestamp());
+        }
+
         // Get Payment Method
         $paymentMethod = $alias->getPaymentMethod();
 
@@ -224,6 +230,10 @@ trait HostedCheckout
             $request->setData('pmlisttype', $listType);
         }
 
+        if (in_array($paymentId, [null, Ingenico::CODE])) {
+            $request->setData('exclpmlist', 'FACILYPAY3X;FACILYPAY3XNF;FACILYPAY4X;FACILYPAY4XNF;KLARNA_BANK_TRANSFER;KLARNA_DIRECT_DEBIT;KLARNA_FINANCING;KLARNA_PAYLATER;KLARNA_PAYNOW;Open Invoice DE;Open Invoice NL;Open Invoice NO');
+        }
+
         /** @var EcommercePaymentRequest $request */
         $request = self::copyOrderDataToPaymentRequest($request, $order);
         $request = self::copyBrowserDataToPaymentRequest($request, $order);
@@ -250,10 +260,6 @@ trait HostedCheckout
                 KlarnaPayNow::CODE,
             ])
         ) {
-            if (is_string($order->getCustomerDob())) {
-                $order->setCustomerDob((new \DateTime($order->getCustomerDob()))->getTimestamp());
-            }
-
             $request->setEcomConsumerGender($order->getCustomerGender())
                 ->setEcomShiptoPostalNamePrefix($order->getShippingCustomerTitle())
                 ->setEcomShiptoDob(
@@ -417,6 +423,10 @@ trait HostedCheckout
             $request->setData('ISSUERID', $additionalData['issuer_id']);
         }
 
+        if ($this->logger) {
+            $this->logger->debug(__METHOD__, $request->toArray());
+        }
+
         // Validate
         $request->validate();
 
@@ -493,7 +503,7 @@ trait HostedCheckout
         $params['SHASIGN'] = $paymentRequest->getShaSign();
 
         if ($this->logger) {
-            $this->logger->debug(__CLASS__. '::' . __METHOD__, $params);
+            $this->logger->debug(__METHOD__, $params);
         }
 
         return (new Data())->setUrl($paymentRequest->getOgoneUri())

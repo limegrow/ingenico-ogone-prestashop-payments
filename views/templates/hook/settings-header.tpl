@@ -16,7 +16,6 @@
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *}
 <script>
-    ingenico_ajax_url = '{$ingenico_ajax_url nofilter}';
     installments_amount_min = "{$instalments_flex_instalments_min|escape}";
     installments_amount_max = "{$instalments_flex_instalments_max|escape}";
     installments_period_min = "{$instalments_flex_period_min|escape}";

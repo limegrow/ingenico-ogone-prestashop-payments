@@ -17,17 +17,27 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
-use Ingenico\Utils;
-use IngenicoClient\IngenicoCoreLibrary;
+use Ingenico\Payment\Utils;
+use Ingenico\Payment\Connector;
 
 class Ingenico_EpaymentsAjaxModuleFrontController extends ModuleFrontController
 {
     /** @var Ingenico_epayments */
     public $module;
 
+    /**
+     * @var Connector
+     */
+    public $connector;
+
     public function initContent()
     {
         parent::initContent();
+
+        $this->connector = $this->module->get('ingenico.payment.connector');
+
+        // Set up Controller for Connector
+        $this->connector->controller = $this;
         
         $method = Tools::getValue('method');
         $response = null;
@@ -37,7 +47,7 @@ class Ingenico_EpaymentsAjaxModuleFrontController extends ModuleFrontController
                 $query = Tools::getValue('query');
                 $selected_countries = Tools::getValue('selected_countries');
                 $selected_countries_array = explode('|', $selected_countries);
-                $matching_countries = $this->module->filterCountries($query, $selected_countries_array);
+                $matching_countries = $this->connector->filterCountries($query, $selected_countries_array);
                 $response = '';
                 foreach ($matching_countries as $iso_code => $matching_country) {
                     // Assign data for Smarty
@@ -55,7 +65,7 @@ class Ingenico_EpaymentsAjaxModuleFrontController extends ModuleFrontController
             /** settings page payments filtering */
             case 'filter_payment_methods':
                 $query = Tools::getValue('query');
-                $matching_methods = $this->module->filterPaymentMethods($query);
+                $matching_methods = $this->connector->filterPaymentMethods($query);
                 $response = '';
                 foreach ($matching_methods as $key => $matching_method) {
                     // Assign data for Smarty
@@ -80,7 +90,7 @@ class Ingenico_EpaymentsAjaxModuleFrontController extends ModuleFrontController
 
                 // Get methods that unselected
                 $payment_methods = [];
-                $methods = $this->module->coreLibrary->getPaymentMethods();
+                $methods = $this->connector->coreLibrary->getPaymentMethods();
                 foreach ($methods as $method) {
                     if (!in_array($method->getId(), $selected)) {
                         $payment_methods[] = $method;
@@ -92,7 +102,7 @@ class Ingenico_EpaymentsAjaxModuleFrontController extends ModuleFrontController
             case 'payment_status':
                 $orderId = Tools::getValue('ORDERID');
                 $payId = Tools::getValue('PAYID', null);
-                $paymentResponse = $this->module->coreLibrary->getPaymentInfo($orderId, $payId);
+                $paymentResponse = $this->connector->coreLibrary->getPaymentInfo($orderId, $payId);
                 if (!$paymentResponse->isSuccessful()) {
                     $message = $this->trans('Payment Status is failed. Error: %code% %details%', [
                         '%code%' => $paymentResponse->getParam('NCERROR'),
@@ -109,7 +119,7 @@ class Ingenico_EpaymentsAjaxModuleFrontController extends ModuleFrontController
             case 'register_account':
                 //$email = Tools::getValue('account_info');
                 parse_str(Tools::getValue('account_info'), $account_info);
-                $response = $this->module->submitOnboardingRequest(
+                $response = $this->connector->submitOnboardingRequest(
                     $account_info['company_name'],
                     $account_info['account_email'],
                     $account_info['business_country']
@@ -117,7 +127,8 @@ class Ingenico_EpaymentsAjaxModuleFrontController extends ModuleFrontController
                 break;
             case 'add_countries':
                 $countries = (array) Tools::getValue('countries');
-                $response = $this->module->fetchPaymentMethodsByCountryTemplate($countries);
+                $openinvoice = Tools::getValue('openinvoice');
+                $response = $this->module->fetchPaymentMethodsByCountryTemplate($countries, $openinvoice);
                 break;
             case 'fetch_methods_by_countries':
                 $countries = (array) Tools::getValue('countries');
@@ -125,7 +136,7 @@ class Ingenico_EpaymentsAjaxModuleFrontController extends ModuleFrontController
                 $response = $this->module->fetchPaymentMethodsByCountryTemplate($countries, $openinvoice);
                 break;
             case 'charge_payment':
-                $response = $this->module->finishReturnInline();
+                $response = $this->connector->finishReturnInline();
                 if (isset($response['message'])) {
                     Utils::setSessionValue('ingenico_message', $response['message']);
                 }
@@ -152,7 +163,7 @@ class Ingenico_EpaymentsAjaxModuleFrontController extends ModuleFrontController
                 $country = Tools::getValue('country');
 
                 try {
-                    $this->module->setGenericCountry($country);
+                    $this->connector->setGenericCountry($country);
                     $response['status'] = 'success';
                 } catch (Exception $e) {
                     $response['status'] = 'failure';
@@ -212,6 +223,32 @@ class Ingenico_EpaymentsAjaxModuleFrontController extends ModuleFrontController
                     'brand' => $_POST['brand'],
                     'img' => $image
                 ];
+                break;
+            case 'set_payment_method':
+                // Save selected payment method
+                $payment_method = Tools::getValue('payment_method');
+                $cart = Context::getContext()->cart;
+
+                if (empty($payment_method)) {
+                    Db::getInstance()->delete(
+                        'ingenico_cart',
+                        'id_cart = ' . (int) $cart->id
+                    );
+                } else {
+                    Db::getInstance()->insert(
+                        'ingenico_cart',
+                        [
+                            'id_cart' => (int) $cart->id,
+                            'payment_id' => $payment_method,
+                        ],
+                        false,
+                        false,
+                        Db::ON_DUPLICATE_KEY
+                    );
+                }
+
+                $response = [];
+
                 break;
             default:
                 break;

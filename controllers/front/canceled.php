@@ -17,25 +17,35 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
-use Ingenico\Utils;
+use Ingenico\Payment\Utils;
+use Ingenico\Payment\Connector;
 
 class Ingenico_EpaymentsCanceledModuleFrontController extends ModuleFrontController
 {
     /** @var Ingenico_epayments */
     public $module;
 
+    /**
+     * @var Connector
+     */
+    public $connector;
+
     public function initContent()
     {
         parent::initContent();
 
-        // Set up Controller for Connector
-        $this->module->controller = $this;
+        $this->connector = $this->module->get('ingenico.payment.connector');
 
-        $message = 'Cancelled.';
-        if ($message = Utils::getSessionValue('ingenico_message')) {
+        // Set up Controller for Connector
+        $this->connector->controller = $this;
+
+        $message = Utils::getSessionValue('ingenico_message');
+        if ($message) {
             Utils::unsetSessionValue('ingenico_message');
+        } else {
+            $message = 'Cancelled.';
         }
 
-        $this->module->setOrderErrorPage($message);
+        $this->connector->setOrderErrorPage($message);
     }
 }

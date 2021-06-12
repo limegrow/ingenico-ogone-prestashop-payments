@@ -16,6 +16,11 @@
  *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 "use strict"
+/* global ingenico_payment_page_type */
+
+if ( typeof ingenico_payment_page_type === 'undefined' ) {
+    var ingenico_payment_page_type = null;
+}
 
 const Ingenico = {
 
@@ -83,115 +88,77 @@ const Ingenico = {
             document.getElementById('ingenico_iframe').src = iframeUrl;
         });
     },
-};
-
-window.IngenicoCCInline = {
-    iframe: null,
-    wrap: null,
-    oc_wrap: null,
-    tos: null,
-
-    init: function() {
-        var self = this;
-
-        this.iframe = $('iframe#ingenico_iframe');
-        this.wrap = $('.iframe-wrap');
-        this.oc_wrap = $('.one-click-wrap');
-        this.tos = $('#conditions-to-approve input[type="checkbox"]');
-
-        // Hide iframe if ToS has been unchecked
-        if (this.tos.length > 0) {
-            this.watchTos();
-        }
-
-        // Hide "payment confirmation" on the checkout page when cc form chosen
-        $(document).on('click', '.payment-options [name="payment-option"]', function() {
-            // If Inline CC mode is active
-            if ($('#pay-with-' + $(this).prop('id') + '-form').find(self.iframe).length > 0) {
-                setTimeout(function () {
-                    self.hideConfirmationButton();
-                }, 1500);
-            } else {
-                self.showConfirmationButton();
-            }
-        });
-
-        // Toggle CCForm on alias selection
-        $(document).on('click', '.payment-options input[name="alias"]', function() {
-            // Check if the cc iframe is exists
-            if (self.iframe.length === 0) {
-                return;
-            }
-
-            if ($(this).val() === 'new') {
-                self.showOneClickIframe();
-                self.hideConfirmationButton();
-            } else {
-                self.hideOneClickIframe();
-                self.showConfirmationButton();
-            }
-        });
-    },
 
     /**
-     * Watch "Terms of service" and shows or hides iframe depends on the checkbox
+     * Save Payment Method.
+     *
+     * @param payment_method
+     * @returns {*|jQuery}
      */
-    watchTos: function () {
-        var self = this;
+    setPaymentMethod: function (payment_method) {
+        return $.ajax(ingenico_ajax_url, {
+            'method': 'POST',
+            'data': {
+                method: 'set_payment_method',
+                payment_method: payment_method
+            },
+            'dataType': 'json'
+        });
+    }
+};
 
-        if (self.tos.length > 0) {
+jQuery(document).ready(function ($) {
+    // Hide "payment confirmation" on the checkout page when cc form chosen
+    $(document).on( 'click', '.payment-options [name="payment-option"]', function( e ) {
+        var id = $( e.target ).prop('id'),
+            form = $( '#pay-with-' + id + '-form' ),
+            button = $( '#payment-confirmation button' );
+
+        // Saved selected payment method
+        Ingenico.setPaymentMethod( form.find( '[name="payment_id"]' ).first().val() );
+
+        if ( ingenico_payment_page_type === 'INLINE' ) {
+            // Tick the "new card" option if exists
+            form.find( '[name="alias"]' ).find(':radio[value=new]').click();
+
+            button.show();
+            if ( form.find( '.ingenico_frame' ).length > 0 ) {
+                button.hide();
+            }
+        }
+    } );
+
+    // Toggle CCForm on alias selection
+    $(document).on( 'click', '.payment-options input[name="alias"]', function( e ) {
+        if ( ingenico_payment_page_type === 'INLINE' ) {
+            var wrap = $( e.target ).closest( '.js-payment-option-form' ).find( '.one-click-wrap' ),
+                button = $( '#payment-confirmation button' );
+
+            if ( $(this).val() === 'new' ) {
+                wrap.show();
+                button.hide();
+            } else {
+                wrap.hide();
+                button.show();
+            }
+        }
+    });
+
+    if ( ingenico_payment_page_type === 'INLINE' ) {
+        var tos = $( '#conditions-to-approve input[type="checkbox"]' );
+        if ( tos.length > 0 ) {
             setInterval(function () {
-                if (self.tos.is(':checked')) {
-                    self.showIframe();
+                if ( tos.is( ':checked' ) ) {
+                    //$( '.iframe-wrap' ).show();
+                    $( '.iframe-wrap' ).removeClass( 'locked-frame' );
                 } else {
-                    self.hideIframe();
+                    //$( '.iframe-wrap' ).hide();
+                    $( '.iframe-wrap' ).addClass( 'locked-frame' );
                 }
             }, 500);
         }
-    },
-
-    /**
-     * Hide CC Iframe
-     */
-    hideIframe: function () {
-        this.wrap.hide();
-    },
-
-    /**
-     * Show CC Iframe
-     */
-    showIframe: function () {
-        this.wrap.show();
-    },
-
-    /**
-     * Hide "One Click" iframe
-     */
-    hideOneClickIframe: function () {
-        this.oc_wrap.hide();
-    },
-
-    /**
-     * Show "One Click" iframe
-     */
-    showOneClickIframe: function () {
-        this.oc_wrap.show();
-    },
-
-    /**
-     * Hide Confirmation Button
-     */
-    hideConfirmationButton: function () {
-        $('#payment-confirmation button').hide();
-    },
-
-    /**
-     * Show Confirmation Button
-     */
-    showConfirmationButton: function () {
-        $('#payment-confirmation button').show();
     }
-};
+});
 
 $(function() {
     Ingenico.init();

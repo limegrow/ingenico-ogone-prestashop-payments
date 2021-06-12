@@ -1,0 +1,24 @@
+ingenico_capture:
+  path: ingenico/actions/capture/{orderId}
+  methods: [GET]
+  defaults:
+    _controller: 'Ingenico\Payment\Controller\ActionsController::captureAction'
+    _disable_module_prefix: true
+ingenico_refund:
+  path: ingenico/actions/refund/{orderId}
+  methods: [GET]
+  defaults:
+    _controller: 'Ingenico\Payment\Controller\ActionsController::refundAction'
+    _disable_module_prefix: true
+ingenico_cancel:
+  path: ingenico/actions/cancel/{orderId}
+  methods: [GET]
+  defaults:
+    _controller: 'Ingenico\Payment\Controller\ActionsController::cancelAction'
+    _disable_module_prefix: true
+ingenico_api:
+  path: ingenico/actions/api
+  methods: [POST]
+  defaults:
+    _controller: 'Ingenico\Payment\Controller\ActionsController::apiAction'
+    _disable_module_prefix: true

@@ -37,24 +37,26 @@
                         </a>
                     </li>
                     <br>
-                    <li>
-                        {l s='modal.refund_failed.label3' mod='ingenico_epayments'}:<br>
-                        <a target="_blank" href="{$support_phone|escape:'htmlall':'UTF-8'}">
-                            {$support_phone|escape:'htmlall':'UTF-8'}
-                        </a>
-                        <script>
-                            // Convert phone urls to text
-                            jQuery( document ).ready( function ( $ ) {
-                                $( '#refund-failed-modal' ).find( 'a' ).each( function() {
-                                    let el = $( this );
-                                    if ( el.prop( 'href' ).indexOf( 'tel://' ) > -1 ) {
-                                        $( '<span>' + el.text() + '</span>' ).insertAfter( el );
-                                        el.remove();
-                                    }
+                    {if !empty($support_phone)}
+                        <li>
+                            {l s='modal.refund_failed.label3' mod='ingenico_epayments'}:<br>
+                            <a target="_blank" href="{$support_phone|escape:'htmlall':'UTF-8'}">
+                                {$support_phone|escape:'htmlall':'UTF-8'}
+                            </a>
+                            <script>
+                                // Convert phone urls to text
+                                jQuery( document ).ready( function ( $ ) {
+                                    $( '#refund-failed-modal' ).find( 'a' ).each( function() {
+                                        let el = $( this );
+                                        if ( el.prop( 'href' ).indexOf( 'tel://' ) > -1 ) {
+                                            $( '<span>' + el.text() + '</span>' ).insertAfter( el );
+                                            el.remove();
+                                        }
+                                    } );
                                 } );
-                            } );
-                        </script>
-                    </li>
+                            </script>
+                        </li>
+                    {/if}
                 </ul>
             </div>
             <div class="modal-footer">

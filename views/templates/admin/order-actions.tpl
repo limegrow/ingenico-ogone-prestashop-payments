@@ -142,7 +142,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default btn-close" data-dismiss="modal">{l s='button.close' mod='ingenico_epayments'}</button>
-                    <button id="process-refund" type="button" class="btn btn-primary">{l s='order.action.refund' mod='ingenico_epayments'}</button>
+                    <button id="process-perform-refund" type="button" class="btn btn-primary">{l s='order.action.refund' mod='ingenico_epayments'}</button>
                 </div>
             </div>
         </div>
@@ -182,96 +182,5 @@
 {/if}
 
 <script>
-    jQuery(document).ready(function ($) {
-        // Close Button
-        $(document).on('click', '.btn-close', function (e) {
-            e.preventDefault();
-            let modal = $(this).closest('.modal');
-            modal.removeClass('in').hide();
-        });
-
-        // Capture Button
-        $(document).on('click', '#process-capture', function (e) {
-            e.preventDefault();
-            Ingenico.openModal('capture-confirmation-modal');
-        });
-
-        $(document).on('click', '#process-capture-action', function (e) {
-            e.preventDefault();
-
-            let el = $('#process-capture-action');
-            el.addClass('disabled');
-            $.post(document.URL, {
-                ajax: true,
-                ingenico_action: 'capture',
-                order_id: $('#ingenico_order_id').val(),
-                pay_id: $('#ingenico_pay_id').val(),
-                capture_amount: $('#capture_amount').val()
-            }).done(function (response) {
-                el.removeClass('disabled');
-                if (response.status !== 'ok') {
-                    alert('Error: ' + response.message);
-                    return false;
-                }
-                alert(response.message);
-                self.location.href = document.URL;
-            });
-        });
-
-        // Cancel Button
-        $(document).on('click', '#process-cancel-action', function (e) {
-            e.preventDefault();
-
-            let el = $('#process-cancel-action');
-            el.addClass('disabled');
-            $.post(document.URL, {
-                ajax: true,
-                ingenico_action: 'cancel',
-                order_id: $('#ingenico_order_id').val(),
-                pay_id: $('#ingenico_pay_id').val(),
-            }).done(function (response) {
-                el.removeClass('disabled');
-                if (response.status !== 'ok') {
-                    alert('Error: ' + response.message);
-                    return false;
-                }
-                alert(response.message);
-                self.location.href = document.URL;
-            });
-        });
-
-        // Refund Button
-        $(document).on('click', '#process-refund', function (e) {
-            e.preventDefault();
-            Ingenico.openModal('refund-confirmation-modal');
-        });
-
-        $(document).on('click', '#process-refund-action', function (e) {
-            e.preventDefault();
-
-            let el = $('#process-refund-action');
-            el.addClass('disabled');
-            $.post(document.URL, {
-                ajax: true,
-                ingenico_action: 'refund',
-                order_id: $('#ingenico_order_id').val(),
-                pay_id: $('#ingenico_pay_id').val(),
-                refund_amount: $('#refund_amount').val()
-            }).done(function (response) {
-                el.removeClass('disabled');
-                if (response.status !== 'ok') {
-                    if (response.status === 'action_required') {
-                        Ingenico.openModal('refund-failed-modal');
-                        return false;
-                    }
-
-                    alert('Error: ' + response.message);
-                    return false;
-                }
-
-                alert(response.message);
-                self.location.href = document.URL;
-            });
-        });
-    })
+var ingenico_api_url = '{$ingenico_api}';
 </script>

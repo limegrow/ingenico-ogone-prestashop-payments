@@ -17,25 +17,13 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
-namespace Ingenico\Model;
+namespace Ingenico\Payment;
 
 use Db;
 use DbQuery;
 
 class Alias
 {
-    /** @var \Ingenico_epayments */
-    public $module;
-
-    /**
-     * Reminder constructor.
-     * @param $module
-     */
-    public function __construct($module)
-    {
-        $this->module = $module;
-    }
-
     /**
      * Get Alias by CustomerId
      * @param $customerId
@@ -126,7 +114,7 @@ class Alias
                     'ED' => $ed,
                     'updated_at' => date('Y-m-d H:i:s', time())
                 ],
-                sprintf('ALIAS = %d', (int) $row['alias_id'])
+                sprintf('alias_id = %d', (int) $row['alias_id'])
             );
         }
 
@@ -148,5 +136,9 @@ class Alias
             false,
             Db::INSERT_IGNORE
         );
+    }
+
+    public function removeAlias(int $aliasId) {
+        return Db::getInstance()->delete('ingenico_aliases','alias_id = ' . $aliasId);
     }
 }

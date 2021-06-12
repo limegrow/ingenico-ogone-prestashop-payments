@@ -1,4 +1,18 @@
 # Changelog
+## [5.4.0] - 2021-06-12
+### Added
+- Add AirPlus payment method
+- Substitute street number from address
+- Excluded some payment methods for Generic method
+
+### Changed
+- Disabled refunds for Intersolve
+- Updated WL template urls
+
+## [5.3.1] - 2021-05-27
+### Changed
+- Fixed: A non well formed numeric value encountered
+
 ## [5.3.0] - 2021-05-18
 ### Added
 - Implemented Oney payment method

@@ -1,0 +1,29 @@
+services:
+  _defaults:
+    public: true
+
+  ingenico_epayments:
+    class: Ingenico_Epayments
+    factory: [PaymentModule, getInstanceByName]
+    arguments:
+      - 'ingenico_epayments'
+
+  ingenico.legacy.translate:
+    class: Ingenico\Payment\Services\Legacy\Translate
+
+  ingenico.payment.connector:
+    class: Ingenico\Payment\Connector
+
+  ingenico.payment.alias:
+    class: Ingenico\Payment\Alias
+
+  ingenico.payment.payment:
+    class: Ingenico\Payment\Payment
+
+  ingenico.payment.total:
+    class: Ingenico\Payment\Total
+
+  ingenico.payment.reminder:
+    class: Ingenico\Payment\Reminder
+    arguments:
+      - '@ingenico.payment.connector'

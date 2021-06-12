@@ -28,6 +28,8 @@ if (!defined('_PS_VERSION_')) {
 function upgrade_module_4_0_0($module)
 {
     $module->registerHook('actionEmailSendBefore');
+    $module->registerHook('actionGetAdminOrderButtons');
+    $module->registerHook('displayAdminOrderSide');
 
     return true;
 }

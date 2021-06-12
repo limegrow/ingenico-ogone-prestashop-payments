@@ -29,7 +29,7 @@ trait OpenInvoice
 
         // Order items are required
         if (count((array) $order->getItems()) === 0) {
-            $this->logger->debug(__CLASS__ . '::' . __METHOD__ . ' Open Invoice requires order items',
+            $this->logger->debug(__METHOD__ . ' Open Invoice requires order items',
                 [
                     $order->getData(),
                     $paymentMethod,
@@ -236,7 +236,7 @@ trait OpenInvoice
 
         // Order items are required
         if (count((array) $order->getItems()) === 0) {
-            $this->logger->debug(__CLASS__ . '::' . __METHOD__ . ' Open Invoice requires order items', [
+            $this->logger->debug(__METHOD__ . ' Open Invoice requires order items', [
                 $order->getData(),
                 $alias->getData(),
                 $fields]);
@@ -298,7 +298,7 @@ trait OpenInvoice
         $result['SHASIGN'] = $paymentRequest->getShaSign();
 
         if ($this->logger) {
-            $this->logger->debug(__CLASS__. '::' . __METHOD__, $result);
+            $this->logger->debug(__METHOD__, $result);
         }
 
         // Show page with list of payment methods

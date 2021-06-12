@@ -17,7 +17,7 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
-namespace Ingenico\Model;
+namespace Ingenico\Payment;
 
 use Db;
 use DbQuery;
@@ -26,16 +26,15 @@ use PrestaShopDatabaseException;
 
 class Reminder
 {
-    /** @var \Ingenico_epayments */
-    public $module;
+    private $connector;
 
     /**
      * Reminder constructor.
-     * @param $module
+     * @param $connector
      */
-    public function __construct($module)
+    public function __construct($connector)
     {
-        $this->module = $module;
+        $this->connector = $connector;
     }
 
     /**
@@ -122,16 +121,20 @@ class Reminder
         $data = $this->getReminder($orderId);
         if (count($data) === 0) {
             // Generate secret key
-            $days = abs($this->module->coreLibrary->getConfiguration()->getSettingsReminderemailDays());
+            $days = abs($this->connector->coreLibrary->getConfiguration()->getSettingsReminderemailDays());
             $timestamp = strtotime("+{$days} days");
             $this->setReminder($orderId, $timestamp, false);
         }
 
         $data = $this->getReminder($orderId);
 
-        return $this->module->getControllerUrl('pay', [
-            'secret_key' => $data['secure_token']
-        ]);
+        return \Context::getContext()->link->getModuleLink(
+            'ingenico_epayments',
+            'pay',
+            [
+                'secret_key' => $data['secure_token']
+            ]
+        );
     }
 
     /**

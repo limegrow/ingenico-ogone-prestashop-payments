@@ -17,12 +17,10 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
-require_once dirname(__FILE__) . '/../../setup/Migration.php';
-require_once dirname(__FILE__) . '/../../model/Alias.php';
-
-use Ingenico\Utils;
-use Ingenico\Setup\Migration;
-use Ingenico\Model\Alias;
+use Ingenico\Payment\Utils;
+use Ingenico\Payment\Migration;
+use Ingenico\Payment\Alias;
+use Ingenico\Payment\Connector;
 
 class Ingenico_EpaymentsMigrateModuleFrontController extends ModuleFrontController
 {
@@ -38,6 +36,11 @@ class Ingenico_EpaymentsMigrateModuleFrontController extends ModuleFrontControll
     private $alias;
 
     /**
+     * @var Connector
+     */
+    private $connector;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -45,7 +48,8 @@ class Ingenico_EpaymentsMigrateModuleFrontController extends ModuleFrontControll
         parent::__construct();
 
         $this->migration = new Migration($this->module->name);
-        $this->alias = new Alias($this->module);
+        $this->alias = new Alias();
+        $this->connector = new Connector();
     }
 
     /**
@@ -131,8 +135,8 @@ class Ingenico_EpaymentsMigrateModuleFrontController extends ModuleFrontControll
                     }
 
                     // Setup the new plugin
-                    $this->module->saveSetting(true, 'connection_live_webhook', $newWebHook);
-                    $this->module->saveSetting(true, 'connection_live_signature', $newShaSignature);
+                    $this->connector->saveSetting(true, 'connection_live_webhook', $newWebHook);
+                    $this->connector->saveSetting(true, 'connection_live_signature', $newShaSignature);
 
                     $response['data'][] = 'New SHA signature was generated';
                     break;
@@ -150,9 +154,9 @@ class Ingenico_EpaymentsMigrateModuleFrontController extends ModuleFrontControll
                     }
 
                     // Setup the new plugin
-                    $this->module->saveSetting(true, 'connection_live_pspid', Configuration::get('OGONE_PSPID'));
-                    $this->module->saveSetting(true, 'connection_live_dl_user', Configuration::get('OGONE_DL_USER'));
-                    $this->module->saveSetting(true, 'connection_live_dl_password', Configuration::get('OGONE_DL_PASSWORD'));
+                    $this->connector->saveSetting(true, 'connection_live_pspid', Configuration::get('OGONE_PSPID'));
+                    $this->connector->saveSetting(true, 'connection_live_dl_user', Configuration::get('OGONE_DL_USER'));
+                    $this->connector->saveSetting(true, 'connection_live_dl_password', Configuration::get('OGONE_DL_PASSWORD'));
 
                     // Mapping plugin logic settings
                     $configuration = [
@@ -164,11 +168,11 @@ class Ingenico_EpaymentsMigrateModuleFrontController extends ModuleFrontControll
                     ];
 
                     foreach ($configuration as $key => $value) {
-                        $this->module->saveSetting(true, $key, $value);
+                        $this->connector->saveSetting(true, $key, $value);
                     }
 
                     if (Configuration::get('OGONE_USE_KLARNA')) {
-                        $this->module->saveSetting(true, 'selected_payment_methods', ['klarna']);
+                        $this->connector->saveSetting(true, 'selected_payment_methods', ['klarna']);
                     }
 
                     $response['data'][] = 'Configuration were migrated';

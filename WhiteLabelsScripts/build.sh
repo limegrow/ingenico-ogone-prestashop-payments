@@ -21,6 +21,8 @@ cd "$SOURCE_DIR" > /dev/null
 rm -rf "$SOURCE_DIR/.git" > /dev/null
 rm -rf "$SOURCE_DIR/vendor/ingenico/ogone-sdk-php/.git" > /dev/null
 rm -rf "$SOURCE_DIR/vendor/ingenico/ogone-client/.git" > /dev/null
+rm -rf "$SOURCE_DIR/vendor/ingenico/ogone-sdk-php/tests" > /dev/null
+rm -rf "$SOURCE_DIR/vendor/ingenico/ogone-client/tests" > /dev/null
 
 # Install composer dependencies
 # TODO: repositories should be public

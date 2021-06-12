@@ -17,19 +17,27 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
-use Ingenico\Utils;
+use Ingenico\Payment\Utils;
+use Ingenico\Payment\Connector;
 
 class Ingenico_EpaymentsOpen_invoiceModuleFrontController extends ModuleFrontController
 {
     /** @var Ingenico_epayments */
     public $module;
 
+    /**
+     * @var Connector
+     */
+    public $connector;
+
     public function initContent()
     {
         parent::initContent();
 
+        $this->connector = $this->module->get('ingenico.payment.connector');
+
         // Set up Controller for Connector
-        $this->module->controller = $this;
+        $this->connector->controller = $this;
 
         // Get Order
         $orderId = Utils::getSessionValue('ingenico_order');
@@ -69,6 +77,6 @@ class Ingenico_EpaymentsOpen_invoiceModuleFrontController extends ModuleFrontCon
         // @see Connector::showPaymentListRedirectTemplate()
         // @see Connector::clarifyOpenInvoiceAdditionalFields()
         // Expect an argument like ['payment_id' => '', 'brand' => '', 'pm' => '', 'customer_dob' => ''...]
-        $this->module->processOpenInvoicePayment($orderId, $alias, $fields);
+        $this->connector->processOpenInvoicePayment($orderId, $alias, $fields);
     }
 }

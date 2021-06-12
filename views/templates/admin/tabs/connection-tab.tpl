@@ -62,7 +62,8 @@
                         <a class="webhook-url" onclick="Ogone.copyLink('{$webhook_url nofilter}', 'test-webhook')">{$webhook_url|escape}</a>
                     </p>
                 {else}
-                    <p class="col-lg-12">
+                  <input name="connection_test_webhook" type="hidden" value="{$connection_test_webhook|escape}">
+                  <p class="col-lg-12">
                         <a class="webhook-url" onclick="Ogone.copyLink('{$connection_test_webhook nofilter}', 'test-webhook')">{$connection_test_webhook|escape}</a>
                     </p>
                 {/if}
@@ -166,7 +167,8 @@
                         <a class="webhook-url" onclick="Ogone.copyLink('{$webhook_url nofilter}', 'live-webhook')">{$webhook_url|escape}</a>
                     </p>
                 {else}
-                    <p class="col-lg-12">
+                  <input name="connection_live_webhook" type="hidden" value="{$connection_live_webhook|escape}">
+                  <p class="col-lg-12">
                         <a class="webhook-url" onclick="Ogone.copyLink('{$connection_live_webhook nofilter}', 'live-webhook')">{$connection_live_webhook|escape}</a>
                     </p>
                 {/if}

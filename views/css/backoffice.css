@@ -523,7 +523,7 @@
     #content.bootstrap .ingenico-settings #payment_methods ul li {
       list-style: none;
       float: left;
-      width: 92%;
+      width: 100%;
       border: solid 1px #dddddd;
       margin-bottom: 16px;
       height: 62px;
@@ -699,8 +699,8 @@
       color: #000;
       font-weight: 1000; }
     .ingenico-modal .modal-header .close {
-      margin-top: 10px;
-      font-size: 25px; }
+      /* margin-top: 10px; */
+      /* font-size: 25px; */ }
   .ingenico-modal .modal-content {
     width: 960px;
     border: 0;

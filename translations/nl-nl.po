@@ -929,11 +929,11 @@ msgstr "Stuur een e-mail wanneer de terugbetaling is mislukt."
 msgid "Invalid e-mail address"
 msgstr "Ongeldig e-mailadres"
 
-msgid "Pay with Ingenico ePayments"
-msgstr "Betaal met Ingenico ePayments"
+msgid "Pay with %name%"
+msgstr "Betaal met %name%"
 
-msgid "Pay safely on the next page with Ingenico using your preferred payment method"
-msgstr "Betaal veilig op de volgende pagina met Ingenico en gebruik uw favoriete betaalmethode"
+msgid "Pay safely on the next page with %name% using your preferred payment method"
+msgstr "Betaal veilig op de volgende pagina met %name% en gebruik uw favoriete betaalmethode"
 
 msgid "%brand% ends with %cardno%, expires on %month%/%year%"
 msgstr "%brand% eindigt op %cardno%, vervalt op %month%-%year%"
@@ -943,3 +943,27 @@ msgstr "Kredietkaarten"
 
 msgid "Bank Transfer"
 msgstr "Overschrijving"
+
+msgid "Card number"
+msgstr "Kaartnummer"
+
+msgid "Card owner"
+msgstr "Kaart eigenaar"
+
+msgid "Expiration date"
+msgstr "Uiterste houdbaarheidsdatum"
+
+msgid "Are you sure?"
+msgstr "Weet je het zeker?"
+
+msgid "Delete"
+msgstr "Verwijderen"
+
+msgid "My payment methods"
+msgstr "Mijn betaalmethoden"
+
+msgid "My active payment methods"
+msgstr "Mijn actieve betaalmethoden"
+
+msgid "My account"
+msgstr "Mijn rekening"

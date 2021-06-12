@@ -1,0 +1,80 @@
+{#**
+ * 2007-2021 Ingenico
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * @author Ingenico <contact@ingenico.com>
+ * @copyright  2007-2021 Ingenico
+ * @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ *#}
+
+{% extends '@Modules/ingenico_epayments/views/templates/admin/card.html.twig' %}
+
+{% block card_title %}
+    {{ 'ingenico.payment.info'|trans }}
+{% endblock %}
+
+{% block card_body %}
+    {% include '@Modules/ingenico_epayments/views/templates/admin/order-actions-modal.twig' %}
+
+    <div id="ingenico_order_info">
+        <table class="table table-responsive">
+            {% if pay_id %}
+            <tr>
+                <td>{{ 'order.payid'|trans({}) }} </td>
+                <td>{{ pay_id }} </td>
+            </tr>
+            {% endif %}
+
+            {% if pay_id_sub %}
+            <tr>
+                <td>{{ 'order.payidsub'|trans({}) }} </td>
+                <td>{{ pay_id_sub }} </td>
+            </tr>
+            {% endif %}
+
+            {% if payment_method %}
+            <tr>
+                <td>{{ 'order.payment_method'|trans({}) }} </td>
+                <td>{{ payment_method }} </td>
+            </tr>
+            {% endif %}
+
+            {% if status %}
+            <tr>
+                <td>{{ 'order.status'|trans({}) }} </td>
+                <td>{{ status }} </td>
+            </tr>
+            {% endif %}
+
+            {% if brand %}
+            <tr>
+                <td>{{ 'order.brand'|trans({}) }} </td>
+                <td>{{ brand }} </td>
+            </tr>
+            {% endif %}
+
+            {% if card_no %}
+            <tr>
+                <td>{{ 'order.card_no'|trans({}) }} </td>
+                <td>{{ card_no }} </td>
+            </tr>
+            {% endif %}
+
+            {% if cn %}
+            <tr>
+                <td>{{ 'order.customer_name'|trans({}) }} </td>
+                <td>{{ cn }} </td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+{% endblock %}

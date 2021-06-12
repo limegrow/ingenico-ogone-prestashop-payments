@@ -17,15 +17,24 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
+use Ingenico\Payment\Connector;
+
 class Ingenico_EpaymentsWebhookModuleFrontController extends ModuleFrontController
 {
     /** @var Ingenico_epayments */
     public $module;
 
+    /**
+     * @var Connector
+     */
+    public $connector;
+
     public function initContent()
     {
         parent::initContent();
-        $this->module->webhookListener();
+
+        $this->connector = $this->module->get('ingenico.payment.connector');
+        $this->connector->webhookListener();
     }
 
     public function display()

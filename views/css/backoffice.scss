@@ -661,7 +661,7 @@ $color-grey: #afafaf;
         li {
           list-style: none;
           float: left;
-          width: 92%;
+          width: 100%;
           border: solid 1px $color-white-five;
           margin-bottom: 16px;
           height: 62px;
@@ -906,8 +906,8 @@ $color-grey: #afafaf;
       font-weight: 1000;
     }
     .close {
-      margin-top: 10px;
-      font-size: 25px;
+      /* margin-top: 10px; */
+      /* font-size: 25px; */
     }
   }
   .modal-content {

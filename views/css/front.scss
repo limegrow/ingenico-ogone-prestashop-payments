@@ -168,3 +168,89 @@ table.ncoltable3 {
 .payment-option img {
   max-height: 30px;
 }
+
+.locked-frame {
+  display:block;
+  pointer-events: none;
+  -webkit-filter: blur(2px) grayscale(100%);
+  -moz-filter: blur(2px) grayscale(100%);
+  -o-filter: blur(2px) grayscale(100%);
+  /* -ms-filter: blur(2px) grayscale(100%); */
+  filter: blur(2px) grayscale(100%);
+  opacity: 0.95;
+}
+
+.ingenico-aliases {
+  .inner-card {
+    width: 100%;
+    max-width: 270px;
+    position: relative;
+    height: 190px;
+    padding: 20px 15px 15px 15px;
+    margin: 10px auto;
+    border-radius: 8px;
+    border-width: 0 2px 2px 0;
+    border-style: solid;
+    border-color: transparent #D2D2D2 #A5A5A5 transparent;
+    background: linear-gradient(to bottom, rgba(247, 247, 247, 1) 0%,
+      rgba(239, 239, 239, 1) 100%);
+    transition: all 0.3s;
+
+    &:hover {
+      box-shadow: 2px 2px 10px #ddd;
+    }
+  }
+
+  .ingenico-alias-card-logo {
+    width: 50px;
+  }
+
+  .ingenico-alias-cardno {
+    font-size: 12px;
+    color: #aaa;
+    border-bottom: 1px dotted #808080;
+    text-shadow: 1px 1px 0 #F9F9F9;
+  }
+
+  .ingenico-alias-cn {
+    float: left;
+    width: 54%;
+    margin-top: 15px;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: #aaa;
+    border-bottom: 1px dotted #808080;
+    text-shadow: 1px 1px 0 #F9F9F9;
+  }
+
+  .ingenico-alias-ed {
+    float: right;
+    width: 40%;
+    margin-top: 15px;
+    font-size: 12px;
+    color: #aaa;
+    border-bottom: 1px dotted #808080;
+    text-shadow: 1px 1px 0 #F9F9F9;
+  }
+
+  .card-info-title {
+    display: block;
+    text-transform: uppercase;
+    font-size: 10px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .ingenico-alias-delete {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-size: 16px;
+    i {
+      transition: all 0.3s;
+      &:hover {
+        color: #C12828;
+      }
+    }
+  }
+}

@@ -17,7 +17,7 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
-namespace Ingenico;
+namespace Ingenico\Payment;
 
 use Configuration;
 use Tools;
@@ -65,11 +65,6 @@ class Utils
      */
     public static function setSessionValue($key, $value)
     {
-        //if (session_status() == PHP_SESSION_NONE) {
-            //session_start();
-        //}
-
-        //$_SESSION[$key] = $value;
         // Workaround for Safari iFrame Cookie drama (Reference: https://gist.github.com/iansltx/18caf551baaa60b79206)
         // When saving token into cookies, save it into db as well
         // so that when we compare token from inside an iFrame then Safari can get the token from db
@@ -105,13 +100,6 @@ class Utils
      */
     public static function getSessionValue($key)
     {
-        //if (session_status() == PHP_SESSION_NONE) {
-        //    return false;
-        //}
-
-        //if (isset($_SESSION[$key])) {
-        //    return $_SESSION[$key];
-        //}
         $value = \Context::getContext()->cookie->{'ingenico_' . $key};
 
         // Workaround for Safari iFrame Cookie drama (Reference: https://gist.github.com/iansltx/18caf551baaa60b79206)
@@ -130,14 +118,6 @@ class Utils
      */
     public static function unsetSessionValue($key)
     {
-        //if (session_status() == PHP_SESSION_NONE) {
-        //    return;
-        //}
-
-        //if (isset($_SESSION[$key])) {
-            //unset($_SESSION[$key]);
-        //}
-
         // Workaround for Safari iFrame Cookie drama (Reference: https://gist.github.com/iansltx/18caf551baaa60b79206)
         // When saving token into cookies, save it into db as well
         // so that when we compare token from inside an iFrame then Safari can get the token from db

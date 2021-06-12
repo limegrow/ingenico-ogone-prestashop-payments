@@ -17,10 +17,17 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
+use Ingenico\Payment\Connector;
+
 class Ingenico_EpaymentsCronModuleFrontController extends ModuleFrontController
 {
     /** @var Ingenico_epayments */
     public $module;
+
+    /**
+     * @var Connector
+     */
+    public $connector;
 
     public function display()
     {
@@ -29,6 +36,7 @@ class Ingenico_EpaymentsCronModuleFrontController extends ModuleFrontController
 
     public function initContent()
     {
+        $this->connector = $this->module->get('ingenico.payment.connector');
         $token = $this->getCronToken();
 
         if ($token != Tools::getValue('token')) {
@@ -36,7 +44,7 @@ class Ingenico_EpaymentsCronModuleFrontController extends ModuleFrontController
             exit;
         }
 
-        $this->module->cronHandler();
+        $this->connector->cronHandler();
     }
 
     /**
@@ -45,8 +53,8 @@ class Ingenico_EpaymentsCronModuleFrontController extends ModuleFrontController
      */
     private function getCronToken()
     {
-        $settings = $this->module->requestSettings($this->module->requestSettingsMode());
-        $signature = $settings['connection_' . $this->module->mode . '_signature'];
+        $settings = $this->connector->requestSettings($this->connector->requestSettingsMode());
+        $signature = $settings['connection_' . $this->connector->mode . '_signature'];
         return Tools::substr($signature, -5);
     }
 }

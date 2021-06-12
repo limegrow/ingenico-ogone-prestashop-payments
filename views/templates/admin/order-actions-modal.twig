@@ -1,0 +1,244 @@
+{#**
+ * 2007-2021 Ingenico
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * @author Ingenico <contact@ingenico.com>
+ * @copyright  2007-2021 Ingenico
+ * @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ *#}
+
+<script>
+    //var ingenico_api_url = '{{ url('ingenico_api') }}';
+</script>
+
+<input type="hidden" id="ingenico_order_id" name="ingenico_order_id" value="{{ order_id }}"/>
+<input type="hidden" id="ingenico_pay_id" name="ingenico_pay_id" value="{{ pay_id }}"/>
+
+<!-- Capture Modal -->
+<div class="modal fade" id="captureModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    {{ 'order.action.capture'|trans({}) }}
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="capture_amount" class="col-sm-2 control-label">
+                            {{ 'order.action.capture_amount'|trans({}) }}
+                        </label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" id="capture_amount" name="capture_amount" value="{{ capture_amount }}" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-close" data-dismiss="modal">
+                    {{ 'button.close'|trans({}) }}
+                </button>
+                <button id="process-capture" type="button" class="btn btn-primary">
+                    {{ 'order.action.capture'|trans({}) }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Capture Confirmation -->
+<div id="capture-confirmation-modal" class="ingenico-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    {{ 'order.action.confirmation'|trans({}) }}
+                </h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li>
+                        {{ 'order.action.capture_confirmation'|trans({}) }}
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-close" data-dismiss="modal" aria-label="Close">
+                    {{ 'button.close'|trans({}) }}
+                </button>
+
+                <button id="process-capture-action" class="btn btn-primary">
+                    {{ 'order.action.capture'|trans({}) }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Confirmation -->
+<div id="cancel-confirmation-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    {{ 'order.action.confirmation'|trans({}) }}
+                </h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {{ 'order.action.cancellation_confirmation'|trans({}) }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-close" data-dismiss="modal" aria-label="Close">
+                    {{ 'button.close'|trans({}) }}
+                </button>
+
+                <button id="process-cancel-action" class="btn btn-primary">
+                    {{ 'order.action.cancel'|trans({}) }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Refund Modal -->
+<div id="refund-modal" class="ingenico-modal modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">
+                    {{ 'order.action.refund'|trans({}) }}
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="refund_amount" class="col-sm-2 control-label">
+                            {{ 'order.action.refund_amount'|trans({}) }}
+                        </label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" id="refund_amount" name="refund_amount" value="{{ refund_amount }}" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-close" data-dismiss="modal">
+                    {{ 'button.close'|trans({}) }}
+                </button>
+                <button id="process-perform-refund" type="button" class="btn btn-primary">
+                    {{ 'order.action.refund'|trans({}) }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Refund Confirmation -->
+<div id="refund-confirmation-modal" class="ingenico-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    {{ 'order.action.confirmation'|trans({}) }}
+                </h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li>
+                        {{ 'order.action.refund_confirmation'|trans({}) }}
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-close" data-dismiss="modal" aria-label="Close">
+                    {{ 'button.close'|trans({}) }}
+                </button>
+
+                <button id="process-refund-action" class="btn btn-primary">
+                    {{ 'order.action.refund'|trans({}) }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Refund Failed Modal -->
+<div id="refund-failed-modal" class="ingenico-modal modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    {{ 'modal.refund_failed.title'|trans({}) }}
+                </h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li>
+                        {{ 'modal.refund_failed.label1'|trans({}) }}
+                    </li>
+                    <br>
+                    <li>
+                        {{ 'modal.refund_failed.label2'|trans({}) }}:<br>
+                        <a href="mailto:{{ support_email }}">
+                            {{ support_email }}
+                        </a>
+                    </li>
+                    <br>
+                    {% if support_phone is not empty %}
+                        <li>
+                            {{ 'modal.refund_failed.label3'|trans({}) }}:<br>
+                            <a target="_blank" href="{{ support_phone }}">
+                                {{ support_phone }}
+                            </a>
+                            <script>
+                                // Convert phone urls to text
+                                jQuery( document ).ready( function ( $ ) {
+                                    $( '#refund-failed-modal' ).find( 'a' ).each( function() {
+                                        let el = $( this );
+                                        if ( el.prop( 'href' ).indexOf( 'tel://' ) > -1 ) {
+                                            $( '<span>' + el.text() + '</span>' ).insertAfter( el );
+                                            el.remove();
+                                        }
+                                    } );
+                                } );
+                            </script>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    {{ 'button.close'|trans({}) }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,10 +1,10 @@
 {
   "name": "ingenico/ingenico_epayments",
   "description": "Ingenico ePayments Module for PrestaShop",
-  "version": "4.0.0",
-  "license": [
-    "OSL"
-  ],
+  "homepage": "https://github.com/limegrow/ingenico-ogone-prestashop-payments",
+  "version": "5.0.0",
+  "license": "OSL-3.0",
+  "type": "prestashop-module",
   "authors": [
     {
       "name": "Oleg Iskusnyh",
@@ -20,14 +20,26 @@
   "support": {
     "email": "support.ecom@ingenico.com"
   },
+  "config": {
+    "preferred-install": "dist",
+    "optimize-autoloader": true,
+    "prepend-autoloader": false
+  },
   "require": {
-    "php": ">=7.0",
+    "php": ">=7.2",
     "ext-curl": "*",
     "ext-mbstring": "*",
     "ext-bcmath": "*",
-    "ingenico/ogone-client": "^5.3.0"
+    "ingenico/ogone-client": "^5.4.0",
+    "prestashop/module-lib-service-container": "^1.3"
   },
   "require-dev": {
     "phpunit/phpunit": "^7"
+  },
+  "autoload": {
+    "psr-4": {
+      "Ingenico\\Payment\\": "src/"
+    },
+    "classmap": ["ingenico_epayments.php"]
   }
 }
