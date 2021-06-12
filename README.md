@@ -17,6 +17,12 @@ It's free and easy to configure!
 
 ## Installation
 
+### Installation
+1. Download [ingenico_epayments.zip][cloud]
+2. Login to the Prestashop admin panel. Go to IMPROVE > Modules > Module Manager.
+   Click on the Upload a module button. Add "ingenico_epayments.zip" file and install it.
+3. Configure module as per configuration instructions
+
 ### Manual Installation from Downloaded ZIP Archive
 
 1. Download ZIP Archive or clone the code using `git`
@@ -46,3 +52,4 @@ It's free and easy to configure!
 
 [ingenico]: https://www.ingenico.com/global-epayments
 [guide]: https://epayments-support.ingenico.com/en/integration-solutions/plugins/prestashop
+[cloud]: https://yadi.sk/d/afO-XAxtLkh7mg
