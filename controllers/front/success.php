@@ -17,29 +17,37 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
-use Ingenico\Utils;
+use Ingenico\Payment\Utils;
+use Ingenico\Payment\Connector;
 
 class Ingenico_EpaymentsSuccessModuleFrontController extends ModuleFrontController
 {
     /** @var Ingenico_epayments */
     public $module;
 
+    /**
+     * @var Connector
+     */
+    public $connector;
+
     public function initContent()
     {
         parent::initContent();
 
+        $this->connector = $this->module->get('ingenico.payment.connector');
+
         // Set up Controller for Connector
-        $this->module->controller = $this;
+        $this->connector->controller = $this;
 
         $orderId = Tools::getValue('order_id');
         if ($orderId && strpos($orderId, 'cartId') !== false) {
             $cartId = str_replace('cartId', '', $orderId);
             $cart = new \Cart((int) $cartId);
-            if (Tools::getValue('return_state') != $this->module::RETURN_STATE_EXCEPTION && !$cart->orderExists()) {
+            if (Tools::getValue('return_state') != $this->connector::RETURN_STATE_EXCEPTION && !$cart->orderExists()) {
                 // Place order with Pending state
                 $this->module->validateOrder(
                     $cart->id,
-                    Configuration::get($this->module::PS_OS_PENDING),
+                    Configuration::get($this->connector::PS_OS_PENDING),
                     $cart->getOrderTotal(),
                     $this->module->displayName,
                     null,
@@ -58,6 +66,6 @@ class Ingenico_EpaymentsSuccessModuleFrontController extends ModuleFrontControll
             }
         }
 
-        $this->module->processSuccessUrls();
+        $this->connector->processSuccessUrls();
     }
 }

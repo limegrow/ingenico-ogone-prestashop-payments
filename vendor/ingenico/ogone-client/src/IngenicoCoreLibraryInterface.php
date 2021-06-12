@@ -255,7 +255,7 @@ interface IngenicoCoreLibraryInterface
      * @param $category
      * @return array
      */
-    public static function getPaymentMethodsByCategory($category);
+    public function getPaymentMethodsByCategory($category);
 
     /**
      * Get Selected Payment Methods

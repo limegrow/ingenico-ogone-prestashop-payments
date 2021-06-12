@@ -32,10 +32,17 @@ It's free and easy to configure!
 6. Configure module as per configuration instructions
 
 ## Configuration
-1. Login to the Prestashop admin panel
+1. Login to the Prestashop backoffice
 2. Go to IMPROVE > Modules > Module Manager
 3. Find "Ingenico ePayments" and click Configure
 4. Read more [Installation and Configuration guide][guide]
+
+## Update
+
+1. Install updated module as described above
+2. Login to the Prestashop backoffice
+2. Go to IMPROVE > Modules > Module Manager
+3. Find "Ingenico ePayments" and click Upgrade
 
 [ingenico]: https://www.ingenico.com/global-epayments
 [guide]: https://epayments-support.ingenico.com/en/integration-solutions/plugins/prestashop

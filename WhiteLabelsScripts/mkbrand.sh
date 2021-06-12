@@ -148,6 +148,7 @@ mv "$MODULE_DIR/ingenico_epayments.php" "$MODULE_DIR/$MODULE_FILE"
 
 # Change class name of plugin file
 sed -i -e "s/class Ingenico_Epayments/class $MODULE_CLASS/g" "$MODULE_DIR/$MODULE_FILE"
+sed -i -e 's@use Ingenico\\Payment\\@use '$MODULE_CLASS'\\Payment\\@g' "$MODULE_DIR/$MODULE_FILE"
 
 # Change branding in plugin file
 sed -i -e "s/ingenico_epayments/$MODULE_NAME/g" "$MODULE_DIR/$MODULE_FILE"
@@ -155,50 +156,50 @@ sed -i -e "s/Ingenico ePayments/$MODULE_DESC/g" "$MODULE_DIR/$MODULE_FILE"
 sed -i -e "s/Ingenico Group/$MODULE_AUTHOR/g" "$MODULE_DIR/$MODULE_FILE"
 
 # Change class name of controllers
-sed -i -e "s/Ingenico_Epayments/$MODULE_CLASS/g" $MODULE_DIR/controllers/front/ajax.php
-sed -i -e "s/Ingenico_Epayments/$MODULE_CLASS/g" $MODULE_DIR/controllers/front/canceled.php
-sed -i -e "s/Ingenico_Epayments/$MODULE_CLASS/g" $MODULE_DIR/controllers/front/cron.php
-sed -i -e "s/Ingenico_Epayments/$MODULE_CLASS/g" $MODULE_DIR/controllers/front/pay.php
-sed -i -e "s/Ingenico_Epayments/$MODULE_CLASS/g" $MODULE_DIR/controllers/front/payment.php
-sed -i -e "s/Ingenico_Epayments/$MODULE_CLASS/g" $MODULE_DIR/controllers/front/payment_list.php
-sed -i -e "s/Ingenico_Epayments/$MODULE_CLASS/g" $MODULE_DIR/controllers/front/success.php
-sed -i -e "s/Ingenico_Epayments/$MODULE_CLASS/g" $MODULE_DIR/controllers/front/webhook.php
-sed -i -e "s/Ingenico_Epayments/$MODULE_CLASS/g" $MODULE_DIR/controllers/front/open_invoice.php
+find $MODULE_DIR/controllers/front/ -name '*.php' -type f|while read fname; do
+  sed -i -e "s/Ingenico_Epayments/$MODULE_CLASS/g" "$fname"
+  sed -i -e 's@use Ingenico\\Payment\\@use '$MODULE_CLASS'\\Payment\\@g' "$fname"
+done
 
-# Change branding in PrestaShopConnector.php file
-sed -i -e "s/PLATFORM_INGENICO/$PLATFORM_ID/g" "$MODULE_DIR/PrestaShopConnector.php"
+# Change class name of upgrade scripts
+find $MODULE_DIR/upgrade/ -name '*.php' -type f|while read fname; do
+  sed -i -e 's@use Ingenico\\Payment\\@use '$MODULE_CLASS'\\Payment\\@g' "$fname"
+done
+
+# Change branding in Connector.php file
+sed -i -e "s/ingenico_epayments/$MODULE_NAME/g" "$MODULE_DIR/src/Connector.php"
+sed -i -e "s/PLATFORM_INGENICO/$PLATFORM_ID/g" "$MODULE_DIR/src/Connector.php"
 
 # Change branding in Order Statuses
-sed -i -e "s/Ingenico ePayment/$MODULE_DESC/g" $MODULE_DIR/setup/Install.php
-sed -i -e "s/ingenico_epayments/$MODULE_NAME/g" $MODULE_DIR/setup/Install.php
+sed -i -e "s/Ingenico ePayment/$MODULE_DESC/g" $MODULE_DIR/src/Install/Installer.php
+sed -i -e "s/ingenico_epayments/$MODULE_NAME/g" $MODULE_DIR/src/Install/Installer.php
 
-# Change namespace of connector
-sed -i -e "s/namespace Ingenico/namespace $MODULE_CLASS/g" "$MODULE_DIR/PrestaShopConnector.php"
-sed -i -e 's@use Ingenico\\PrestaShopConnector@use '$MODULE_CLASS'\\PrestaShopConnector@g' "$MODULE_DIR/$MODULE_FILE"
+# Directory: config/*.yml
+find $MODULE_DIR/config/ -name '*.yml' -type f|while read fname; do
+  sed -i -e 's@Ingenico\\Payment\\@'$MODULE_CLASS'\\Payment\\@g' "$fname"
+done
 
-# Change namespace of Install script
-sed -i -e "s/namespace Ingenico/namespace $MODULE_CLASS/g" "$MODULE_DIR/setup/Install.php"
-sed -i -e 's@use Ingenico\\PrestaShopConnector@use '$MODULE_CLASS'\\PrestaShopConnector@g' "$MODULE_DIR/setup/Install.php"
-sed -i -e 's@use Ingenico\\Setup@use '$MODULE_CLASS'\\Setup@g' "$MODULE_DIR/$MODULE_FILE"
+# composer.json
+sed -i -e 's@Ingenico\\\\Payment@'$MODULE_CLASS'\\\\Payment@g' "$MODULE_DIR/composer.json"
+sed -i -e "s/ingenico_epayments.php/$MODULE_FILE/g" "$MODULE_DIR/composer.json"
 
-# Change namespace for Utils
-sed -i -e "s/namespace Ingenico/namespace $MODULE_CLASS/g" $MODULE_DIR/utils/Utils.php
-sed -i -e 's@use Ingenico\\Utils@use '$MODULE_CLASS'\\Utils@g' "$MODULE_DIR/$MODULE_FILE"
-
-# Change namepace for Models
-find $MODULE_DIR/model/ -name '*.php' -type f|while read fname; do
+# Change namespaces of src/
+find $MODULE_DIR/src/ -name '*.php' -type f|while read fname; do
   sed -i -e "s/namespace Ingenico/namespace $MODULE_CLASS/g" "$fname"
+  sed -i -e 's@use Ingenico\\Payment\\@use '$MODULE_CLASS'\\Payment\\@g' "$fname"
 done
 
-# Change names
-find $MODULE_DIR/ -name '*.php' -type f|while read fname; do
-  sed -i -e 's@Ingenico\\Utils@'"$MODULE_CLASS"'\\Utils@g' "$fname"
-  sed -i -e 's@Ingenico\\Model@'"$MODULE_CLASS"'\\Model@g' "$fname"
-done
-
-# Change pluginname in templates
+# Change strings in templates *.tpl
 find $MODULE_DIR/views/templates/ -iname *.tpl -type f|while read fname; do
   sed -i -e "s/mod=\'ingenico_epayments\'/mod=\'$MODULE_NAME\'/g" "$fname"
+  sed -i -e "s/Ingenico ePayments/$MODULE_DESC/g" "$fname"
+  sed -i -e "s/Ingenico backoffice/$MODULE_BRAND backoffice/g" "$fname"
+done
+
+# Change strings in templates *.twig
+find $MODULE_DIR/views/templates/ -iname *.twig -type f|while read fname; do
+  sed -i -e "s/ingenico_epayments/$MODULE_NAME/g" "$fname"
+  sed -i -e "s/Ingenico ePayments/$MODULE_DESC/g" "$fname"
 done
 
 # Change branding in translation files
@@ -231,6 +232,9 @@ sed -i -e "s/#eb222e/$COLOR_PINKISH_RED/g" $MODULE_DIR/views/css/front.scss
 sed -i -e "s/#f6f6f6/$COLOR_WHITE_TWO/g" $MODULE_DIR/views/css/front.scss
 sed -i -e "s/#dddddd/$COLOR_WHITE_FIVE/g" $MODULE_DIR/views/css/front.scss
 sed -i -e "s/#afafaf/$COLOR_WHITE_GREY/g" $MODULE_DIR/views/css/front.scss
+
+# Update composer
+composer dump-autoload -o --no-dev
 
 # Build static content
 gulp css:build

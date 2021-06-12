@@ -16,24 +16,54 @@
  * @copyright Ingenico
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
-if (!class_exists('\\IngenicoClient\\IngenicoCoreLibrary', false)) {
-    require dirname(__FILE__) . '/vendor/autoload.php';
+
+declare(strict_types=1);
+
+if (!defined('_PS_VERSION_')) {
+    exit;
 }
 
-require dirname(__FILE__) . '/setup/Install.php';
-require dirname(__FILE__) . '/utils/Utils.php';
-require dirname(__FILE__) . '/PrestaShopConnector.php';
+require_once dirname(__FILE__) . '/vendor/autoload.php';
 
-use Ingenico\PrestaShopConnector;
-use Ingenico\Utils;
-use Ingenico\Setup\Install;
+use PrestaShop\ModuleLibServiceContainer\DependencyInjection\ServiceContainer;
+use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Ingenico\Payment\Install\InstallerFactory;
+use Ingenico\Payment\Connector;
+use Ingenico\Payment\Utils;
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\Loader\PoFileLoader;
 use IngenicoClient\IngenicoCoreLibrary;
+use PrestaShopBundle\Controller\Admin\Sell\Order\ActionsBarButtonsCollection;
+use PrestaShopBundle\Controller\Admin\Sell\Order\ActionsBarButton;
 
-class Ingenico_Epayments extends PrestaShopConnector
+class Ingenico_Epayments extends PaymentModule
 {
+    const VERSION = '5.0.0';
+
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
+
+    /**
+     * @var ServiceContainer
+     */
+    private $serviceContainer;
+
+    /**
+     * Configuration HTML
+     * @var string
+     */
+    protected $form_html = '';
+
+    /**
+     * @var Connector
+     */
+    public $connector;
+
     /**
      * @var Translator
      */
@@ -46,13 +76,13 @@ class Ingenico_Epayments extends PrestaShopConnector
     {
         $this->name = 'ingenico_epayments';
         $this->tab = 'payments_gateways';
-        $this->version = '4.0.0';
+        $this->version = self::VERSION;
         $this->author = 'Ingenico Group';
         $this->need_instance = 0;
         $this->bootstrap = 1;
         $this->is_configurable = 1;
         $this->module_key = '8b809d47d078b595c59c7661bd405f54';
-        $this->ps_versions_compliancy = array('min' => '1.7.0', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.7.5.0', 'max' => _PS_VERSION_);
 
         $this->controllers = ['ajax', 'canceled', 'cron', 'pay', 'payment', 'payment_list', 'success', 'webhook'];
 
@@ -64,9 +94,12 @@ class Ingenico_Epayments extends PrestaShopConnector
         // Initialize translations
         $lang = new Language((int) $this->context->language->id);
         $this->translator = Context::getContext()->getTranslator();
+        //$this->translator = $this->get('translator');
         $this->translator->addLoader('po', new PoFileLoader());
         $this->translator->setFallbackLocales([$lang->locale, 'en-us']);
         $this->translator->setLocale($lang->locale);
+
+        $this->connector = $this->getModuleService('ingenico.payment.connector');
 
         // Load translations of the module
         $languages = Language::getLanguages(true);
@@ -91,26 +124,37 @@ class Ingenico_Epayments extends PrestaShopConnector
                 }
             }
         }
+    }
 
-        // Install or upgrade
-        $install = new Install($this->name);
-        $install->install();
-        $install->upgrade();
+    /**
+     * @param string $serviceName
+     *
+     * @return mixed
+     */
+    public function getModuleService($serviceName)
+    {
+        if (null === $this->serviceContainer) {
+            $this->serviceContainer = new ServiceContainer($this->name, $this->getLocalPath());
+        }
+        return $this->serviceContainer->getService($serviceName);
+    }
 
-        // Install actionEmailSendBefore hook if it's missing
-        $hookInstalled = false;
-        $hooks = Hook::getHookModuleExecList('actionEmailSendBefore');
-        if ($hooks) {
-            foreach ($hooks as $hook) {
-                if ($hook['module'] === $this->name) {
-                    $hookInstalled = true;
-                }
+    /**
+     * Override of native function to always retrieve Symfony container instead of legacy admin container on legacy context.
+     *
+     * {@inheritdoc}
+     */
+    public function get($serviceName)
+    {
+        if (null === $this->container) {
+            $this->container = SymfonyContainer::getInstance();
+
+            if (null === $this->container) {
+                return $this->getModuleService($serviceName);
             }
         }
 
-        if (!$hookInstalled) {
-            $this->registerHook('actionEmailSendBefore');
-        }
+        return $this->container->get($serviceName);
     }
 
     /**
@@ -119,23 +163,8 @@ class Ingenico_Epayments extends PrestaShopConnector
      */
     public function install()
     {
-        $install = new Install();
-        if (!parent::install() ||
-            !$this->registerHook('header') ||
-            !$this->registerHook('backOfficeHeader') ||
-            !$this->registerHook('displayBackOfficeOrderActions') ||
-            !$this->registerHook('displayAdminOrder') ||
-            !$this->registerHook('actionCronJob') ||
-            !$this->registerHook('paymentOptions') ||
-            !$this->registerHook('paymentReturn') ||
-            !$this->registerHook('actionEmailSendBefore') ||
-            !$install->install() ||
-            !$this->saveAdminDir()
-        ) {
-            return false;
-        }
-
-        return true;
+        $installer = InstallerFactory::create();
+        return $this->saveAdminDir() && parent::install() && $installer->install($this);
     }
 
     /**
@@ -144,7 +173,9 @@ class Ingenico_Epayments extends PrestaShopConnector
      */
     public function uninstall()
     {
-        return parent::uninstall();
+        $installer = InstallerFactory::create();
+
+        return $installer->uninstall() && parent::uninstall();
     }
 
     /**
@@ -154,6 +185,17 @@ class Ingenico_Epayments extends PrestaShopConnector
     {
         // Add JS and CSS
         $this->context->controller->addJquery();
+
+        try {
+            $pageType = $this->connector->coreLibrary->getConfiguration()->getPaymentpageType();
+        } catch (\Exception $e) {
+            $pageType = null;
+        }
+
+        Media::addJsDef([
+            'ingenico_ajax_url' => $this->getControllerUrl('ajax'),
+            'ingenico_payment_page_type' => $pageType
+        ]);
 
         if (_PS_MODE_DEV_) {
             $this->context->controller->addJS($this->getPath(true) . 'views/js/front.js');
@@ -174,9 +216,21 @@ class Ingenico_Epayments extends PrestaShopConnector
             $this->context->controller->addJquery();
             $this->context->controller->addJqueryPlugin('ui.slider');
 
+            /** @var UrlGeneratorInterface $router */
+            $router = $this->get('router');
+
+            Media::addJsDef([
+                'ingenico_ajax_url' => $this->getControllerUrl('ajax'),
+                'ingenico_api_url' => $router->generate('ingenico_api'),
+                'ingenico_flex_upload_url' => $this->getControllerUrl('ajax', [
+                    'method' => 'flex_upload'
+                ])
+            ]);
+
             if (_PS_MODE_DEV_) {
                 $this->context->controller->addJS($this->getPath(true) . 'views/js/async.js');
                 $this->context->controller->addJS($this->getPath(true) . 'views/js/backoffice.js');
+                $this->context->controller->addJS($this->getPath(true) . 'views/js/order-actions.js');
                 $this->context->controller->addCSS($this->getPath(true) . 'views/css/backoffice.css');
 
                 $this->context->controller->addCSS($this->getPath(true) . 'views/jsgrid/jsgrid.css');
@@ -185,6 +239,7 @@ class Ingenico_Epayments extends PrestaShopConnector
             } else {
                 $this->context->controller->addJS($this->getPath(true) . 'views/js/async.min.js');
                 $this->context->controller->addJS($this->getPath(true) . 'views/js/backoffice.min.js');
+                $this->context->controller->addJS($this->getPath(true) . 'views/js/order-actions.min.js');
                 $this->context->controller->addCSS($this->getPath(true) . 'views/css/backoffice.min.css');
 
                 $this->context->controller->addCSS($this->getPath(true) . 'views/jsgrid/jsgrid.min.css');
@@ -198,158 +253,57 @@ class Ingenico_Epayments extends PrestaShopConnector
                     $this->getPath(true) . 'views/jsgrid/i18n/jsgrid-' . $locale . '.js'
                 );
             }
-
-            // ViewOrder Page
-            if (Tools::getValue('vieworder') !== false &&  Tools::getValue('id_order') !== false) {
-                $order = new Order(Tools::getValue('id_order'));
-                if ($order->module === $this->name) {
-                    // Ingenico Actions
-                    if (Tools::isSubmit('ingenico_action') && Tools::getValue('order_id')) {
-                        $action = Tools::getValue('ingenico_action');
-                        $orderId = Tools::getValue('order_id');
-                        $payId = Tools::getValue('pay_id');
-
-                        try {
-                            switch ($action) {
-                                case 'capture':
-                                    $captureAmount = (float) Tools::getValue('capture_amount');
-                                    if ($captureAmount > $this->total->getAvailableCaptureAmount($orderId)) {
-                                        throw new \Exception($this->trans('order.action.capture_too_much', [], 'messages'));
-                                    }
-
-                                    if ($captureAmount <= 0) {
-                                        throw new \Exception($this->trans('order.action.capture_too_little', [], 'messages'));
-                                    }
-
-                                    if ($captureAmount == $order->total_paid_tax_incl) {
-                                        $result = $this->coreLibrary->capture($orderId, $payId);
-                                    } else {
-                                        $result = $this->coreLibrary->capture($orderId, $payId, $captureAmount);
-                                    }
-
-                                    switch ($result->getPaymentStatus()) {
-                                        case IngenicoCoreLibrary::STATUS_CAPTURE_PROCESSING:
-                                            $message = $this->trans('order.action.capture_pending', [], 'messages');
-                                            break;
-                                        case IngenicoCoreLibrary::STATUS_CAPTURED:
-                                            $message = $this->trans('order.action.captured', [], 'messages');
-                                            break;
-                                        default:
-                                            $message = '';
-                                            break;
-                                    }
-
-
-                                    header('Content-Type: application/json');
-                                    echo json_encode([
-                                        'status' => 'ok',
-                                        'message' => $message
-                                    ]);
-                                    exit();
-                                case 'cancel':
-                                    $this->coreLibrary->cancel($orderId, $payId);
-
-                                    header('Content-Type: application/json');
-                                    echo json_encode([
-                                        'status' => 'ok',
-                                        'message' => $this->trans('order.action.cancelled', [], 'messages')
-                                    ]);
-                                    exit();
-                                case 'refund':
-                                    $refundAmount = (float) Tools::getValue('refund_amount');
-                                    if ($refundAmount > $this->total->getAvailableRefundAmount($orderId)) {
-                                        throw new \Exception($this->trans('order.action.refund_too_much', [], 'messages'));
-                                    }
-
-                                    if ($refundAmount <= 0) {
-                                        throw new \Exception($this->trans('order.action.refund_too_little', [], 'messages'));
-                                    }
-
-                                    $result = $this->coreLibrary->refund($orderId, $payId, $refundAmount);
-                                    switch ($result->getPaymentStatus()) {
-                                        case IngenicoCoreLibrary::STATUS_REFUND_PROCESSING:
-                                            $message = $this->trans('order.action.refund_pending', [], 'messages');
-                                            break;
-                                        case IngenicoCoreLibrary::STATUS_REFUNDED:
-                                            $message = $this->trans('order.action.refunded', [], 'messages');
-                                            break;
-                                        default:
-                                            $message = '';
-                                            break;
-                                    }
-
-                                    header('Content-Type: application/json');
-                                    echo json_encode([
-                                        'status' => 'ok',
-                                        'message' => $message
-                                    ]);
-                                    exit();
-                            }
-                        } catch (Exception $e) {
-                            header('Content-Type: application/json');
-
-                            /**
-                             * 50001111 - Operation is not allowed : check user privileges
-                             * 50001218 - Operation not permitted for the merchant
-                             * 50001046 - Operation not permitted for the merchant
-                             * 50001186 - Operation not permitted
-                             * 50001187 - Operation not permitted
-                             */
-                            if ($action === 'refund' &&
-                                in_array((string) $e->getCode(), ['50001111', '50001218', '50001046', '50001186', '50001187'])
-                            ) {
-                                echo json_encode([
-                                    'status' => 'action_required',
-                                    'message' => $e->getMessage()
-                                ]);
-                                exit();
-                            }
-
-                            echo json_encode([
-                                'status' => 'error',
-                                'message' => $e->getMessage()
-                            ]);
-                            exit();
-                        }
-                    }
-                }
-            }
         }
     }
 
     /**
      * Hook: DisplayBackOfficeOrderActions
+     * @depecated since PS 1.7.7, replaced to ActionGetAdminOrderButtons
      * @param $params
      */
     public function hookDisplayBackOfficeOrderActions($params)
     {
+        if (version_compare(_PS_VERSION_, '1.7.7.0', '>=')) {
+            // @see hookDisplayAdminOrderSide
+            return;
+        }
+
         $orderId = $params['id_order'];
+        $order = new Order($orderId);
+
+        if ($order->module !== $this->name) {
+            return;
+        }
 
         // Get Payment Details
-        $data = $this->getIngenicoPaymentLog($orderId);
+        $data = $this->connector->getIngenicoPaymentLog($orderId);
         if (!$data->getOrderId()) {
             // Fetch payment info
             try {
-                $data = $this->coreLibrary->getPaymentInfo($orderId);
+                $data = $this->connector->coreLibrary->getPaymentInfo($orderId);
                 if ($data->isTransactionSuccessful()) {
-                    $this->logIngenicoPayment($orderId, $data);
+                    $this->connector->logIngenicoPayment($orderId, $data);
                 }
             } catch (Exception $e) {
-                $this->logger->debug($e->getMessage());
+                $this->connector->logger->debug($e->getMessage());
                 return;
             }
         }
 
         // Get available refund amount
-        $refundAmount = $this->total->getAvailableRefundAmount($orderId);
-        $captureAmount = $this->total->getAvailableCaptureAmount($orderId);
-        $cancelAmount = $this->total->getAvailableCancelAmount($orderId);
+        $refundAmount = $this->connector->total->getAvailableRefundAmount($orderId);
+        $captureAmount = $this->connector->total->getAvailableCaptureAmount($orderId);
+        $cancelAmount = $this->connector->total->getAvailableCancelAmount($orderId);
 
-        $this->context->smarty->assign([
+        /** @var UrlGeneratorInterface $router */
+        $router = $this->get('router');
+
+        $params = [
             'template_dir' => dirname(__FILE__) . '/views/templates/',
-            'can_refund' => $this->coreLibrary->canRefund($data->getOrderId(), $data->getPayId(), $refundAmount),
-            'can_capture' => $this->coreLibrary->canCapture($data->getOrderId(), $data->getPayId(), $captureAmount),
-            'can_cancel' => $this->coreLibrary->canVoid($data->getOrderId(), $data->getPayId(), $cancelAmount),
+            'ingenico_api' => $router->generate('ingenico_api'),
+            'can_refund' => $this->connector->coreLibrary->canRefund($data->getOrderId(), $data->getPayId(), $refundAmount),
+            'can_capture' => $this->connector->coreLibrary->canCapture($data->getOrderId(), $data->getPayId(), $captureAmount),
+            'can_cancel' => $this->connector->coreLibrary->canVoid($data->getOrderId(), $data->getPayId(), $cancelAmount),
             'refund_amount' => $refundAmount,
             'capture_amount' => $captureAmount,
             'cancel_amount' => $cancelAmount,
@@ -358,11 +312,70 @@ class Ingenico_Epayments extends PrestaShopConnector
             'pay_id' => $data->getPayId(),
 
             // WhiteLabels
-            'support_email' => $this->coreLibrary->getWhiteLabelsData()->getSupportEmail(),
-            'support_phone' => $this->coreLibrary->getWhiteLabelsData()->getSupportPhone(),
-        ]);
+            'support_email' => $this->connector->coreLibrary->getWhiteLabelsData()->getSupportEmail(),
+            'support_phone' => $this->connector->coreLibrary->getWhiteLabelsData()->getSupportPhone(),
+        ];
 
+        $this->context->smarty->assign($params);
         echo $this->display(__FILE__, 'views/templates/admin/order-actions.tpl');
+    }
+
+    /**
+     * Hook: DisplayAdminOrderSide
+     * @version since PS 1.7.7
+     */
+    public function hookDisplayAdminOrderSide(array $params)
+    {
+        // Add info section to Order view in admin backend
+        $orderId = $params['id_order'];
+        $order = new Order($orderId);
+
+        if ($order->module !== $this->name) {
+            return;
+        }
+
+        // Get Payment Details
+        $data = $this->connector->getIngenicoPaymentLog($orderId);
+        if (!$data->getOrderId()) {
+            // Fetch payment info
+            try {
+                $data = $this->connector->coreLibrary->getPaymentInfo($orderId);
+                if ($data->isTransactionSuccessful()) {
+                    $this->connector->logIngenicoPayment($orderId, $data);
+                }
+            } catch (Exception $e) {
+                $this->connector->logger->debug($e->getMessage());
+                return;
+            }
+        }
+
+        $params = [
+            'order_id' => $orderId,
+            'order_amount' => $data->getOrderId(),
+            'status' => $data->getStatus(),
+            'pay_id' => $data->getPayId(),
+            'pay_id_sub' => $data->getPayIdSub(),
+            'payment_method' => $data->getPm(),
+            'brand' => $data->getBrand(),
+            'card_no' => $data->getCardNo(),
+            'cn' => $data->getCn(),
+
+            'refund_amount' => $this->connector->total->getAvailableRefundAmount($orderId),
+            'capture_amount' => $this->connector->total->getAvailableCaptureAmount($orderId),
+            'cancel_amount' => $this->connector->total->getAvailableCancelAmount($orderId),
+
+            // WhiteLabels
+            'support_email' => $this->connector->coreLibrary->getWhiteLabelsData()->getSupportEmail(),
+            'support_phone' => $this->connector->coreLibrary->getWhiteLabelsData()->getSupportPhone(),
+        ];
+
+        /** @var Twig_Environment $twig */
+        $twig = $this->get('twig');
+
+        return $twig->render(
+            sprintf('@Modules/%s/views/templates/admin/order-info.twig', $this->name),
+            $params
+        );
     }
 
     /**
@@ -370,77 +383,129 @@ class Ingenico_Epayments extends PrestaShopConnector
      */
     public function hookDisplayAdminOrder($params)
     {
+        if (version_compare(_PS_VERSION_, '1.7.7.0', '>=')) {
+            // @see hookDisplayAdminOrderSide
+            return;
+        }
+
         // Add info section to Order view in admin backend
         $orderId = Tools::getValue('id_order', 0);
         $order = new Order($orderId);
 
-        if ($order->module === $this->name) {
-            // Get Payment Details
-            $data = $this->getIngenicoPaymentLog($orderId);
-            if (!$data->getOrderId()) {
-                // Fetch payment info
-                try {
-                    $data = $this->coreLibrary->getPaymentInfo($orderId);
-                    $this->logIngenicoPayment($orderId, $data);
-                } catch (Exception $e) {
-                    $this->logger->debug($e->getMessage());
-                    return;
+        if ($order->module !== $this->name) {
+            return;
+        }
+
+        // Get Payment Details
+        $data = $this->connector->getIngenicoPaymentLog($orderId);
+        if (!$data->getOrderId()) {
+            // Fetch payment info
+            try {
+                $data = $this->connector->coreLibrary->getPaymentInfo($orderId);
+                if ($data->isTransactionSuccessful()) {
+                    $this->connector->logIngenicoPayment($orderId, $data);
                 }
+            } catch (Exception $e) {
+                $this->connector->logger->debug($e->getMessage());
+                return;
             }
+        }
 
-            $this->context->smarty->assign([
-                'order_id' => $orderId,
-                'order_amount' => $data->getOrderId(),
-                'status' => $data->getStatus(),
-                'pay_id' => $data->getPayId(),
-                'pay_id_sub' => $data->getPayIdSub(),
-                'payment_method' => $data->getPm(),
-                'brand' => $data->getBrand(),
-                'card_no' => $data->getCardNo(),
-                'cn' => $data->getCn(),
-            ]);
+        $params = [
+            'order_id' => $orderId,
+            'order_amount' => $data->getOrderId(),
+            'status' => $data->getStatus(),
+            'pay_id' => $data->getPayId(),
+            'pay_id_sub' => $data->getPayIdSub(),
+            'payment_method' => $data->getPm(),
+            'brand' => $data->getBrand(),
+            'card_no' => $data->getCardNo(),
+            'cn' => $data->getCn(),
+        ];
 
-            if (version_compare(_PS_VERSION_, '1.7.7.0', '>=')) {
-                // Temporary fix for PS v1.7.7
-                ob_start();
-                ?>
-                <style type="text/css">
-                    #ingenicoOrder {
-                        display: none;
-                    }
-                </style>
-                <div class="card mt-2" id="view_order_payments_block">
-                    <div class="card-header">
-                        <h3 class="card-header-title">
-                            Ingenico payment info
-                        </h3>
-                    </div>
+        $this->context->smarty->assign($params);
+        echo $this->display(__FILE__, 'views/templates/admin/order-info.tpl');
+    }
 
-                    <div class="card-body">
-                        <?php echo $this->display(__FILE__, 'views/templates/admin/admin-order.tpl'); ?>
-                    </div>
-                </div>
+    /**
+     * Hook: ActionGetAdminOrderButtons
+     * @version since PS 1.7.7
+     */
+    public function hookActionGetAdminOrderButtons(array $params)
+    {
+        $order = new Order($params['id_order']);
 
-                <div class="card mt-2" id="view_order_payments_block">
-                    <div class="card-header">
-                        <h3 class="card-header-title">
-                            Ingenico payment actions
-                        </h3>
-                    </div>
+        $orderId = $order->id;
 
-                    <div class="card-body">
-                        <?php $this->hookDisplayBackOfficeOrderActions($params); ?>
-                    </div>
-                </div>
-                <?php
-
-                $result = ob_get_contents();
-                ob_end_clean();
-
-                return $result;
-            } else {
-                echo $this->display(__FILE__, 'views/templates/admin/admin-order.tpl');
+        // Get Payment Details
+        $data = $this->connector->getIngenicoPaymentLog($orderId);
+        if (!$data->getOrderId()) {
+            // Fetch payment info
+            try {
+                $data = $this->connector->coreLibrary->getPaymentInfo($orderId);
+                if ($data->isTransactionSuccessful()) {
+                    $this->connector->logIngenicoPayment($orderId, $data);
+                }
+            } catch (Exception $e) {
+                $this->connector->logger->debug($e->getMessage());
+                return;
             }
+        }
+
+        // Get available refund amount
+        $refundAmount = $this->connector->total->getAvailableRefundAmount($orderId);
+        $captureAmount = $this->connector->total->getAvailableCaptureAmount($orderId);
+        $cancelAmount = $this->connector->total->getAvailableCancelAmount($orderId);
+
+        /** @var UrlGeneratorInterface $router */
+        $router = $this->get('router');
+
+        /** @var ActionsBarButtonsCollection $bar */
+        $bar = $params['actions_bar_buttons_collection'];
+
+        // Refund
+        if ($this->connector->coreLibrary->canRefund($data->getOrderId(), $data->getPayId(), $refundAmount)) {
+            $bar->add(
+                new ActionsBarButton(
+                    'btn-action btn-ing-refund',
+                    [
+                        'href' => $router->generate('ingenico_refund', [
+                            'orderId'=> (int)$order->id
+                        ]),
+                    ],
+                    $this->trans('order.action.refund_btn', [], 'messages')
+                )
+            );
+        }
+
+        // Capture
+        if ($this->connector->coreLibrary->canCapture($data->getOrderId(), $data->getPayId(), $captureAmount)) {
+            $bar->add(
+                new ActionsBarButton(
+                    'btn-action btn-ing-capture',
+                    [
+                        'href' => $router->generate('ingenico_capture', [
+                            'orderId'=> (int)$order->id
+                        ]),
+                    ],
+                    $this->trans('order.action.capture', [], 'messages')
+                )
+            );
+        }
+
+        // Cancel
+        if ($this->connector->coreLibrary->canVoid($data->getOrderId(), $data->getPayId(), $cancelAmount)) {
+            $bar->add(
+                new ActionsBarButton(
+                    'btn-action btn-ing-cancel',
+                    [
+                        'href' => $router->generate('ingenico_cancel', [
+                            'orderId'=> (int)$order->id
+                        ]),
+                    ],
+                    $this->trans('order.action.cancel', [], 'messages')
+                )
+            );
         }
     }
 
@@ -449,7 +514,7 @@ class Ingenico_Epayments extends PrestaShopConnector
      */
     public function hookActionCronJob()
     {
-        $signature = $this->coreLibrary->getConfiguration()->getPassphrase();
+        $signature = $this->connector->coreLibrary->getConfiguration()->getPassphrase();
 
         // Trigger Cron Controller
         $cronJobUrl = $this->getControllerUrl('cron', [
@@ -457,6 +522,25 @@ class Ingenico_Epayments extends PrestaShopConnector
         ]);
 
         Tools::file_get_contents($cronJobUrl);
+    }
+
+
+    public function canUseAliases()
+    {
+        return $this->connector->coreLibrary->getConfiguration()->getSettingsOneclick();
+        // additional check $this->canUseDirectLink();
+    }
+
+    /**
+     * Hook: displayCustomerAccount
+     */
+    public function hookDisplayCustomerAccount() {
+        if (!$this->canUseAliases()) {
+            return '';
+        }
+
+        $this->context->smarty->assign('alias_page_link', $this->getControllerUrl('aliases'));
+        echo $this->display(__FILE__, 'views/templates/hook/my-account-tab.tpl');
     }
 
     /**
@@ -481,20 +565,13 @@ class Ingenico_Epayments extends PrestaShopConnector
     public function hookPaymentOptions($params)
     {
         $paymentOptions = [];
-        $selectedPaymentMethods = $this->coreLibrary->getSelectedPaymentMethods();
+        $selectedPaymentMethods = $this->connector->coreLibrary->getSelectedPaymentMethods();
         $ccMethods = [];
 
         /** @var \IngenicoClient\PaymentMethod\PaymentMethod $paymentMethod */
         foreach ($selectedPaymentMethods as $paymentMethod) {
-            $paymentMethodsText[$paymentMethod->getId()] = $this->trans(
-                $paymentMethod->getName(),
-                [],
-                'messages'
-            );
-
             switch ($paymentMethod->getId()) {
                 case \IngenicoClient\PaymentMethod\Amex::CODE:
-                case \IngenicoClient\PaymentMethod\CarteBancaire::CODE:
                 case \IngenicoClient\PaymentMethod\DinersClub::CODE:
                 case \IngenicoClient\PaymentMethod\Discover::CODE:
                 case \IngenicoClient\PaymentMethod\Jcb::CODE:
@@ -519,20 +596,33 @@ class Ingenico_Epayments extends PrestaShopConnector
                         break;
                     }
 
+                    $actionUrl = $this->context->link->getModuleLink(
+                        $this->name,
+                        'open_invoice',
+                        [
+                            'payment_id' => $paymentMethod->getId(),
+                            'pm' => $paymentMethod->getPM(),
+                            'brand' => $paymentMethod->getBrand()
+                        ],
+                        true
+                    );
+
+                    // Render the form
+                    $this->smarty->assign(
+                        [
+                            'action' => $actionUrl,
+                            'payment_id' => $paymentMethod->getId(),
+                        ]
+                    );
+
                     $paymentOption = new PaymentOption();
                     $paymentOption->setModuleName($this->name)
                         ->setCallToActionText($this->trans($paymentMethod->getName(), [], 'messages'))
                         ->setLogo($paymentMethod->getEmbeddedLogo())
-                        ->setAction($this->context->link->getModuleLink(
-                            $this->name,
-                            'open_invoice',
-                            [
-                                'payment_id' => $paymentMethod->getId(),
-                                'pm' => $paymentMethod->getPM(),
-                                'brand' => $paymentMethod->getBrand()
-                            ],
-                        true
-                        ));
+                        ->setAction($actionUrl)
+                        ->setForm(
+                            $this->fetch('module:' . $this->name . '/views/templates/front/payment-method.tpl')
+                        );
 
                         $paymentOptions[] = $paymentOption;
                     break;
@@ -540,61 +630,187 @@ class Ingenico_Epayments extends PrestaShopConnector
                 case \IngenicoClient\PaymentMethod\FacilyPay3xnf::CODE:
                 case \IngenicoClient\PaymentMethod\FacilyPay4x::CODE:
                 case \IngenicoClient\PaymentMethod\FacilyPay4xnf::CODE:
+                    $actionUrl = $this->context->link->getModuleLink(
+                        $this->name,
+                        'open_invoice',
+                        [
+                            'payment_id' => $paymentMethod->getId(),
+                            'pm' => $paymentMethod->getPM(),
+                            'brand' => $paymentMethod->getBrand()
+                        ],
+                        true
+                    );
+
+                    // Render the form
+                    $this->smarty->assign(
+                        [
+                            'action' => $actionUrl,
+                            'payment_id' => $paymentMethod->getId(),
+                        ]
+                    );
+
                     $paymentOption = new PaymentOption();
                     $paymentOption->setModuleName($this->name)
                         ->setCallToActionText($this->trans($paymentMethod->getName(), [], 'messages'))
                         ->setLogo($paymentMethod->getEmbeddedLogo())
-                        ->setAction($this->context->link->getModuleLink(
-                            $this->name,
-                        'open_invoice',
-                            [
-                                'payment_id' => $paymentMethod->getId(),
-                                'pm' => $paymentMethod->getPM(),
-                                'brand' => $paymentMethod->getBrand()
-                            ],
-                            true
-                        ));
+                        ->setAction($actionUrl)
+                        ->setForm(
+                            $this->fetch('module:' . $this->name . '/views/templates/front/payment-method.tpl')
+                        );
 
                     $paymentOptions[] = $paymentOption;
                     break;
                 case \IngenicoClient\PaymentMethod\Ingenico::CODE:
                     // Add Generic method
+                    $actionUrl = $this->context->link->getModuleLink(
+                        $this->name,
+                        'payment',
+                        [],
+                        true
+                    );
+
+                    // Render the form
+                    $this->smarty->assign(
+                        [
+                            'action' => $actionUrl,
+                            'payment_id' => $paymentMethod->getId(),
+                        ]
+                    );
+
                     $paymentOption = new PaymentOption();
                     $paymentOption->setModuleName($this->name)
-                        ->setCallToActionText($this->trans('Pay with Ingenico ePayments', [], 'messages'))
+                        ->setCallToActionText($this->trans(
+                            'Pay with %name%',
+                            [
+                                '%name%' => $this->connector->coreLibrary->getWhiteLabelsData()->getPlatform()
+                            ],
+                            'messages'
+                        ))
                         ->setAdditionalInformation(
                             $this->trans(
-                                'Pay safely on the next page with Ingenico using your preferred payment method',
-                                [],
+                                'Pay safely on the next page with %name% using your preferred payment method',
+                                [
+                                    '%name%' => $this->connector->coreLibrary->getWhiteLabelsData()->getPlatform()
+                                ],
                                 'messages'
                             )
                         )
-                        ->setLogo($this->getPathUri() . '/views/img/ingenico.gif')
-                        ->setAction($this->context->link->getModuleLink(
-                            $this->name,
-                            'payment',
-                            [],
-                            true
-                        ));
+
+                        ->setAction($actionUrl)
+                        ->setForm(
+                            $this->fetch('module:' . $this->name . '/views/templates/front/payment-method.tpl')
+                        );
+
+                    // Set logo
+                    if ($this->connector->getPlatformEnvironment() === IngenicoCoreLibrary::PLATFORM_INGENICO) {
+                        $paymentOption->setLogo($this->getPathUri() . '/views/img/ingenico.gif');
+                    } else {
+                        $paymentOption->setLogo($this->getPathUri() . '/logo.png');
+                    }
 
                     $paymentOptions[] = $paymentOption;
                     break;
+                case \IngenicoClient\PaymentMethod\CarteBancaire::CODE:
+                    $customerId = (int) Context::getContext()->customer->id;
+                    $paymentPageType = $this->connector->coreLibrary->getConfiguration()->getPaymentpageType();
+                    $oneClickPayments = $this->connector->coreLibrary->getConfiguration()->getSettingsOneclick();
 
-                default:
+                    // Load aliases
+                    $aliases = [];
+                    if ($oneClickPayments && $customerId > 0) {
+                        $aliases = $this->connector->coreLibrary->getCustomerAliases($customerId);
+                        foreach ($aliases as $id => $alias) {
+                            if ($alias->getBrand() !== 'CB') {
+                                unset($aliases[$id]);
+                                continue;
+                            }
+
+                            $alias->setTranslatedName(
+                                $this->trans('%brand% ends with %cardno%, expires on %month%/%year%', [
+                                    '%brand%' => 'Carte Bancaire',
+                                    '%cardno%' => substr($alias->getCardno(),-4,4),
+                                    '%month%' => substr($alias->getEd(), 0, 2),
+                                    '%year%' => substr($alias->getEd(), 2, 4),
+                                ], 'messages')
+                            );
+                        }
+                    }
+
+                    $actionUrl = $this->context->link->getModuleLink(
+                        $this->name,
+                        'payment',
+                        [
+                            'payment_id' => $paymentMethod->getId(),
+                            'pm' => $paymentMethod->getPM(),
+                            'brand' => $paymentMethod->getBrand()
+                        ],
+                        true
+                    );
+
+                    // Render the form
+                    $this->smarty->assign(
+                        [
+                            'action' => $actionUrl,
+                            'payment_id' => $paymentMethod->getId(),
+                            'one_click_payment' => $oneClickPayments,
+                            'aliases' => $aliases,
+                            'payment_page_type' => $paymentPageType,
+                            'frame_url' => $paymentPageType === 'INLINE' ? $this->connector->coreLibrary->getCcIFrameUrlBeforePlaceOrder(
+                                'cartId' . Context::getContext()->cart->id
+                            ) : null
+                        ]
+                    );
+
+                    // Render the form
+                    $form = $this->fetch('module:' . $this->name . '/views/templates/hook/cb-form.tpl');
+
                     $paymentOption = new PaymentOption();
                     $paymentOption->setModuleName($this->name)
-                        ->setCallToActionText($paymentMethod->getName())
+                        ->setCallToActionText($this->trans(
+                            $paymentMethod->getName(),
+                            [],
+                            'messages'
+                        ))
                         ->setLogo($paymentMethod->getEmbeddedLogo())
-                        ->setAction($this->context->link->getModuleLink(
-                            $this->name,
-                            'payment',
-                            [
-                                'payment_id' => $paymentMethod->getId(),
-                                'pm' => $paymentMethod->getPM(),
-                                'brand' => $paymentMethod->getBrand()
-                            ],
-                            true
-                        ));
+                        ->setAction($actionUrl)
+                        ->setForm($form);
+
+                    $paymentOptions[] = $paymentOption;
+
+                    break;
+
+                default:
+                    $actionUrl = $this->context->link->getModuleLink(
+                        $this->name,
+                        'payment',
+                        [
+                            'payment_id' => $paymentMethod->getId(),
+                            'pm' => $paymentMethod->getPM(),
+                            'brand' => $paymentMethod->getBrand()
+                        ],
+                        true
+                    );
+
+                    // Render the form
+                    $this->smarty->assign(
+                        [
+                            'action' => $actionUrl,
+                            'payment_id' => $paymentMethod->getId(),
+                        ]
+                    );
+
+                    $paymentOption = new PaymentOption();
+                    $paymentOption->setModuleName($this->name)
+                        ->setCallToActionText($this->trans(
+                            $paymentMethod->getName(),
+                            [],
+                            'messages'
+                        ))
+                        ->setLogo($paymentMethod->getEmbeddedLogo())
+                        ->setAction($actionUrl)
+                        ->setForm(
+                            $this->fetch('module:' . $this->name . '/views/templates/front/payment-method.tpl')
+                        );
 
                     $paymentOptions[] = $paymentOption;
             }
@@ -603,14 +819,20 @@ class Ingenico_Epayments extends PrestaShopConnector
         // Add CC method
         if (count($ccMethods) > 0) {
             $customerId = (int) Context::getContext()->customer->id;
-            $paymentPageType = $this->coreLibrary->getConfiguration()->getPaymentpageType();
-            $oneClickPayments = $this->coreLibrary->getConfiguration()->getSettingsOneclick();
+            $paymentPageType = $this->connector->coreLibrary->getConfiguration()->getPaymentpageType();
+            $oneClickPayments = $this->connector->coreLibrary->getConfiguration()->getSettingsOneclick();
 
             // Load aliases
             $aliases = [];
             if ($oneClickPayments && $customerId > 0) {
-                $aliases = $this->coreLibrary->getCustomerAliases($customerId);
-                foreach ($aliases as $alias) {
+                $aliases = $this->connector->coreLibrary->getCustomerAliases($customerId);
+                foreach ($aliases as $id => $alias) {
+                    // Unset Carte Bancaire cards
+                    if ($alias->getBrand() === 'CB') {
+                        unset($aliases[$id]);
+                        continue;
+                    }
+
                     $alias->setTranslatedName(
                         $this->trans('%brand% ends with %cardno%, expires on %month%/%year%', [
                             '%brand%' => $alias->getBrand(),
@@ -622,23 +844,26 @@ class Ingenico_Epayments extends PrestaShopConnector
                 }
             }
 
+            $actionUrl = $this->context->link->getModuleLink(
+                $this->name,
+                'payment',
+                [
+                    'payment_id' => 'visa',
+                    'pm' => 'CreditCard',
+                    'brand' => 'CreditCard'
+                ],
+                true
+            );
+
             // Render the form
             $this->smarty->assign(
                 [
-                    'action' => $this->context->link->getModuleLink(
-                        $this->name,
-                        'payment',
-                        [
-                            'payment_id' => 'visa',
-                            'pm' => 'CreditCard',
-                            'brand' => 'CreditCard'
-                        ],
-                        true
-                    ),
+                    'action' => $actionUrl,
+                    'payment_id' => $paymentMethod->getId(),
                     'one_click_payment' => $oneClickPayments,
                     'aliases' => $aliases,
                     'payment_page_type' => $paymentPageType,
-                    'frame_url' => $paymentPageType === 'INLINE' ? $this->coreLibrary->getCcIFrameUrlBeforePlaceOrder(
+                    'frame_url' => $paymentPageType === 'INLINE' ? $this->connector->coreLibrary->getCcIFrameUrlBeforePlaceOrder(
                         'cartId' . Context::getContext()->cart->id
                     ) : null
                 ]
@@ -648,16 +873,7 @@ class Ingenico_Epayments extends PrestaShopConnector
             $paymentOption->setModuleName($this->name)
                 ->setCallToActionText($this->trans('Credit Cards', [], 'messages'))
                 ->setLogo($this->getPathUri() . '/views/img/card-logo-unknown.svg')
-                ->setAction($this->context->link->getModuleLink(
-                    $this->name,
-                    'payment',
-                    [
-                        'payment_id' => 'visa',
-                        'pm' => 'CreditCard',
-                        'brand' => 'CreditCard'
-                    ],
-                    true
-                ))
+                ->setAction($actionUrl)
                 ->setForm(
                     $this->fetch('module:' . $this->name . '/views/templates/hook/cc-form.tpl')
                 );
@@ -667,6 +883,9 @@ class Ingenico_Epayments extends PrestaShopConnector
 
         // Add Blank payment methods
         $flex_methods = Utils::getConfig('FLEX_METHODS');
+        if (!$flex_methods) {
+            $flex_methods = '[]';
+        }
         $flex_methods = json_decode($flex_methods, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             $flex_methods = [];
@@ -773,7 +992,7 @@ class Ingenico_Epayments extends PrestaShopConnector
             // Place order with Pending state
             $this->validateOrder(
                 $this->context->cart->id,
-                Configuration::get(self::PS_OS_PENDING),
+                Configuration::get(Connector::PS_OS_PENDING),
                 $this->context->cart->getOrderTotal(),
                 $this->displayName,
                 null,
@@ -788,29 +1007,11 @@ class Ingenico_Epayments extends PrestaShopConnector
 
             return new Order($this->currentOrder);
         } catch (Exception $e) {
-            $this->logger->debug($e->getMessage());
+            $this->connector->logger->debug($e->getMessage());
             throw $e;
         }
 
         return false;
-    }
-
-    /**
-     * Restores previous cart by order id.
-     *
-     * @param $id_order
-     * @throws Exception
-     * @throws PrestaShopException
-     */
-    public function restoreCart($id_order)
-    {
-        $oldCart = new Cart(Order::getCartIdStatic($id_order, $this->context->customer->id));
-        $duplication = $oldCart->duplicate();
-        $this->context->cookie->id_cart = $duplication['cart']->id;
-        $context = $this->context;
-        $context->cart = $duplication['cart'];
-        CartRule::autoAddToCart($context);
-        $this->context->cookie->write();
     }
 
     /**
@@ -824,7 +1025,7 @@ class Ingenico_Epayments extends PrestaShopConnector
      */
     public function fetchPaymentMethodsByCountryTemplate(array $countries, $openinvoice)
     {
-        $methods = $this->coreLibrary->getAndMergeCountriesPaymentMethods($countries);
+        $methods = $this->connector->coreLibrary->getAndMergeCountriesPaymentMethods($countries);
 
         // Selected Open Invoice Method
         if ($openinvoice === 'afterpay') {
@@ -852,15 +1053,15 @@ class Ingenico_Epayments extends PrestaShopConnector
         $this->smarty->assign(
             [
                 'module_dir' => $this->getPath(true),
-                'module' => $this,
-                'payment_categories' => $this->getPaymentCategories(),
+                'connector' => $this->connector,
+                'payment_categories' => $this->connector->getPaymentCategories(),
                 'selected_payment_methods' => $methods,
                 'module_name' => $this->name,
             ]
         );
 
         // Render template
-        return $this->fetch('module:' . $this->name . '/views/templates/hook/selected-payment-methods.tpl');
+        return $this->fetch('module:' . $this->name . '/views/templates/admin/selected-payment-methods.tpl');
     }
 
     /**
@@ -877,15 +1078,15 @@ class Ingenico_Epayments extends PrestaShopConnector
         $this->smarty->assign(
             [
                 'module_dir' => $this->getPath(true),
-                'module' => $this,
-                'payment_categories' => $this->getPaymentCategories(),
+                'connector' => $this->connector,
+                'payment_categories' => $this->connector->getPaymentCategories(),
                 'selected_payment_methods' => $methods,
                 'module_name' => $this->name,
             ]
         );
 
         // Render template
-        return $this->fetch('module:' . $this->name . '/views/templates/hook/selected-payment-methods.tpl');
+        return $this->fetch('module:' . $this->name . '/views/templates/admin/selected-payment-methods.tpl');
     }
 
     /**
@@ -951,6 +1152,342 @@ class Ingenico_Epayments extends PrestaShopConnector
     }
 
     /**
+     * Settings page content.
+     * PrestaShop use this method to render module configuration.
+     *
+     * @return string HTML
+     */
+    public function getContent()
+    {
+        if (\Tools::isSubmit('submit' . $this->name)) {
+            $this->saveSettings();
+        }
+
+        // Submit Support Request
+        if (\Tools::isSubmit('submitSupportRequest')) {
+            $ticket = \Tools::getValue('support_ticket');
+            $email = \Tools::getValue('support_email');
+            $description = \Tools::getValue('support_description');
+
+            $hasErrors = false;
+            if (!empty($ticket) && !preg_match(\Tools::cleanNonUnicodeSupport('/^[^<>]*$/u'), $ticket)) {
+                $this->form_html .= $this->displayError($this->trans('form.support.validation.ticket_failed', [], 'messages'));
+                $hasErrors = true;
+            }
+
+            if (empty($email)) {
+                $this->form_html .= $this->displayError($this->trans('form.support.validation.email_required', [], 'messages'));
+                $hasErrors = true;
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $this->form_html .= $this->displayError($this->trans('form.support.validation.email_invalid', [], 'messages'));
+                $hasErrors = true;
+            }
+
+            if (!$hasErrors) {
+                // Export settings to temporary file
+                $filename = sprintf('settings_%s_%s.json', \Tools::getShopDomain(), date('dmY_H_i_s'));
+                if (!empty($ticket)) {
+                    $filename = sprintf('settings_%s_%s_%s.json', \Tools::getShopDomain(), $ticket, date('dmY_H_i_s'));
+                }
+
+                $data = $this->connector->coreLibrary->getConfiguration()->export();
+                $contents = json_encode($data, JSON_PRETTY_PRINT);
+                file_put_contents(sys_get_temp_dir() . DIRECTORY_SEPARATOR . $filename, $contents);
+
+                // Get Platform
+                $platform = $this->connector->requestShoppingCartExtensionId();
+
+                // Prepare subject
+                if (!empty($ticket)) {
+                    $subject = sprintf('Exported settings related to the ticket nr [%s]', $ticket);
+                } else {
+                    $subject = sprintf('%s: Issues configuring the site %s', $platform, \Tools::getShopDomain());
+                }
+
+                // Send E-mail
+                $result = $this->connector->sendSupportEmail(
+                    $email,
+                    $subject,
+                    [
+                        Connector::PARAM_NAME_PLATFORM => $platform,
+                        Connector::PARAM_NAME_TICKET => $ticket,
+                        Connector::PARAM_NAME_DESCRIPTION => $description
+                    ],
+                    sys_get_temp_dir() . DIRECTORY_SEPARATOR . $filename
+                );
+
+                // Remove temporary file
+                @unlink(sys_get_temp_dir() . DIRECTORY_SEPARATOR . $filename);
+
+                if ($result) {
+                    $this->form_html .= $this->displayConfirmation($this->trans('form.support.validation.mail_sent', [], 'messages'));
+                } else {
+                    $this->form_html .= $this->displayError($this->trans('form.support.validation.mail_failed', [], 'messages'));
+                }
+            }
+        }
+
+        // Import Settings
+        if (\Tools::isSubmit('submitImportSettings')) {
+            // Upload file
+            if (empty($_FILES['support-import']['tmp_name'])) {
+                $this->form_html .= $this->displayError($this->trans('form.support.validation.file_required', [], 'messages'));
+            } elseif (file_exists($_FILES['support-import']['tmp_name']) &&
+                is_uploaded_file($_FILES['support-import']['tmp_name'])
+            ) {
+                try {
+                    // Security: check mime type
+                    $mime = mime_content_type($_FILES['support-import']['tmp_name']);
+                    if ($mime !== 'text/plain') {
+                        throw new \Exception($this->trans('validator.mime_text_only', [], 'messages'));
+                    }
+
+                    $contents = \Tools::file_get_contents($_FILES['support-import']['tmp_name']);
+                    $data = @json_decode($contents, true);
+
+                    // Validate data
+                    if (!is_array($data) || !isset($data['test']) || !isset($data['production'])) {
+                        $this->form_html .= $this->displayError($this->trans('form.support.invalid_json_data', [], 'messages'));
+                    } else {
+                        $this->connector->coreLibrary->getConfiguration()->import($data);
+                        $this->form_html .= $this->displayConfirmation($this->trans('form.support.import_success', [], 'messages'));
+                    }
+                } catch (\Exception $e) {
+                    $this->form_html .= $this->displayError($e->getMessage());
+                }
+            }
+        }
+
+        // Export Settings
+        if (\Tools::isSubmit('submitExportSettings')) {
+            $filename = sprintf('settings_%s_%s.json', \Tools::getShopDomain(), date('dmY_H_i_s'));
+            $data = $this->connector->coreLibrary->getConfiguration()->export();
+            $contents = json_encode($data, JSON_PRETTY_PRINT);
+
+            header('Content-Type: application/json');
+            header('Content-Disposition: attachment; filename="' . $filename . '";');
+            echo $contents;
+            exit();
+        }
+
+        // Account creation language
+        $lang = 1; // Default, english
+        if (isset(IngenicoCoreLibrary::$accountCreationLangCodes[$this->context->language->iso_code])) {
+            $lang = IngenicoCoreLibrary::$accountCreationLangCodes[$this->context->language->iso_code];
+        }
+
+        // Countries which available to chose
+        $payment_countries = $this->connector->getAllCountries();
+
+        // Countries which available to create account
+        $create_account_countries = $this->connector->getAllCountries();
+        unset(
+            $create_account_countries['SE'],
+            $create_account_countries['FI'],
+            $create_account_countries['DK'],
+            $create_account_countries['NO']
+        );
+
+        // Blank payment methods
+        $flex_methods = Utils::getConfig('FLEX_METHODS');
+        if (!$flex_methods) {
+            $flex_methods = '[]';
+        }
+        json_decode($flex_methods);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $flex_methods = '[]';
+        }
+
+        // Assign Smarty values
+        $this->smarty->assign(
+            array_merge(
+                $this->connector->requestSettings($this->connector->requestSettingsMode()),
+                [
+                    'connector' => $this->connector,
+                    'path' => $this->getPathUri(),
+                    //'is_migration_available' => Migration::isOldModuleInstalled() && !Migration::isMigrationWasPerformed(),
+                    'is_migration_available' => false,
+                    'migration_ajax_url' => $this->getControllerUrl('migrate'),
+                    'installed' => (bool) Utils::getConfig('installed'),
+                    'installation' => Utils::getConfig('installation'),
+                    'action' => \AdminController::$currentIndex .
+                        '&configure=' . $this->name .
+                        '&token=' . \Tools::getAdminTokenLite('AdminModules'),
+                    'webhook_url' => $this->getControllerUrl('webhook'),
+                    'payment_methods' => $this->connector->coreLibrary->getPaymentMethods(),
+                    'payment_categories' => $this->connector->getPaymentCategories(),
+                    'payment_countries' => $payment_countries,
+                    'create_account_countries' => $create_account_countries,
+                    'ingenico_ajax_url' => $this->getControllerUrl('ajax'),
+                    'template_dir' => dirname(__FILE__) . '/views/templates/',
+                    'module_name' => $this->name,
+                    'account_creation_lang' => $lang,
+                    'admin_email' => \Context::getContext()->employee->email,
+
+                    // WhiteLabels
+                    'logo_url' => $this->connector->coreLibrary->getWhiteLabelsData()->getLogoUrl(),
+                    'ticket_placeholder' => $this->connector->coreLibrary->getWhiteLabelsData()->getSupportTicketPlaceholder(),
+                    'template_guid_ecom' => $this->connector->coreLibrary->getWhiteLabelsData()->getTemplateGuidEcom(),
+                    'template_guid_flex' => $this->connector->coreLibrary->getWhiteLabelsData()->getTemplateGuidFlex(),
+                    'template_guid_paypal' => $this->connector->coreLibrary->getWhiteLabelsData()->getTemplateGuidPaypal(),
+
+                    // Blank payment methods
+                    'flex_methods' => $flex_methods,
+                    'uploads_dir' => $this->context->link->getBaseLink() . '/upload/ingenico/'
+                ]
+            )
+        );
+
+        // Render templates
+        foreach (['settings-header', 'form'] as $template) {
+            $this->form_html .= $this->display(
+                __FILE__,
+                $template . '.tpl'
+            );
+        }
+
+        return $this->form_html;
+    }
+
+    /**
+     * Validate plugin settings (in the admin)
+     *
+     * @return array
+     */
+    private function validateSettings()
+    {
+        $errors = [];
+
+        // Get settings
+        $default = \IngenicoClient\Configuration::getDefault();
+        foreach ($default as $fieldKey => $value) {
+            $fieldValue = \Tools::getValue($fieldKey);
+
+            // Validate field
+            $error = $this->connector->coreLibrary->getConfiguration()->validate($fieldKey, $fieldValue);
+            if (is_string($error)) {
+                $errors[] = $error;
+                continue;
+            }
+
+            // Validate Upload
+            if ($fieldKey === 'paymentpage_template_localfilename' &&
+                file_exists($_FILES['paymentpage_template_localfilename']['tmp_name']) &&
+                is_uploaded_file($_FILES['paymentpage_template_localfilename']['tmp_name'])
+            ) {
+                $target_dir = _PS_ROOT_DIR_ . '/modules/' . $this->name . '/uploads/';
+                $target_file = $target_dir . basename($_FILES['paymentpage_template_localfilename']['name']);
+                $template_file_type = \Tools::strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+                if ($template_file_type !== 'html') {
+                    $errors[] = $this->trans('validator.extension_html_only', [], 'messages');
+                }
+
+                $mime = mime_content_type($_FILES['paymentpage_template_localfilename']['tmp_name']);
+                if ($mime !== 'text/html') {
+                    $errors[] = $this->trans('validator.mime_html_only', [], 'messages');
+                    unset($_FILES['paymentpage_template_localfilename']['tmp_name']);
+                }
+            }
+        }
+
+        // Validate additional settings
+        if (\Tools::getValue('notification_order_paid') &&
+            !filter_var(\Tools::getValue('notification_order_paid_email'), FILTER_VALIDATE_EMAIL)
+        ) {
+            $errors[] = $this->trans('Invalid e-mail address', [], 'messages');
+        }
+
+        if (\Tools::getValue('notification_refund_failed') &&
+            !filter_var(\Tools::getValue('notification_refund_failed_email'), FILTER_VALIDATE_EMAIL)
+        ) {
+            $errors[] = $this->trans('Invalid e-mail address', [], 'messages');
+        }
+
+        return $errors;
+    }
+
+    /**
+     * Save plugin settings.
+     *
+     * @return void
+     */
+    private function saveSettings()
+    {
+        // Validate settings
+        $errors = $this->validateSettings();
+        foreach ($errors as $error) {
+            $this->form_html .= $this->displayError($error);
+        }
+
+        // Get settings
+        $default = \IngenicoClient\Configuration::getDefault();
+        foreach ($default as $fieldKey => $value) {
+            $fieldValue = \Tools::getValue($fieldKey);
+
+            // Set field's value
+            $this->connector->coreLibrary->getConfiguration()->setData($fieldKey, $fieldValue);
+        }
+
+        // Save configuration
+        try {
+            $this->connector->coreLibrary->getConfiguration()->save();
+        } catch (\Exception $e) {
+            // Configuration saving errors here
+        }
+
+        // Save additional settings
+        if (count($errors) === 0) {
+            $suffix = $this->connector->coreLibrary->getConfiguration()->getMode() ? 'live' : 'test';
+            $additional = [
+                'notification_order_paid',
+                'notification_order_paid_email',
+                'notification_refund_failed',
+                'notification_refund_failed_email'
+            ];
+
+            foreach ($additional as $fieldKey) {
+                $fieldValue = \Tools::getValue($fieldKey);
+
+                switch ($fieldKey) {
+                    case 'notification_order_paid':
+                    case 'notification_refund_failed':
+                        if (is_bool($fieldValue)) {
+                            $fieldValue = $fieldValue ? 'on' : 'off';
+                        }
+
+                        Utils::updateConfig($fieldKey . '_' . $suffix, $fieldValue);
+                        break;
+                    default:
+                        Utils::updateConfig($fieldKey . '_' . $suffix, $fieldValue);
+                }
+            }
+        }
+
+        // Copy test settings to live
+        // Checks if test settings are already copied to live
+        $testToLive = Utils::getConfig('test_to_live');
+        if (!$testToLive && \Tools::getValue('connection_mode') === 'on') {
+            $this->connector->coreLibrary->getConfiguration()->copyToLive();
+            Utils::updateConfig('test_to_live', 1);
+        }
+
+        // Mark as installed
+        if (!Utils::getConfig('installed') && count($errors) === 0) {
+            $this->form_html .= $this->displayConfirmation($this->trans('form.install.success', [], 'messages'));
+            Utils::updateConfig('installed', 1);
+        }
+
+        // Save mode flag
+        Utils::updateConfig('mode', \Tools::getValue('mode'));
+
+        $flex_methods = \Tools::getValue('flex_methods');
+        json_decode($flex_methods);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            Utils::updateConfig('FLEX_METHODS', $flex_methods);
+        }
+    }
+
+    /**
      * Saves admin dir
      *
      * Because Admin directory is defined only when admin is logged in
@@ -963,8 +1500,59 @@ class Ingenico_Epayments extends PrestaShopConnector
     {
         if (defined('_PS_ADMIN_DIR_')) {
             Utils::updateConfig('admin_dir', basename(_PS_ADMIN_DIR_));
-
             return true;
+        }
+    }
+
+    /**
+     * Get value from Session.
+     *
+     * @param string $key
+     * @return mixed
+     */
+    private function getSessionValue($key)
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (isset($_SESSION[$key])) {
+            return $_SESSION[$key];
+        }
+
+        return false;
+    }
+
+    /**
+     * Store value in Session.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return void
+     */
+    private function setSessionValue($key, $value)
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $_SESSION[$key] = $value;
+    }
+
+    /**
+     * Remove value from Session.
+     *
+     * @param $key
+     * @return void
+     */
+    private function unsetSessionValue($key)
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (isset($_SESSION[$key])) {
+            unset($_SESSION[$key]);
         }
     }
 }

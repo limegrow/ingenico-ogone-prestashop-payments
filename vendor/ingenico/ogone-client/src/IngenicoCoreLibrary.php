@@ -650,11 +650,6 @@ class IngenicoCoreLibrary implements
     /**
      * @var string
      */
-    public $platform_name = self::PLATFORM_INGENICO;
-
-    /**
-     * @var string
-     */
     public $api_ecommerce_test = 'https://ogone.test.v-psp.com/ncol/test/orderstandard_utf8.asp';
 
     /**
@@ -758,9 +753,6 @@ class IngenicoCoreLibrary implements
         // Load environment
         $env = parse_ini_file(__DIR__ . '/../environments.ini', true);
         $environment = $env[$extension->getPlatformEnvironment()];
-
-        // Platform name
-        $this->platform_name = $environment['platform'];
 
         // Ecommerce API
         $this->api_ecommerce_test = $environment['ecommerce_test'];
@@ -1989,23 +1981,23 @@ class IngenicoCoreLibrary implements
             ), 0, 35, 'UTF-8');
         }
 
-        // Substitute steet number
+        // Substitute street number
         if (empty($info[OrderField::BILLING_STREET_NUMBER]) && !empty($info[OrderField::BILLING_ADDRESS1])) {
-            // @todo Split address automatically
+            // Split address automatically
             try {
-                //$result = AddressSplitter::splitAddress($info[OrderField::BILLING_ADDRESS1]);
-                //$info[OrderField::BILLING_STREET_NUMBER] = $result['houseNumber'];
+                $result = AddressSplitter::splitAddress($info[OrderField::BILLING_ADDRESS1]);
+                $info[OrderField::BILLING_STREET_NUMBER] = $result['houseNumber'];
             } catch (\Exception $e) {
                 // Ignore it
             }
         }
 
-        // Substitute steet number
+        // Substitute street number
         if (empty($info[OrderField::SHIPPING_STREET_NUMBER]) && !empty($info[OrderField::SHIPPING_ADDRESS1])) {
-            // @todo Split address automatically
+            // Split address automatically
             try {
-                //$result = AddressSplitter::splitAddress($info[OrderField::SHIPPING_ADDRESS1]);
-                //$info[OrderField::SHIPPING_STREET_NUMBER] = $result['houseNumber'];
+                $result = AddressSplitter::splitAddress($info[OrderField::SHIPPING_ADDRESS1]);
+                $info[OrderField::SHIPPING_STREET_NUMBER] = $result['houseNumber'];
             } catch (\Exception $e) {
                 // Ignore it
             }
@@ -2046,23 +2038,23 @@ class IngenicoCoreLibrary implements
             ), 0, 35, 'UTF-8');
         }
 
-        // Substitute steet number
+        // Substitute street number
         if (empty($info[OrderField::BILLING_STREET_NUMBER]) && !empty($info[OrderField::BILLING_ADDRESS1])) {
-            // @todo Split address automatically
+            // Split address automatically
             try {
-                //$result = AddressSplitter::splitAddress($info[OrderField::BILLING_ADDRESS1]);
-                //$info[OrderField::BILLING_STREET_NUMBER] = $result['houseNumber'];
+                $result = AddressSplitter::splitAddress($info[OrderField::BILLING_ADDRESS1]);
+                $info[OrderField::BILLING_STREET_NUMBER] = $result['houseNumber'];
             } catch (\Exception $e) {
                 // Ignore it
             }
         }
 
-        // Substitute steet number
+        // Substitute street number
         if (empty($info[OrderField::SHIPPING_STREET_NUMBER]) && !empty($info[OrderField::SHIPPING_ADDRESS1])) {
-            // @todo Split address automatically
+            // Split address automatically
             try {
-                //$result = AddressSplitter::splitAddress($info[OrderField::SHIPPING_ADDRESS1]);
-                //$info[OrderField::SHIPPING_STREET_NUMBER] = $result['houseNumber'];
+                $result = AddressSplitter::splitAddress($info[OrderField::SHIPPING_ADDRESS1]);
+                $info[OrderField::SHIPPING_STREET_NUMBER] = $result['houseNumber'];
             } catch (\Exception $e) {
                 // Ignore it
             }
@@ -2163,6 +2155,14 @@ class IngenicoCoreLibrary implements
                 unset($paymentMethods[$key]);
             }
 
+            // Add branding for Generic method
+            if ($paymentMethod->getId() === \IngenicoClient\PaymentMethod\Ingenico::CODE) {
+                $paymentMethod->setName($this->getWhiteLabelsData()->getPlatform());
+                $paymentMethod->setLogo('white-labels/' . $this->getWhiteLabelsData()->getLogo());
+
+                $paymentMethods[$key] = $paymentMethod;
+            }
+
             // This Payment Method don't support Inline
             // Use special page for "Redirect" payment
             if (in_array($paymentMethod->getId(), [Afterpay::CODE, Klarna::CODE])) {
@@ -2207,7 +2207,20 @@ class IngenicoCoreLibrary implements
      */
     public function getPaymentMethodByBrand($brand)
     {
-        return PaymentMethod::getPaymentMethodByBrand($brand, $this);
+        $paymentMethods = PaymentMethod::getPaymentMethodByBrand($brand, $this);
+
+        // Add branding for Generic method
+        /** @var PaymentMethod\PaymentMethod $paymentMethod */
+        foreach ($paymentMethods as $key => $paymentMethod) {
+            if ($paymentMethod->getId() === \IngenicoClient\PaymentMethod\Ingenico::CODE) {
+                $paymentMethod->setName($this->getWhiteLabelsData()->getPlatform());
+                $paymentMethod->setLogo('white-labels/' . $this->getWhiteLabelsData()->getLogo());
+
+                $paymentMethods[$key] = $paymentMethod;
+            }
+        }
+
+        return $paymentMethods;
     }
 
     /**
@@ -2216,7 +2229,7 @@ class IngenicoCoreLibrary implements
      * @param $category
      * @return array
      */
-    public static function getPaymentMethodsByCategory($category)
+    public function getPaymentMethodsByCategory($category)
     {
         $paymentMethods = PaymentMethod::getPaymentMethodsByCategory($category);
 
@@ -2225,6 +2238,14 @@ class IngenicoCoreLibrary implements
         foreach ($paymentMethods as $key => $paymentMethod) {
             if ($paymentMethod->isHidden()) {
                 unset($paymentMethods[$key]);
+            }
+
+            // Add branding for Generic method
+            if ($paymentMethod->getId() === \IngenicoClient\PaymentMethod\Ingenico::CODE) {
+                $paymentMethod->setName($this->getWhiteLabelsData()->getPlatform());
+                $paymentMethod->setLogo('white-labels/' . $this->getWhiteLabelsData()->getLogo());
+
+                $paymentMethods[$key] = $paymentMethod;
             }
         }
 
@@ -2251,6 +2272,14 @@ class IngenicoCoreLibrary implements
         foreach ($paymentMethods as $key => $paymentMethod) {
             if (!in_array($paymentMethod->getId(), $selected)) {
                 unset($paymentMethods[$key]);
+            }
+
+            // Add branding for Generic method
+            if ($paymentMethod->getId() === \IngenicoClient\PaymentMethod\Ingenico::CODE) {
+                $paymentMethod->setName($this->getWhiteLabelsData()->getPlatform());
+                $paymentMethod->setLogo('white-labels/' . $this->getWhiteLabelsData()->getLogo());
+
+                $paymentMethods[$key] = $paymentMethod;
             }
         }
 
@@ -2651,6 +2680,16 @@ class IngenicoCoreLibrary implements
             return false;
         }
 
+        // Check if payment can't support refunds
+        try {
+            $paymentResult = $this->getPaymentInfo($orderId, $payId);
+            if ($paymentResult->isTransactionSuccessful() && in_array($paymentResult->getBrand(), ['Intersolve'])) {
+                return false;
+            }
+        } catch (\Exception $e) {
+            //
+        }
+
         //$statusCode = $this->getPaymentInfo($orderId, $payId)->getStatus();
         //return self::STATUS_CAPTURED === $this->getStatusByCode($statusCode);
         return true;
@@ -2964,7 +3003,7 @@ class IngenicoCoreLibrary implements
         $fields = array(),
         $locale = null
     ) {
-        $fields['platform_name'] = $this->platform_name;
+        $fields['platform_name'] = $this->getWhiteLabelsData()->getPlatform();
 
         return $this->sendMail(
             (new MailTemplate(
@@ -3044,7 +3083,7 @@ class IngenicoCoreLibrary implements
         $fields = array(),
         $locale = null
     ) {
-        $fields['platform_name'] = $this->platform_name;
+        $fields['platform_name'] = $this->getWhiteLabelsData()->getPlatform();
 
         return $this->sendMail(
             (new MailTemplate(
@@ -3124,7 +3163,7 @@ class IngenicoCoreLibrary implements
         $fields = array(),
         $locale = null
     ) {
-        $fields['platform_name'] = $this->platform_name;
+        $fields['platform_name'] = $this->getWhiteLabelsData()->getPlatform();
 
         return $this->sendMail(
             (new MailTemplate(
@@ -3165,7 +3204,7 @@ class IngenicoCoreLibrary implements
         $fields = array(),
         $locale = null
     ) {
-        $fields['platform_name'] = $this->platform_name;
+        $fields['platform_name'] = $this->getWhiteLabelsData()->getPlatform();
 
         return $this->sendMail(
             (new MailTemplate(

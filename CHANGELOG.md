@@ -1,4 +1,23 @@
 # Changelog
+## [5.0.0] - 2021-06-12
+### Added
+- PrestaShop v1.7.7 support
+- UI to manage saved cards
+- Added Carte Bancaire method
+- Added AirPlus payment method
+
+### Changed
+- PSR-4 code improvements
+- Changed color of order statuses in the backoffice for PS v1.7.7
+- Updated translations
+- Fixed image uploading for flex methods
+- Excluded some payment methods for Generic method
+- Fix klarna parameters
+- Substitute street number from address
+- Branding fixes
+- Disable refunds for Intersolve
+- Optimize minified js files
+
 ## [4.0.0] - 2021-05-18
 ### Added
 - Implemented Blank payment methods

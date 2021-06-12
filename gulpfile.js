@@ -41,16 +41,23 @@ gulp.task('css:build:watch', function () {
     gulp.watch('./views/css/*.scss', gulp.parallel('css:build'));
 });
 
-gulp.task('js:build', function () {
-    return gulp.src(['./views/js/*.js', '!./views/js/*.min.js'])
-        .pipe(sourcemaps.init())
-        .pipe(uglify())
-        .pipe(rename(function (path) {
-            path.extname = '.min.js';
-        }))
-        .pipe(sourcemaps.write())
-        .pipe(gulp.dest('./views/js'));
-});
+gulp.task(
+    'js:build',
+    function () {
+        return gulp.src( ['./views/js/*.js', '!./views/js/*.min.js'] )
+            .pipe( sourcemaps.init() )
+            .pipe( uglify() )
+            .pipe(
+                rename(
+                    function (path) {
+                        path.extname = '.min.js';
+                    }
+                )
+            )
+            .pipe( sourcemaps.write('.') )
+            .pipe( gulp.dest( './views/js' ) );
+    }
+);
 
 gulp.task('js:build:watch', function () {
     gulp.watch('./views/js/*.js', gulp.parallel('js:build'));

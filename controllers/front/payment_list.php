@@ -17,19 +17,27 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
-use Ingenico\Utils;
+use Ingenico\Payment\Utils;
+use Ingenico\Payment\Connector;
 
 class Ingenico_EpaymentsPayment_listModuleFrontController extends ModuleFrontController
 {
     /** @var Ingenico_epayments */
     public $module;
 
+    /**
+     * @var Connector
+     */
+    public $connector;
+
     public function initContent()
     {
         parent::initContent();
 
+        $this->connector = $this->module->get('ingenico.payment.connector');
+
         // Set up Controller for Connector
-        $this->module->controller = $this;
+        $this->connector->controller = $this;
 
         $orderId = Utils::getSessionValue('ingenico_order');
         if (!$orderId) {
@@ -47,7 +55,7 @@ class Ingenico_EpaymentsPayment_listModuleFrontController extends ModuleFrontCon
                     // Prestashop empties the cart when order is being placed.
                     // But we need to save the cart if Inline method is active.
                     // So we are going to restore the cart.
-                    $this->module->restoreCart($orderId);
+                    $this->connector->restoreCart($orderId);
                 }
             } else {
                 throw new PrestaShopException('Your shopping cart is empty.');
@@ -67,10 +75,10 @@ class Ingenico_EpaymentsPayment_listModuleFrontController extends ModuleFrontCon
                 // Prestashop empties the cart when order is being placed.
                 // But we need to save the cart if Inline method is active.
                 // So we are going to restore the cart.
-                $this->module->restoreCart($orderId);
+                $this->connector->restoreCart($orderId);
             }
         }
 
-        $this->module->processPayment();
+        $this->connector->processPayment();
     }
 }

@@ -17,13 +17,16 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
-namespace Ingenico;
+declare(strict_types=1);
 
-require dirname(__FILE__) . '/setup/Migration.php';
-require dirname(__FILE__) . '/model/Reminder.php';
-require dirname(__FILE__) . '/model/Total.php';
-require dirname(__FILE__) . '/model/Payment.php';
-require dirname(__FILE__) . '/model/Alias.php';
+namespace Ingenico\Payment;
+
+use Ingenico\Payment\Utils;
+use IngenicoClient\ConnectorInterface;
+use IngenicoClient\Order;
+use IngenicoClient\OrderField;
+use IngenicoClient\OrderItem;
+use IngenicoClient\PaymentMethod\PaymentMethod;
 
 use Gelf\Publisher;
 use Gelf\Transport\TcpTransport;
@@ -32,18 +35,13 @@ use Monolog\Handler\GelfHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\WebProcessor;
-use Ingenico\Model\Reminder;
-use Ingenico\Model\Total;
-use Ingenico\Model\Payment;
-use Ingenico\Model\Alias;
-use IngenicoClient\Connector;
 use IngenicoClient\IngenicoCoreLibrary;
-use IngenicoClient\ConnectorInterface;
-use IngenicoClient\PaymentMethod\PaymentMethod;
-use IngenicoClient\OrderItem;
-use IngenicoClient\OrderField;
+use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Translation\Translator;
+use Symfony\Component\Translation\Loader\PoFileLoader;
+use PrestaShop\ModuleLibServiceContainer\DependencyInjection\ContainerProvider;
 
-class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
+class Connector extends \IngenicoClient\Connector implements ConnectorInterface
 {
     /**
      * Order Statuses
@@ -76,54 +74,81 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
     const RETURN_STATE_BACK = 'BACK';
 
     /**
-     * @var IngenicoCoreLibrary
+     * Module name.
+     *
+     * @var string
      */
-    public $coreLibrary;
-
-    /** @var Reminder */
-    public $reminder;
-
-    /** @var Total */
-    public $total;
-
-    /** @var Payment */
-    public $payment;
-
-    /** @var Alias */
-    public $alias;
-
-    /** @var Psr\Log\LoggerInterface */
-    protected $logger;
-
-    /** @var string live|test */
-    public $mode;
+    public $name = 'ingenico_epayments';
 
     /**
-     * Controller
-     * @var ModuleFrontController
+     * @var \Context
+     */
+    public $context;
+
+    /**
+     * @var \ModuleFrontController
      */
     public $controller;
 
     /**
-     * Configuration HTML
-     * @var string
+     * @var IngenicoCoreLibrary
      */
-    protected $form_html = '';
+    public $coreLibrary;
 
     /**
-     * PrestaShopConnector constructor.
-     * @param null $name
-     * @param \Context|null $context
+     * @var Reminder
      */
-    public function __construct($name = null, \Context $context = null)
-    {
-        parent::__construct($name, $context);
+    public $reminder;
+
+    /**
+     * @var Total
+     */
+    public $total;
+
+    /**
+     * @var Payment
+     */
+    public $payment;
+
+    /**
+     * @var Alias
+     */
+    public $alias;
+
+    /**
+     * @var \Psr\Log\LoggerInterface
+     */
+    public $logger;
+
+    /**
+     * live|test.
+     *
+     * @var string
+     */
+    public $mode;
+
+    /**
+     * @var TranslatorInterface
+     */
+    public $translator;
+
+    /**
+     * Connector constructor.
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     */
+    public function __construct() {
+        $this->translator = \Context::getContext()->getTranslator();
+        $this->context = \Context::getContext();
 
         // Initialize Logger
         $this->logger = new Logger('ingenico');
 
         if (is_writable(_PS_ROOT_DIR_ . '/var/logs')) {
-            $this->logger->pushHandler(new StreamHandler(_PS_ROOT_DIR_ . '/var/logs/ingenico_epayments.log'), Logger::DEBUG);
+            $this->logger->pushHandler(
+                new StreamHandler(_PS_ROOT_DIR_ . '/var/logs/ingenico_epayments.log'),
+                Logger::DEBUG
+            );
         }
 
         if (_PS_MODE_DEV_ && file_exists(_PS_ROOT_DIR_ . '/config/logger.ini')) {
@@ -140,30 +165,53 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
 
         $this->logger->pushProcessor(new WebProcessor());
 
-        if ($this->active == 1) {
-            try {
-                $this->mode = $this->requestSettingsMode() ? 'live' : 'test';
-                $this->coreLibrary = (new IngenicoCoreLibrary($this))
-                    ->setLogger($this->logger)
-                    ->setMailTemplatesDirectory(_THEME_DIR_ . '/ingenico_epayments/templates');
-            } catch (\Exception $e) {
-                $this->logger->debug($e->getMessage());
-            }
+        try {
+            $this->mode = $this->requestSettingsMode() ? 'live' : 'test';
+            $this->coreLibrary = (new IngenicoCoreLibrary($this))
+                ->setLogger($this->logger)
+                ->setMailTemplatesDirectory(_THEME_DIR_ . '/ingenico_epayments/templates');
+        } catch (\Exception $e) {
+            $this->logger->debug($e->getMessage());
         }
 
         // Models
         $this->reminder = new Reminder($this);
-        $this->total = new Total($this);
-        $this->payment = new Payment($this);
-        $this->alias = new Alias($this);
+        $this->total = new Total();
+        $this->payment = new Payment();
+        $this->alias = new Alias();
 
-        //Redirect admin to order detail.
+        // Redirect admin to order detail.
         $this->redirectAdminOrderDetails();
 
-        // Initialise sessions
-        //if (session_status() == PHP_SESSION_NONE) {
-            //session_start();
-        //}
+        // Initialize translations
+        $lang = new \Language((int) $this->context->language->id);
+        $this->translator->addLoader('po', new PoFileLoader());
+        $this->translator->setFallbackLocales([$lang->locale, 'en-us']);
+        $this->translator->setLocale($lang->locale);
+
+        // Load translations of the module
+        $languages = \Language::getLanguages(true);
+        $directory = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'translations';
+        $files = scandir($directory);
+        foreach ($files as $file) {
+            $file = $directory . DIRECTORY_SEPARATOR . $file;
+            $info = pathinfo($file);
+            if ($info['extension'] !== 'po') {
+                continue;
+            }
+
+            // Locale of the module i.e. en-us
+            $moduleLocale = mb_strtolower($info['filename']);
+
+            // Load the locale that was installed in the shop
+            foreach ($languages as $language) {
+                $shopLocale = mb_strtolower(mb_substr($language['locale'], 0, 2, 'UTF-8'), 'UTF-8');
+                if (mb_substr($moduleLocale, 0, 2, 'UTF-8') === $shopLocale) {
+                    $this->translator->addResource('po', $directory . DIRECTORY_SEPARATOR . $info['basename'], $language['locale'], 'messages');
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -176,7 +224,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
         return sprintf(
             'PS%sV%s',
             str_replace('.', '', _PS_VERSION_),
-            str_replace('.', '', $this->version)
+            str_replace('.', '', \Ingenico_Epayments::VERSION)
         );
     }
 
@@ -258,7 +306,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
      * @return bool
      */
     public function isOrderCreated($orderId) {
-        if (strpos($orderId, 'cartId') !== false) {
+        if (strpos((string) $orderId, 'cartId') !== false) {
             return false;
         }
 
@@ -417,7 +465,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             OrderField::BILLING_COUNTRY => \Country::getNameById($order->id_lang, $billingAddress->id_country),
             OrderField::BILLING_COUNTRY_CODE => \Country::getIsoById($billingAddress->id_country),
             OrderField::BILLING_ADDRESS1 => $billingAddress->address1,
-            OrderField::BILLING_ADDRESS2 => !empty($billingAddress->address2) ? $billingAddress->address2 : '.',
+            OrderField::BILLING_ADDRESS2 => !empty($billingAddress->address2) ? $billingAddress->address2 : null,
             OrderField::BILLING_ADDRESS3 => null,
             OrderField::BILLING_CITY => $billingAddress->city,
             OrderField::BILLING_STATE => \State::getNameById($billingAddress->id_state),
@@ -431,7 +479,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             OrderField::SHIPPING_COUNTRY => \Country::getNameById($order->id_lang, $shippingAddress->id_country),
             OrderField::SHIPPING_COUNTRY_CODE => \Country::getIsoById($shippingAddress->id_country),
             OrderField::SHIPPING_ADDRESS1 => $shippingAddress->address1,
-            OrderField::SHIPPING_ADDRESS2 => !empty($shippingAddress->address2) ? $shippingAddress->address2 : '.',
+            OrderField::SHIPPING_ADDRESS2 => !empty($shippingAddress->address2) ? $shippingAddress->address2 : null,
             OrderField::SHIPPING_ADDRESS3 => null,
             OrderField::SHIPPING_CITY => $shippingAddress->city,
             OrderField::SHIPPING_STATE => \State::getNameById($shippingAddress->id_state),
@@ -442,7 +490,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             OrderField::SHIPPING_LAST_NAME => $shippingAddress->lastname,
             OrderField::CUSTOMER_ID => (int) $order->id_customer,
             OrderField::CUSTOMER_IP => \Tools::getRemoteAddr(),
-            OrderField::CUSTOMER_DOB => ($customer->birthday === '0000-00-00') ? null : strtotime($customer->birthday),  //null or timestamp
+            OrderField::CUSTOMER_DOB => ($customer->birthday === '0000-00-00' || !$customer->birthday) ? null : strtotime($customer->birthday),  //null or timestamp
             OrderField::CUSTOMER_GENDER => $gender->type == 1 ? 'F' : 'M',
             OrderField::IS_VIRTUAL => $order->isVirtual(false),
             OrderField::ITEMS => $items,
@@ -610,7 +658,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             OrderField::SHIPPING_LAST_NAME => $shippingAddress->lastname,
             OrderField::CUSTOMER_ID => (int) $cart->id_customer,
             OrderField::CUSTOMER_IP => \Tools::getRemoteAddr(),
-            OrderField::CUSTOMER_DOB => ($customer->birthday === '0000-00-00') ? null : strtotime($customer->birthday),  //null or timestamp
+            OrderField::CUSTOMER_DOB => ($customer->birthday === '0000-00-00' || !$customer->birthday) ? null : strtotime($customer->birthday),  //null or timestamp
             OrderField::CUSTOMER_GENDER => $gender->type == 1 ? 'F' : 'M',
             OrderField::IS_VIRTUAL => $cart->isVirtualCart(),
             OrderField::ITEMS => $items,
@@ -639,9 +687,13 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             return false;
         }
 
-        $payment = $this->payment->getIngenicoPaymentLog($orderId);
-        $method = \IngenicoClient\PaymentMethod::getPaymentMethodByBrand($payment['brand']);
+        $sql = new \DbQuery();
+        $sql->select('c.payment_id');
+        $sql->from('ingenico_cart', 'c');
+        $sql->where('c.id_cart = "' . (int) $order->id_cart . '"');
+        $payment_id = \Db::getInstance()->getValue($sql, false);
 
+        $method = \IngenicoClient\PaymentMethod::getPaymentMethodById($payment_id);
         return $method ? $method::CODE : false;
 
     }
@@ -655,7 +707,19 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
      */
     public function getQuotePaymentMethod($quoteId = null)
     {
-        return false;
+        $cart = \Context::getContext()->cart;
+        if (!$cart->id) {
+            return false;
+        }
+
+        $sql = new \DbQuery();
+        $sql->select('c.payment_id');
+        $sql->from('ingenico_cart', 'c');
+        $sql->where('c.id_cart = "' . (int) $cart->id . '"');
+        $payment_id = \Db::getInstance()->getValue($sql, false);
+
+        $method = \IngenicoClient\PaymentMethod::getPaymentMethodById($payment_id);
+        return $method ? $method::CODE : false;
     }
 
     /**
@@ -668,22 +732,22 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
     {
         // Typical fields of address
         $map = [
-            OrderField::CUSTOMER_DOB => $this->trans('Date of Birth', [], 'messages'),
-            OrderField::BILLING_ADDRESS1 => $this->trans('Billing address', [], 'messages') . ' 1',
-            OrderField::BILLING_ADDRESS2 => $this->trans('Billing address', [], 'messages') . ' 2',
-            OrderField::BILLING_ADDRESS3 => $this->trans('Billing address', [], 'messages') . ' 3',
-            OrderField::SHIPPING_ADDRESS1 => $this->trans('Shipping address', [], 'messages') . ' 1',
-            OrderField::SHIPPING_ADDRESS2 => $this->trans('Shipping address', [], 'messages') . ' 2',
-            OrderField::SHIPPING_ADDRESS3 => $this->trans('Shipping address', [], 'messages') . ' 3',
-            OrderField::BILLING_CUSTOMER_TITLE => $this->trans('Billing customer title', [], 'messages'),
-            OrderField::SHIPPING_CUSTOMER_TITLE => $this->trans('Shipping customer title', [], 'messages')
+            OrderField::CUSTOMER_DOB => $this->translator->trans('Date of Birth', [], 'messages'),
+            OrderField::BILLING_ADDRESS1 => $this->translator->trans('Billing address', [], 'messages') . ' 1',
+            OrderField::BILLING_ADDRESS2 => $this->translator->trans('Billing address', [], 'messages') . ' 2',
+            OrderField::BILLING_ADDRESS3 => $this->translator->trans('Billing address', [], 'messages') . ' 3',
+            OrderField::SHIPPING_ADDRESS1 => $this->translator->trans('Shipping address', [], 'messages') . ' 1',
+            OrderField::SHIPPING_ADDRESS2 => $this->translator->trans('Shipping address', [], 'messages') . ' 2',
+            OrderField::SHIPPING_ADDRESS3 => $this->translator->trans('Shipping address', [], 'messages') . ' 3',
+            OrderField::BILLING_CUSTOMER_TITLE => $this->translator->trans('Billing customer title', [], 'messages'),
+            OrderField::SHIPPING_CUSTOMER_TITLE => $this->translator->trans('Shipping customer title', [], 'messages')
         ];
 
         if (isset($map[$field])) {
             return $map[$field];
         }
 
-        return $this->trans(ucfirst(str_replace('_', ' ', $field)), [], 'messages');
+        return $this->translator->trans(ucfirst(str_replace('_', ' ', $field)), [], 'messages');
     }
 
     /**
@@ -738,18 +802,18 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
 
                         // Security: check mime type
                         if (mime_content_type($uploadedFile) !== 'text/html') {
-                            throw new \Exception($this->trans('validator.mime_html_only', [], 'messages'));
+                            throw new \Exception($this->translator->trans('validator.mime_html_only', [], 'messages'));
                         }
 
                         // Security: check mime extension
                         $templateFileType = \Tools::strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
                         if (!in_array($templateFileType, ['htm', 'html'])) {
-                            throw new \Exception($this->trans('validator.extension_html_only', [], 'messages'));
+                            throw new \Exception($this->translator->trans('validator.extension_html_only', [], 'messages'));
                         }
 
                         // Upload file
                         if (!move_uploaded_file($uploadedFile, $targetFile)) { //NOSONAR
-                            throw new \Exception($this->trans('exceptions.upload_filed', [], 'messages'));
+                            throw new \Exception($this->translator->trans('exceptions.upload_filed', [], 'messages'));
                         }
 
                         Utils::updateConfig('paymentpage_template_localfilename_' . $mode, $_FILES['paymentpage_template_localfilename']['name']);
@@ -762,7 +826,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
                 Utils::updateConfig($key . '_' . $mode, json_encode($value));
                 break;
             default:
-                Utils::updateConfig($key . '_' . $mode, trim($value));
+                Utils::updateConfig($key . '_' . $mode, is_string($value) ? trim($value) : $value);
         }
     }
 
@@ -839,6 +903,28 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             // Show Error Page
             $this->setOrderErrorPage($e->getMessage());
         }
+    }
+
+    public function processDeleteAlias(int $idAlias)
+    {
+        $aliasRow = $this->alias->getAlias($idAlias);
+        $errors = [];
+        if (!$aliasRow ||
+            (int) $aliasRow['customer_id'] !== (int) $this->context->customer->id) {
+            $errors[] = $this->translator->trans('Invalid customer');
+        } else {
+            if ( !$this->alias->removeAlias($idAlias) ) {
+                $errors[] = $this->translator->trans('Unable delete alias');
+            }
+        }
+
+        if ($errors) {
+            $this->controller->errors = $errors;
+        } else {
+            $this->controller->success = [$this->translator->trans('Alias deleted')];
+        }
+
+        $this->controller->redirectWithNotifications($this->getControllerUrl('aliases'));
     }
 
     /**
@@ -952,8 +1038,8 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
                 break;
             case IngenicoCoreLibrary::STATUS_REFUNDED:
                 // Is it the partial refund?
-                $totalAmount = (float) \Tools::ps_round($order->total_paid_tax_incl, 2);
-                $refundedAmount = $this->total->getRefundedAmount($orderId);
+                $totalAmount = (string) \Tools::ps_round($order->total_paid_tax_incl, 2);
+                $refundedAmount = (string) $this->total->getRefundedAmount($orderId);
 
                 if (bccomp($refundedAmount , $totalAmount, 2) === -1) {
                     // Partial refund
@@ -1015,6 +1101,8 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             $customer_message->add();
         }
     }
+
+
 
     /**
      * Check if Shopping Cart has orders that were paid (via other payment integrations, i.e. PayPal module)
@@ -1178,7 +1266,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             null,
             $this->coreLibrary->__('order_paid.subject', [], 'email', $locale),
             [
-                Connector::PARAM_NAME_SHOP_NAME => \Configuration::get('PS_SHOP_NAME'),
+                \IngenicoClient\Connector::PARAM_NAME_SHOP_NAME => \Configuration::get('PS_SHOP_NAME'),
                 Connector::PARAM_NAME_SHOP_LOGO => _PS_IMG_DIR_ . \Configuration::get('PS_LOGO'),
                 Connector::PARAM_NAME_SHOP_URL => \Context::getContext()->link->getPageLink('index', true),
                 Connector::PARAM_NAME_CUSTOMER_NAME => sprintf('%s %s', $customer->firstname, $customer->lastname),
@@ -1506,7 +1594,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
      */
     public function getPaymentMethodsByCategory($category)
     {
-        return IngenicoCoreLibrary::getPaymentMethodsByCategory($category);
+        return $this->coreLibrary->getPaymentMethodsByCategory($category);
     }
 
     /**
@@ -1557,343 +1645,6 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
     public function getUnusedPaymentMethods()
     {
         return $this->coreLibrary->getUnusedPaymentMethods();
-    }
-
-    /**
-     * Settings page content.
-     * PrestaShop use this method to render module configuration.
-     *
-     * @return string HTML
-     */
-    public function getContent()
-    {
-        if (\Tools::isSubmit('submit' . $this->name)) {
-            $this->saveSettings();
-        }
-
-        // Submit Support Request
-        if (\Tools::isSubmit('submitSupportRequest')) {
-            $ticket = \Tools::getValue('support_ticket');
-            $email = \Tools::getValue('support_email');
-            $description = \Tools::getValue('support_description');
-
-            $hasErrors = false;
-            if (!empty($ticket) && !preg_match(\Tools::cleanNonUnicodeSupport('/^[^<>]*$/u'), $ticket)) {
-                $this->form_html .= $this->displayError($this->trans('form.support.validation.ticket_failed', [], 'messages'));
-                $hasErrors = true;
-            }
-
-            if (empty($email)) {
-                $this->form_html .= $this->displayError($this->trans('form.support.validation.email_required', [], 'messages'));
-                $hasErrors = true;
-            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $this->form_html .= $this->displayError($this->trans('form.support.validation.email_invalid', [], 'messages'));
-                $hasErrors = true;
-            }
-
-            if (!$hasErrors) {
-                // Export settings to temporary file
-                $filename = sprintf('settings_%s_%s.json', \Tools::getShopDomain(), date('dmY_H_i_s'));
-                if (!empty($ticket)) {
-                    $filename = sprintf('settings_%s_%s_%s.json', \Tools::getShopDomain(), $ticket, date('dmY_H_i_s'));
-                }
-
-                $data = $this->coreLibrary->getConfiguration()->export();
-                $contents = json_encode($data, JSON_PRETTY_PRINT);
-                file_put_contents(sys_get_temp_dir() . DIRECTORY_SEPARATOR . $filename, $contents);
-
-                // Get Platform
-                $platform = $this->requestShoppingCartExtensionId();
-
-                // Prepare subject
-                if (!empty($ticket)) {
-                    $subject = sprintf('Exported settings related to the ticket nr [%s]', $ticket);
-                } else {
-                    $subject = sprintf('%s: Issues configuring the site %s', $platform, \Tools::getShopDomain());
-                }
-
-                // Send E-mail
-                $result = $this->sendSupportEmail(
-                    $email,
-                    $subject,
-                    [
-                        Connector::PARAM_NAME_PLATFORM => $platform,
-                        Connector::PARAM_NAME_TICKET => $ticket,
-                        Connector::PARAM_NAME_DESCRIPTION => $description
-                    ],
-                    sys_get_temp_dir() . DIRECTORY_SEPARATOR . $filename
-                );
-
-                // Remove temporary file
-                @unlink(sys_get_temp_dir() . DIRECTORY_SEPARATOR . $filename);
-
-                if ($result) {
-                    $this->form_html .= $this->displayConfirmation($this->trans('form.support.validation.mail_sent', [], 'messages'));
-                } else {
-                    $this->form_html .= $this->displayError($this->trans('form.support.validation.mail_failed', [], 'messages'));
-                }
-            }
-        }
-
-        // Import Settings
-        if (\Tools::isSubmit('submitImportSettings')) {
-            // Upload file
-            if (empty($_FILES['support-import']['tmp_name'])) {
-                $this->form_html .= $this->displayError($this->trans('form.support.validation.file_required', [], 'messages'));
-            } elseif (file_exists($_FILES['support-import']['tmp_name']) &&
-                is_uploaded_file($_FILES['support-import']['tmp_name'])
-            ) {
-                try {
-                    // Security: check mime type
-                    $mime = mime_content_type($_FILES['support-import']['tmp_name']);
-                    if ($mime !== 'text/plain') {
-                        throw new \Exception($this->trans('validator.mime_text_only', [], 'messages'));
-                    }
-
-                    $contents = \Tools::file_get_contents($_FILES['support-import']['tmp_name']);
-                    $data = @json_decode($contents, true);
-
-                    // Validate data
-                    if (!is_array($data) || !isset($data['test']) || !isset($data['production'])) {
-                        $this->form_html .= $this->displayError($this->trans('form.support.invalid_json_data', [], 'messages'));
-                    } else {
-                        $this->coreLibrary->getConfiguration()->import($data);
-                        $this->form_html .= $this->displayConfirmation($this->trans('form.support.import_success', [], 'messages'));
-                    }
-                } catch (\Exception $e) {
-                    $this->form_html .= $this->displayError($e->getMessage());
-                }
-            }
-        }
-
-        // Export Settings
-        if (\Tools::isSubmit('submitExportSettings')) {
-            $filename = sprintf('settings_%s_%s.json', \Tools::getShopDomain(), date('dmY_H_i_s'));
-            $data = $this->coreLibrary->getConfiguration()->export();
-            $contents = json_encode($data, JSON_PRETTY_PRINT);
-
-            header('Content-Type: application/json');
-            header('Content-Disposition: attachment; filename="' . $filename . '";');
-            echo $contents;
-            exit();
-        }
-
-        // Account creation language
-        $lang = 1; // Default, english
-        if (isset(IngenicoCoreLibrary::$accountCreationLangCodes[$this->context->language->iso_code])) {
-            $lang = IngenicoCoreLibrary::$accountCreationLangCodes[$this->context->language->iso_code];
-        }
-
-        // Countries which available to chose
-        $payment_countries = $this->getAllCountries();
-
-        // Countries which available to create account
-        $create_account_countries = $this->getAllCountries();
-        unset(
-            $create_account_countries['SE'],
-            $create_account_countries['FI'],
-            $create_account_countries['DK'],
-            $create_account_countries['NO']
-        );
-
-        // Blank payment methods
-        $flex_methods = Utils::getConfig('FLEX_METHODS');
-        json_decode($flex_methods);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $flex_methods = '[]';
-        }
-
-        // Assign Smarty values
-        $this->smarty->assign(
-            array_merge(
-                $this->requestSettings($this->requestSettingsMode()),
-                [
-                    'module' => $this,
-                    'path' => $this->getPathUri(),
-                    //'is_migration_available' => Migration::isOldModuleInstalled() && !Migration::isMigrationWasPerformed(),
-                    'is_migration_available' => false,
-                    'migration_ajax_url' => $this->getControllerUrl('migrate'),
-                    'installed' => (bool) Utils::getConfig('installed'),
-                    'installation' => Utils::getConfig('installation'),
-                    'action' => \AdminController::$currentIndex .
-                                '&configure=' . $this->name .
-                                '&token=' . \Tools::getAdminTokenLite('AdminModules'),
-                    'webhook_url' => $this->getControllerUrl('webhook'),
-                    'payment_methods' => $this->coreLibrary->getPaymentMethods(),
-                    'payment_categories' => $this->getPaymentCategories(),
-                    'payment_countries' => $payment_countries,
-                    'create_account_countries' => $create_account_countries,
-                    'ingenico_ajax_url' => $this->getControllerUrl('ajax'),
-                    'template_dir' => dirname(__FILE__) . '/views/templates/',
-                    'module_name' => $this->name,
-                    'account_creation_lang' => $lang,
-                    'admin_email' => \Context::getContext()->employee->email,
-
-                    // WhiteLabels
-                    'logo_url' => $this->coreLibrary->getWhiteLabelsData()->getLogoUrl(),
-                    'ticket_placeholder' => $this->coreLibrary->getWhiteLabelsData()->getSupportTicketPlaceholder(),
-                    'template_guid_ecom' => $this->coreLibrary->getWhiteLabelsData()->getTemplateGuidEcom(),
-                    'template_guid_flex' => $this->coreLibrary->getWhiteLabelsData()->getTemplateGuidFlex(),
-                    'template_guid_paypal' => $this->coreLibrary->getWhiteLabelsData()->getTemplateGuidPaypal(),
-
-                    // Blank payment methods
-                    'flex_methods' => $flex_methods,
-                    'uploads_dir' => $this->context->link->getBaseLink() . '/upload/ingenico/'
-                ]
-            )
-        );
-
-        // Render templates
-        foreach (['settings-header', 'form'] as $template) {
-            $this->form_html .= $this->display(
-                str_replace(
-                    __FILE__,
-                    'PrestaShopConnector.php',
-                    $this->name . '.php'
-                ),
-                $template . '.tpl'
-            );
-        }
-
-        return $this->form_html;
-    }
-
-    /**
-     * Validate plugin settings (in the admin)
-     *
-     * @return array
-     */
-    private function validateSettings()
-    {
-        $errors = [];
-
-        // Get settings
-        $default = \IngenicoClient\Configuration::getDefault();
-        foreach ($default as $fieldKey => $value) {
-            $fieldValue = \Tools::getValue($fieldKey);
-
-            // Validate field
-            $error = $this->coreLibrary->getConfiguration()->validate($fieldKey, $fieldValue);
-            if (is_string($error)) {
-                $errors[] = $error;
-                continue;
-            }
-
-            // Validate Upload
-            if ($fieldKey === 'paymentpage_template_localfilename' &&
-                file_exists($_FILES['paymentpage_template_localfilename']['tmp_name']) &&
-                is_uploaded_file($_FILES['paymentpage_template_localfilename']['tmp_name'])
-            ) {
-                $target_dir = _PS_ROOT_DIR_ . '/modules/' . $this->name . '/uploads/';
-                $target_file = $target_dir . basename($_FILES['paymentpage_template_localfilename']['name']);
-                $template_file_type = \Tools::strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-                if ($template_file_type !== 'html') {
-                    $errors[] = $this->trans('validator.extension_html_only', [], 'messages');
-                }
-
-                $mime = mime_content_type($_FILES['paymentpage_template_localfilename']['tmp_name']);
-                if ($mime !== 'text/html') {
-                    $errors[] = $this->trans('validator.mime_html_only', [], 'messages');
-                    unset($_FILES['paymentpage_template_localfilename']['tmp_name']);
-                }
-            }
-        }
-
-        // Validate additional settings
-        if (\Tools::getValue('notification_order_paid') &&
-            !filter_var(\Tools::getValue('notification_order_paid_email'), FILTER_VALIDATE_EMAIL)
-        ) {
-            $errors[] = $this->trans('Invalid e-mail address', [], 'messages');
-        }
-
-        if (\Tools::getValue('notification_refund_failed') &&
-            !filter_var(\Tools::getValue('notification_refund_failed_email'), FILTER_VALIDATE_EMAIL)
-        ) {
-            $errors[] = $this->trans('Invalid e-mail address', [], 'messages');
-        }
-
-        return $errors;
-    }
-
-    /**
-     * Save plugin settings.
-     *
-     * @return void
-     */
-    private function saveSettings()
-    {
-        // Validate settings
-        $errors = $this->validateSettings();
-        foreach ($errors as $error) {
-            $this->form_html .= $this->displayError($error);
-        }
-
-        // Get settings
-        $default = \IngenicoClient\Configuration::getDefault();
-        foreach ($default as $fieldKey => $value) {
-            $fieldValue = \Tools::getValue($fieldKey);
-
-            // Set field's value
-            $this->coreLibrary->getConfiguration()->setData($fieldKey, $fieldValue);
-        }
-
-        // Save configuration
-        try {
-            $this->coreLibrary->getConfiguration()->save();
-        } catch (\Exception $e) {
-            // Configuration saving errors here
-        }
-
-        // Save additional settings
-        if (count($errors) === 0) {
-            $suffix = $this->coreLibrary->getConfiguration()->getMode() ? 'live' : 'test';
-            $additional = [
-                'notification_order_paid',
-                'notification_order_paid_email',
-                'notification_refund_failed',
-                'notification_refund_failed_email'
-            ];
-
-            foreach ($additional as $fieldKey) {
-                $fieldValue = \Tools::getValue($fieldKey);
-
-                switch ($fieldKey) {
-                    case 'notification_order_paid':
-                    case 'notification_refund_failed':
-                        if (is_bool($fieldValue)) {
-                            $fieldValue = $fieldValue ? 'on' : 'off';
-                        }
-
-                        Utils::updateConfig($fieldKey . '_' . $suffix, $fieldValue);
-                        break;
-                    default:
-                        Utils::updateConfig($fieldKey . '_' . $suffix, $fieldValue);
-                }
-            }
-        }
-
-        // Copy test settings to live
-        // Checks if test settings are already copied to live
-        $testToLive = Utils::getConfig('test_to_live');
-        if (!$testToLive && \Tools::getValue('connection_mode') === 'on') {
-            $this->coreLibrary->getConfiguration()->copyToLive();
-            Utils::updateConfig('test_to_live', 1);
-        }
-
-        // Mark as installed
-        if (!Utils::getConfig('installed') && count($errors) === 0) {
-            $this->form_html .= $this->displayConfirmation($this->trans('form.install.success', [], 'messages'));
-            Utils::updateConfig('installed', 1);
-        }
-
-        // Save mode flag
-        Utils::updateConfig('mode', \Tools::getValue('mode'));
-
-        $flex_methods = \Tools::getValue('flex_methods');
-        json_decode($flex_methods);
-        if (json_last_error() === JSON_ERROR_NONE) {
-            Utils::updateConfig('FLEX_METHODS', $flex_methods);
-        }
     }
 
     /**
@@ -2266,7 +2017,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             $email,
             $countryCode,
             'PrestaShop',
-            $this->version,
+            \Ingenico_Epayments::VERSION,
             \Configuration::get('PS_SHOP_NAME'),
             _PS_IMG_DIR_ . \Configuration::get('PS_LOGO'),
             \Context::getContext()->link->getPageLink('index', true),
@@ -2294,7 +2045,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             'module_dir' => $this->getPath(true),
             'ajax_url' => $this->getControllerUrl('ajax'),
             'token' => $token,
-            'order_id' => $fields[Connector::PARAM_NAME_ORDER_ID],
+            'order_id' => $fields[\IngenicoClient\Connector::PARAM_NAME_ORDER_ID],
             'alias_id' => $fields[Connector::PARAM_NAME_ALIAS_ID],
             'card_brand' => $fields[Connector::PARAM_CARD_BRAND],
             'card_no' => $fields[Connector::PARAM_CARD_CN],
@@ -2302,6 +2053,52 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
 
         // Render template
         $this->controller->setTemplate('module:' . $this->name . '/views/templates/front/inline-loader.tpl');
+    }
+
+
+    public function getInlineIFrameUrlForAddCreditCardForm($alias) {
+        $request = $this->coreLibrary->getFlexCheckoutPaymentRequest(
+            (new Order())->setOrderId(1),
+            $alias->setPm('CreditCard')
+        );
+
+        $request->setShaSign();
+        //pass order id validation
+        $params = $request->toArray();
+        // unset($params['ALIAS.ORDERID']);
+        // like getCheckoutUrl();
+        return $request->getOgoneUri().'?'. http_build_query($params);
+    }
+
+    /*
+     * Render the template of stored credit cards in the customer account area.
+     *
+     *
+     * @return void
+     */
+    public function showStoredCreditCardTempate() {
+        $alias = new \IngenicoClient\Alias();
+        $alias->setIsShouldStoredPermanently(true);
+
+        $aliases = $this->coreLibrary->getCustomerAliases($this->context->customer->id);
+        $aliases = array_map(function($alias) {
+            $alias['ed'] = substr_replace($alias['ed'], '/', 2, 0);
+            return $alias;
+        }, $aliases);
+
+        foreach($aliases as $alias) {
+            $alias->setData('delete_link', $this->getControllerUrl( 'aliases', array(
+                'action' => 'delete',
+                'id_alias' => $alias->getData('alias_id')
+            )));
+        }
+
+        $this->context->smarty->assign([
+            'aliases' => $aliases,
+           // 'inline_frame_url' => $this->getInlineIFrameUrlForAddCreditCardForm($alias)
+        ]);
+
+        $this->controller->setTemplate('module:' . $this->name . '/views/templates/front/aliases.tpl');
     }
 
     /**
@@ -2399,13 +2196,13 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             $this->updateOrderStatus(
                 $fields['order_id'],
                 $payment,
-                $this->trans('checkout.payment_cancelled', [], 'messages')
+                $this->translator->trans('checkout.payment_cancelled', [], 'messages')
             );
 
             $this->restoreCart($fields['order_id']);
         }
 
-        $this->controller->warning[] = $this->trans('checkout.payment_cancelled', [], 'messages');
+        $this->controller->warning[] = $this->translator->trans('checkout.payment_cancelled', [], 'messages');
         $this->controller->redirectWithNotifications($this->context->link->getPageLink(
             'cart',
             null,
@@ -2438,7 +2235,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
             $this->updateOrderStatus(
                 $fields['order_id'],
                 $payment,
-                $this->trans('checkout.payment_cancelled', [], 'messages')
+                $this->translator->trans('checkout.payment_cancelled', [], 'messages')
             );
 
             $this->restoreCart($fields['order_id']);
@@ -2447,7 +2244,7 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
         // Inline cc form: Cancellation
         if (array_key_exists('order_id', $fields) && is_null($fields['order_id'])) {
             $this->context->smarty->assign([
-                'message' => $this->trans(
+                'message' => $this->translator->trans(
                     'Please %s try again %s or choose another payment method.',
                     [
                         "<a href='javascript:;' id='ingenico-cc-iframe-retry'>",
@@ -2799,5 +2596,111 @@ class PrestaShopConnector extends \PaymentModule implements ConnectorInterface
         }
 
         return $orderId;
+    }
+
+    /**
+     * Get controller URL
+     *
+     * @param $controller
+     * @param array $params
+     * @return string URL
+     */
+    private function getControllerUrl($controller, $params = [])
+    {
+        return $this->context->link->getModuleLink(
+            $this->name,
+            $controller,
+            $params
+        );
+    }
+
+    /**
+     * Get Full Module Path Uri
+     * @param bool $secure
+     *
+     * @return string
+     */
+    private function getPath($secure = false)
+    {
+        if ($secure) {
+            return \Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'modules/' . $this->name . '/';
+        }
+
+        return \Tools::getShopDomain(true, true) . __PS_BASE_URI__ . 'modules/' . $this->name . '/';
+    }
+
+    /**
+     * @return string
+     */
+    private function getPathUri()
+    {
+        return \Tools::getShopDomain(true, true) . __PS_BASE_URI__ . 'modules/' . $this->name . '/';
+    }
+
+    /**
+     * Get Success Page Url
+     *
+     * @param $orderId
+     * @return string
+     */
+    private function getSuccessPageUrl($orderId)
+    {
+        $order = new \Order($orderId);
+        $customer = new \Customer($order->id_customer);
+        $url = 'index.php?controller=order-confirmation&id_cart='
+            . $order->id_cart . '&id_module='
+            . $this->getModuleId() . '&id_order='
+            . $order->id . '&key='
+            . $customer->secure_key;
+        $base_uri = __PS_BASE_URI__;
+        $link = \Context::getContext()->link;
+        if (strpos($url, 'http://') === false &&
+            strpos($url, 'https://') === false &&
+            $link) {
+            if (strpos($url, $base_uri) === 0) {
+                $url = \Tools::substr($url, \Tools::strlen($base_uri));
+            }
+            if (strpos($url, 'index.php?controller=') !== false &&
+                strpos($url, 'index.php/') == 0) {
+                $url = \Tools::substr($url, \Tools::strlen('index.php?controller='));
+                if (\Configuration::get('PS_REWRITING_SETTINGS')) {
+                    $url = \Tools::strReplaceFirst('&', '?', $url);
+                }
+            }
+            $explode = explode('?', $url);
+            $use_ssl = !empty($url);
+            $url = $link->getPageLink($explode[0], $use_ssl);
+
+            if (isset($explode[1])) {
+                $url .= '?'.$explode[1];
+            }
+        }
+
+        return $url;
+    }
+
+    private function getModuleId()
+    {
+        $result = \Db::getInstance()->getRow('SELECT `id_module` FROM `' . _DB_PREFIX_ . 'module` WHERE LOWER(`name`) = \'' . pSQL(\Tools::strtolower($this->name)) . '\'');
+
+        return (int) $result['id_module'];
+    }
+
+    /**
+     * Restores previous cart by order id.
+     *
+     * @param $id_order
+     * @throws \Exception
+     * @throws \PrestaShopException
+     */
+    public function restoreCart($id_order)
+    {
+        $oldCart = new \Cart(\Order::getCartIdStatic($id_order, $this->context->customer->id));
+        $duplication = $oldCart->duplicate();
+        $this->context->cookie->id_cart = $duplication['cart']->id;
+        $context = $this->context;
+        $context->cart = $duplication['cart'];
+        \CartRule::autoAddToCart($context);
+        $this->context->cookie->write();
     }
 }

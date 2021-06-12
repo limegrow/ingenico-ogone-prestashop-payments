@@ -929,11 +929,11 @@ msgstr "Envoyez un e-mail lorsque le remboursement a échoué."
 msgid "Invalid e-mail address"
 msgstr "Adresse e-mail invalide"
 
-msgid "Pay with Ingenico ePayments"
-msgstr "Payer avec Ingenico ePayments"
+msgid "Pay with %name%"
+msgstr "Payer avec %name%"
 
-msgid "Pay safely on the next page with Ingenico using your preferred payment method"
-msgstr "Payez en toute sécurité sur la page suivante avec Ingenico en utilisant votre mode de paiement préféré"
+msgid "Pay safely on the next page with %name% using your preferred payment method"
+msgstr "Payez en toute sécurité sur la page suivante avec %name% en utilisant votre mode de paiement préféré"
 
 msgid "%brand% ends with %cardno%, expires on %month%/%year%"
 msgstr "%brand% se termine par %cardno%, expire le %month%/%year%"
@@ -946,3 +946,27 @@ msgstr "Cartes de crédit"
 
 msgid "Bank Transfer"
 msgstr "Virement Bancaire"
+
+msgid "Card number"
+msgstr "Numéro de carte"
+
+msgid "Card owner"
+msgstr "Propriétaire de la carte"
+
+msgid "Expiration date"
+msgstr "Date d'expiration"
+
+msgid "Are you sure?"
+msgstr "Êtes-vous sûr?"
+
+msgid "Delete"
+msgstr "Effacer"
+
+msgid "My payment methods"
+msgstr "Mes moyens de paiement"
+
+msgid "My active payment methods"
+msgstr "Mes moyens de paiement actifs"
+
+msgid "My account"
+msgstr "Mon compte"

@@ -389,10 +389,12 @@ const Ingenico = {
             Ingenico.addCountries();
         });
 
-        $('.paymentpage_template input[type=file]').live('change', function() {
-            var filename = $('input[type=file]').val().split('\\').pop();
+        $(document).on( 'click', '.paymentpage_template input[type=file]', function (e) {
+            let el = $(this);
+
+            var filename = el.split('\\').pop();
             $('.paymentpage_template .upload-label').html(filename);
-        });
+        } );
     },
 
     pattern : /[a-zA-Z0-9_\-\+\.]/,
@@ -501,7 +503,7 @@ const Ingenico = {
         elm.find('.modal-dialog').addClass('modal-dialog-scrollable');
         elm.modal(options);
         elm.on('shown.bs.modal', function () {
-            $('body').css('overflow', 'auto');
+            //$('body').css('overflow', 'auto');
             //elm.addClass('in');
             //elm.css('top', offset + 'px');
 

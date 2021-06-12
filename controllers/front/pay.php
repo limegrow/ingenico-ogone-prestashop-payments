@@ -17,18 +17,27 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
+use Ingenico\Payment\Connector;
+
 class Ingenico_EpaymentsPayModuleFrontController extends ModuleFrontController
 {
     /** @var Ingenico_epayments */
     public $module;
 
+    /**
+     * @var Connector
+     */
+    public $connector;
+
     public function initContent()
     {
         parent::initContent();
 
-        // Set up Controller for Connector
-        $this->module->controller = $this;
+        $this->connector = $this->module->get('ingenico.payment.connector');
 
-        $this->module->showReminderPayOrderPage();
+        // Set up Controller for Connector
+        $this->connector->controller = $this;
+
+        $this->connector->showReminderPayOrderPage();
     }
 }

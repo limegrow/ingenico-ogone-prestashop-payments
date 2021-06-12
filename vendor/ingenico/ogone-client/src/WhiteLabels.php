@@ -4,7 +4,9 @@ namespace IngenicoClient;
 
 /**
  * Class WhiteLabels.
+ * @method string getPlatform()
  * @method string getLogoUrl()
+ * @method string getLogo()
  * @method string getTemplateGuidEcom()
  * @method string getTemplateGuidFlex()
  * @method string getTemplateGuidPaypal()

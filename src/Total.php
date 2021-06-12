@@ -17,25 +17,13 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
-namespace Ingenico\Model;
+namespace Ingenico\Payment;
 
 use Db;
 use Order;
 
 class Total
 {
-    /** @var \Ingenico_epayments */
-    public $module;
-
-    /**
-     * Reminder constructor.
-     * @param $module
-     */
-    public function __construct($module)
-    {
-        $this->module = $module;
-    }
-
     /**
      * Add Captured Amount
      * @param int $orderId

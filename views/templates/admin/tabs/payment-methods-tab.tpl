@@ -25,7 +25,7 @@
         <button type="button" class="ingenico-btn modal-link" data-modal-id="countries-list">{l s='form.payment_methods.button.fetch' mod='ingenico_epayments'}</button>
     </p>
     <div id="selected_payment_methods">
-        {include file="$template_dir/hook/selected-payment-methods.tpl"}
+        {include file="$template_dir/admin/selected-payment-methods.tpl"}
     </div>
     <p class="col-lg-12">
         <button type="button" class="ingenico-btn modal-link" data-modal-id="payment-methods-list">{l s='form.payment_methods.button.add' mod='ingenico_epayments'}</button>
@@ -100,7 +100,7 @@
                     return $.ajax({
                         method: 'post',
                         type: 'POST',
-                        url: ingenico_ajax_url + '?method=flex_upload',
+                        url: ingenico_flex_upload_url,
                         data: formData,
                         contentType: false,
                         processData: false

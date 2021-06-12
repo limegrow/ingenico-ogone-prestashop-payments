@@ -1,0 +1,6 @@
+services:
+  _defaults:
+    public: true
+
+  ingenico.payment.connector:
+    class: Ingenico\Payment\Connector

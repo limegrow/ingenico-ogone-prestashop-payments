@@ -17,19 +17,27 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
-use Ingenico\Utils;
+use Ingenico\Payment\Utils;
+use Ingenico\Payment\Connector;
 
 class Ingenico_EpaymentsPaymentModuleFrontController extends ModuleFrontController
 {
     /** @var Ingenico_epayments */
     public $module;
 
+    /**
+     * @var Connector
+     */
+    public $connector;
+
     public function initContent()
     {
         parent::initContent();
 
+        $this->connector = $this->module->get('ingenico.payment.connector');
+
         // Set up Controller for Connector
-        $this->module->controller = $this;
+        $this->connector->controller = $this;
 
         $aliasId = Tools::getValue('alias', null);
         $paymentId = Tools::getValue('payment_id');
@@ -46,14 +54,18 @@ class Ingenico_EpaymentsPaymentModuleFrontController extends ModuleFrontControll
         }
 
         if ($aliasId && $aliasId !== \IngenicoClient\IngenicoCoreLibrary::ALIAS_CREATE_NEW) {
-            $alias = $this->module->getAlias($aliasId);
+            $alias = $this->connector->getAlias($aliasId);
             $pm = $alias['PM'];
             $brand = $alias['BRAND'];
         }
 
+        if ($paymentId === \IngenicoClient\PaymentMethod\Ingenico::CODE) {
+            $paymentId = null;
+        }
+
         if (($pm && $brand) || $paymentId) {
             // @todo Get PM and Brand by PaymentMethod Id
-            $data = $this->module->coreLibrary->getSpecifiedRedirectPaymentRequest(
+            $data = $this->connector->coreLibrary->getSpecifiedRedirectPaymentRequest(
                 $orderId,
                 $aliasId,
                 $pm,
@@ -61,13 +73,13 @@ class Ingenico_EpaymentsPaymentModuleFrontController extends ModuleFrontControll
                 $paymentId
             );
 
-            $this->module->showPaymentListRedirectTemplate([
+            $this->connector->showPaymentListRedirectTemplate([
                 'order_id' => $orderId,
                 'url' => $data->getUrl(),
                 'fields' => $data->getFields()
             ]);
         } else {
-            $this->module->coreLibrary->processPaymentRedirect($orderId, $aliasId);
+            $this->connector->coreLibrary->processPaymentRedirect($orderId, $aliasId);
             // @see self::showPaymentListRedirectTemplate()
         }
     }

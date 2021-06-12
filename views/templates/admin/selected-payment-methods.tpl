@@ -22,7 +22,7 @@
     {/foreach}
 </select>
 {foreach $payment_categories as $category => $category_name}
-    {$payment_methods=$module->getPaymentMethodsByCategory($category)}
+    {$payment_methods=$connector->getPaymentMethodsByCategory($category)}
     {foreach $selected_payment_methods as $selected_payment_method}
         {if isset($payment_methods[$selected_payment_method])}
             <h3 class="col-lg-12">{$category_name|escape}</h3>
@@ -55,7 +55,7 @@
                     {$countries=$payment_method->getCountries()}
                     {assign var="array_countries" value=[]}
                     {foreach $countries as $country => $popularities}
-                        {$array_countries[]=$module->getCountryByCode($country)}
+                        {$array_countries[]=$connector->getCountryByCode($country)}
                     {/foreach}
                     {assign var='string' value=', '|implode:$array_countries}
                     {$string|truncate:60:"...":true}
