@@ -1,0 +1,44 @@
+name: Integration tests
+
+on:
+  push:
+    branches:
+    - '*'
+    tags:
+    - '*'
+  pull_request:
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-18.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: ingenico_epayments
+
+      - name: Install dependencies
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: '7.3'
+          extension: intl, mbstring, json, bcmath, sodium, zip
+          coverage: xdebug
+          tools: composer, php-cs-fixer, phpunit:7.5.19, phpcpd, phpmd
+
+      - name: Install tools
+        run: |
+          cd $GITHUB_WORKSPACE/ingenico_epayments
+          composer global require squizlabs/php_codesniffer
+          composer global require phpmd/phpmd
+          composer global require sebastian/phpcpd
+
+      - name: Run PHPCS inspection
+        run: |
+          cd $GITHUB_WORKSPACE/ingenico_epayments
+          # php ~/.composer/vendor/bin/phpcpd ./
+          # php ~/.composer/vendor/bin/phpmd ./ text cleancode,codesize,controversial,design,naming,unusedcode --exclude vendor/
+          # php ~/.composer/vendor/bin/phpcs --standard=PSR1 ./ --ignore=./vendor/*
+          # php ~/.composer/vendor/bin/phpcs --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 --standard=PSR2 ./ --ignore=./vendor/*
+          php -v
