@@ -6,8 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'phpDocumentor\\Reflection\\' => array($vendorDir . '/phpdocumentor/reflection-common/src', $vendorDir . '/phpdocumentor/reflection-docblock/src', $vendorDir . '/phpdocumentor/type-resolver/src'),
-    'Webmozart\\Assert\\' => array($vendorDir . '/webmozart/assert/src'),
     'VIISON\\AddressSplitter\\' => array($vendorDir . '/viison/address-splitter/src'),
     'Symfony\\Polyfill\\Php80\\' => array($vendorDir . '/symfony/polyfill-php80'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
@@ -35,9 +33,5 @@ return array(
     'League\\ISO3166\\' => array($vendorDir . '/league/iso3166/src'),
     'Ingenico\\Payment\\' => array($baseDir . '/src'),
     'IngenicoClient\\' => array($vendorDir . '/ingenico/ogone-client/src'),
-    'Gettext\\Languages\\' => array($vendorDir . '/gettext/languages/src'),
-    'Gettext\\' => array($vendorDir . '/gettext/gettext/src'),
     'Gelf\\' => array($vendorDir . '/graylog2/gelf-php/src/Gelf'),
-    'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
-    'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
 );
