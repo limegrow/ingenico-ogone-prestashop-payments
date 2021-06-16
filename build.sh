@@ -6,8 +6,7 @@ mkdir $TMPDIR/ingenico_epayments
 cp -R -f $CURRENT_DIR/* $TMPDIR/ingenico_epayments/
 
 cd $TMPDIR/ingenico_epayments/
-composer require ingenico/ogone-sdk-php
-composer require ingenico/ogone-client
+composer install --no-dev --optimize-autoloader
 npm install
 gulp js:build
 gulp css:build
@@ -55,11 +54,17 @@ rm -rf ./autoindex
 rm -rf ./vendor/ingenico/ogone-client/src/PaymentMethod/index.php
 rm -rf ./gulpfile.js
 rm -rf ./vendor/ingenico/ogone-client/vendor/sebastian/diff/tests/Output/UnifiedDiffOutputBuilderDataProvider.php
-rm -rf ./vendor/sebastian/diff/tests/Output/UnifiedDiffOutputBuilderDataProvider.php
 rm -rf ./.git
 rm -rf ./vendor/ingenico/ogone-sdk-php/.git
 rm -rf ./vendor/ingenico/ogone-client/.git
 rm -rf ./node_modules/
+rm -rf ./package.json
+rm -rf ./tests/
+rm -rf ./phpunit.xml
+rm -rf ./bitbucket-pipelines.yml
+rm -rf ./.github
+rm -rf ./build.sh
+rm -rf ./WhiteLabelsScripts
 
 cd $TMPDIR
 zip -r ingenico_epayments.zip ./ingenico_epayments/
