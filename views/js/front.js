@@ -149,11 +149,13 @@ jQuery(document).ready(function ($) {
         if ( tos.length > 0 ) {
             setInterval(function () {
                 if ( tos.is( ':checked' ) ) {
-                    //$( '.iframe-wrap' ).show();
-                    $( '.iframe-wrap' ).removeClass( 'locked-frame' );
+                    $( '.iframe-tos-hint' ).hide();
+                    $( '.iframe-wrap' ).show();
+                    //$( '.iframe-wrap' ).removeClass( 'locked-frame' );
                 } else {
-                    //$( '.iframe-wrap' ).hide();
-                    $( '.iframe-wrap' ).addClass( 'locked-frame' );
+                    $( '.iframe-tos-hint' ).show();
+                    $( '.iframe-wrap' ).hide();
+                    //$( '.iframe-wrap' ).addClass( 'locked-frame' );
                 }
             }, 500);
         }

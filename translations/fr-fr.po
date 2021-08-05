@@ -970,3 +970,6 @@ msgstr "Mes moyens de paiement actifs"
 
 msgid "My account"
 msgstr "Mon compte"
+
+msgid "You should accept terms and conditions"
+msgstr "Vous devez accepter les termes et conditions"

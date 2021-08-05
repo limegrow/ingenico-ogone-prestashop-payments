@@ -1,4 +1,10 @@
 # Changelog
+## [5.0.1] - 2021-08-05
+### Changed
+- Remove the conditional freeze of the iFrame
+- Don't empty cart on redirect for payment
+- Oney updates
+
 ## [5.0.0] - 2021-06-12
 ### Added
 - PrestaShop v1.7.7 support

@@ -5,10 +5,20 @@ namespace IngenicoClient;
 use IngenicoClient\PaymentMethod\CarteBancaire;
 use IngenicoClient\PaymentMethod\Afterpay;
 use IngenicoClient\PaymentMethod\Klarna;
+use IngenicoClient\PaymentMethod\KlarnaBankTransfer;
+use IngenicoClient\PaymentMethod\KlarnaDirectDebit;
+use IngenicoClient\PaymentMethod\KlarnaFinancing;
+use IngenicoClient\PaymentMethod\KlarnaPayLater;
+use IngenicoClient\PaymentMethod\KlarnaPayNow;
+use IngenicoClient\PaymentMethod\FacilyPay3x;
+use IngenicoClient\PaymentMethod\FacilyPay3xnf;
+use IngenicoClient\PaymentMethod\FacilyPay4x;
+use IngenicoClient\PaymentMethod\FacilyPay4xnf;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\Loader\PoFileLoader;
 use VIISON\AddressSplitter\AddressSplitter;
+use VIISON\AddressSplitter\Exceptions\SplittingException;
 
 class IngenicoCoreLibrary implements
     IngenicoCoreLibraryInterface,
@@ -1949,14 +1959,15 @@ class IngenicoCoreLibrary implements
     /**
      * Get Order.
      *
-     * @param $orderId
+     * @param mixed $orderId
+     * @param array $fields Additional fields to override
      *
      * @return Order|false
      */
-    private function getOrder($orderId)
+    private function getOrder($orderId, array $fields = [])
     {
         if (!$this->extension->isOrderCreated($orderId)) {
-            return $this->getOrderBeforePlaceOrder($orderId);
+            return $this->getOrderBeforePlaceOrder($orderId, $fields);
         }
 
         $info = $this->extension->requestOrderInfo($orderId);
@@ -1964,8 +1975,73 @@ class IngenicoCoreLibrary implements
             return false;
         }
 
+        // Override order data
+        if (count($fields) > 0) {
+            $info = array_merge($info, $fields);
+        }
+
+        // Substitute street number
+        if (in_array($this->extension->getOrderPaymentMethod($orderId), [
+            Klarna::CODE,
+            Afterpay::CODE,
+            KlarnaBankTransfer::CODE,
+            KlarnaDirectDebit::CODE,
+            KlarnaFinancing::CODE,
+            KlarnaPayLater::CODE,
+            KlarnaPayNow::CODE,
+            FacilyPay3x::CODE,
+            FacilyPay3xnf::CODE,
+            FacilyPay4x::CODE,
+            FacilyPay4xnf::CODE,
+        ])) {
+            if (empty($info[OrderField::BILLING_STREET_NUMBER]) && !empty($info[OrderField::BILLING_ADDRESS1])) {
+                $info[OrderField::BILLING_ADDRESS1] = preg_replace(
+                    '/\s+/',
+                    ' ',
+                    $info[OrderField::BILLING_ADDRESS1]
+                );
+
+                // Split address automatically
+                try {
+                    $result = AddressSplitter::splitAddress($info[OrderField::BILLING_ADDRESS1]);
+                    $info[OrderField::BILLING_ADDRESS1] = trim(sprintf('%s %s %s',
+                        $result['additionToAddress1'],
+                        $result['streetName'],
+                        $result['additionToAddress2']
+                    ));
+
+                    $info[OrderField::BILLING_STREET_NUMBER] = trim($result['houseNumber']);
+                } catch (SplittingException $e) {
+                    // Ignore it
+                }
+            }
+
+            // Substitute street number
+            if (empty($info[OrderField::SHIPPING_STREET_NUMBER]) && !empty($info[OrderField::SHIPPING_ADDRESS1])) {
+                $info[OrderField::SHIPPING_ADDRESS1] = preg_replace(
+                    '/\s+/',
+                    ' ',
+                    $info[OrderField::SHIPPING_ADDRESS1]
+                );
+
+                // Split address automatically
+                try {
+                    $result = AddressSplitter::splitAddress($info[OrderField::SHIPPING_ADDRESS1]);
+                    $info[OrderField::SHIPPING_ADDRESS1] = trim(sprintf('%s %s %s',
+                        $result['additionToAddress1'],
+                        $result['streetName'],
+                        $result['additionToAddress2']
+                    ));
+
+                    $info[OrderField::SHIPPING_STREET_NUMBER] = trim($result['houseNumber']);
+                } catch (SplittingException $e) {
+                    // Ignore it
+                }
+            }
+        }
+
         // Word-wrap of street address
-        if (mb_strlen($info[OrderField::BILLING_ADDRESS1]) > 35) {
+        if (mb_strlen($info[OrderField::BILLING_ADDRESS1], 'UTF-8') > 35) {
             $billingAddress1 = $info[OrderField::BILLING_ADDRESS1];
             $info[OrderField::BILLING_ADDRESS1] = mb_substr($billingAddress1, 0, 35, 'UTF-8');
             $info[OrderField::BILLING_ADDRESS2] = mb_substr(trim(
@@ -1973,7 +2049,7 @@ class IngenicoCoreLibrary implements
             ), 0, 35, 'UTF-8');
         }
 
-        if (mb_strlen($info[OrderField::SHIPPING_ADDRESS1]) > 35) {
+        if (mb_strlen($info[OrderField::SHIPPING_ADDRESS1], 'UTF-8') > 35) {
             $shippingAddress1 = $info[OrderField::SHIPPING_ADDRESS1];
             $info[OrderField::SHIPPING_ADDRESS1] = mb_substr($shippingAddress1, 0, 35, 'UTF-8');
             $info[OrderField::SHIPPING_ADDRESS2] = mb_substr(trim(
@@ -1981,48 +2057,91 @@ class IngenicoCoreLibrary implements
             ), 0, 35, 'UTF-8');
         }
 
-        // Substitute street number
-        if (empty($info[OrderField::BILLING_STREET_NUMBER]) && !empty($info[OrderField::BILLING_ADDRESS1])) {
-            // Split address automatically
-            try {
-                $result = AddressSplitter::splitAddress($info[OrderField::BILLING_ADDRESS1]);
-                $info[OrderField::BILLING_STREET_NUMBER] = $result['houseNumber'];
-            } catch (\Exception $e) {
-                // Ignore it
-            }
-        }
-
-        // Substitute street number
-        if (empty($info[OrderField::SHIPPING_STREET_NUMBER]) && !empty($info[OrderField::SHIPPING_ADDRESS1])) {
-            // Split address automatically
-            try {
-                $result = AddressSplitter::splitAddress($info[OrderField::SHIPPING_ADDRESS1]);
-                $info[OrderField::SHIPPING_STREET_NUMBER] = $result['houseNumber'];
-            } catch (\Exception $e) {
-                // Ignore it
-            }
-        }
-
         return new Order($info);
     }
-
     /**
      * Get IngenicoClient's Order Before The Actual Order Is Created.
      * This Is Necessary To Show CreditCard iFrame In Checkout
      *
-     * @param $reservedOrderId
+     * @param mixed $reservedOrderId
+     * @param array $fields
      *
      * @return Order|false
      */
-    private function getOrderBeforePlaceOrder($reservedOrderId)
+    private function getOrderBeforePlaceOrder($reservedOrderId, array $fields = [])
     {
         $info = $this->extension->requestOrderInfoBeforePlaceOrder($reservedOrderId);
         if (!$info) {
             return false;
         }
 
+        // Override order data
+        if (count($fields) > 0) {
+            $info = array_merge($info, $fields);
+        }
+
+        // Substitute street number
+        if (in_array($this->extension->getQuotePaymentMethod(null), [
+            Klarna::CODE,
+            Afterpay::CODE,
+            KlarnaBankTransfer::CODE,
+            KlarnaDirectDebit::CODE,
+            KlarnaFinancing::CODE,
+            KlarnaPayLater::CODE,
+            KlarnaPayNow::CODE,
+            FacilyPay3x::CODE,
+            FacilyPay3xnf::CODE,
+            FacilyPay4x::CODE,
+            FacilyPay4xnf::CODE,
+        ])) {
+            if (empty($info[OrderField::BILLING_STREET_NUMBER]) && !empty($info[OrderField::BILLING_ADDRESS1])) {
+                $info[OrderField::BILLING_ADDRESS1] = preg_replace(
+                    '/\s+/',
+                    ' ',
+                    $info[OrderField::BILLING_ADDRESS1]
+                );
+
+                // Split address automatically
+                try {
+                    $result = AddressSplitter::splitAddress($info[OrderField::BILLING_ADDRESS1]);
+                    $info[OrderField::BILLING_ADDRESS1] = trim(sprintf('%s %s %s',
+                        $result['additionToAddress1'],
+                        $result['streetName'],
+                        $result['additionToAddress2']
+                    ));
+
+                    $info[OrderField::BILLING_STREET_NUMBER] = trim($result['houseNumber']);
+                } catch (SplittingException $e) {
+                    // Ignore it
+                }
+            }
+
+            // Substitute street number
+            if (empty($info[OrderField::SHIPPING_STREET_NUMBER]) && !empty($info[OrderField::SHIPPING_ADDRESS1])) {
+                $info[OrderField::SHIPPING_ADDRESS1] = preg_replace(
+                    '/\s+/',
+                    ' ',
+                    $info[OrderField::SHIPPING_ADDRESS1]
+                );
+
+                // Split address automatically
+                try {
+                    $result = AddressSplitter::splitAddress($info[OrderField::SHIPPING_ADDRESS1]);
+                    $info[OrderField::SHIPPING_ADDRESS1] = trim(sprintf('%s %s %s',
+                        $result['additionToAddress1'],
+                        $result['streetName'],
+                        $result['additionToAddress2']
+                    ));
+
+                    $info[OrderField::SHIPPING_STREET_NUMBER] = trim($result['houseNumber']);
+                } catch (SplittingException $e) {
+                    // Ignore it
+                }
+            }
+        }
+
         // Word-wrap of street address
-        if (mb_strlen($info[OrderField::BILLING_ADDRESS1]) > 35) {
+        if (mb_strlen($info[OrderField::BILLING_ADDRESS1], 'UTF-8') > 35) {
             $billingAddress1 = $info[OrderField::BILLING_ADDRESS1];
             $info[OrderField::BILLING_ADDRESS1] = mb_substr($billingAddress1, 0, 35, 'UTF-8');
             $info[OrderField::BILLING_ADDRESS2] = mb_substr(trim(
@@ -2030,34 +2149,12 @@ class IngenicoCoreLibrary implements
             ), 0, 35, 'UTF-8');
         }
 
-        if (mb_strlen($info[OrderField::SHIPPING_ADDRESS1]) > 35) {
+        if (mb_strlen($info[OrderField::SHIPPING_ADDRESS1], 'UTF-8') > 35) {
             $shippingAddress1 = $info[OrderField::SHIPPING_ADDRESS1];
             $info[OrderField::SHIPPING_ADDRESS1] = mb_substr($shippingAddress1, 0, 35, 'UTF-8');
             $info[OrderField::SHIPPING_ADDRESS2] = mb_substr(trim(
                 mb_substr($shippingAddress1, 35, null, 'UTF-8') . ' ' . $info[OrderField::SHIPPING_ADDRESS2]
             ), 0, 35, 'UTF-8');
-        }
-
-        // Substitute street number
-        if (empty($info[OrderField::BILLING_STREET_NUMBER]) && !empty($info[OrderField::BILLING_ADDRESS1])) {
-            // Split address automatically
-            try {
-                $result = AddressSplitter::splitAddress($info[OrderField::BILLING_ADDRESS1]);
-                $info[OrderField::BILLING_STREET_NUMBER] = $result['houseNumber'];
-            } catch (\Exception $e) {
-                // Ignore it
-            }
-        }
-
-        // Substitute street number
-        if (empty($info[OrderField::SHIPPING_STREET_NUMBER]) && !empty($info[OrderField::SHIPPING_ADDRESS1])) {
-            // Split address automatically
-            try {
-                $result = AddressSplitter::splitAddress($info[OrderField::SHIPPING_ADDRESS1]);
-                $info[OrderField::SHIPPING_STREET_NUMBER] = $result['houseNumber'];
-            } catch (\Exception $e) {
-                // Ignore it
-            }
         }
 
         return new Order($info);

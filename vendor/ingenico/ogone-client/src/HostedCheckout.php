@@ -20,7 +20,6 @@ use Ogone\AbstractPaymentRequest;
 use Ogone\DirectLink\PaymentOperation;
 use Ogone\Ecommerce\EcommercePaymentRequest;
 use Ogone\Ecommerce\EcommercePaymentResponse;
-use VIISON\AddressSplitter\AddressSplitter;
 
 trait HostedCheckout
 {
@@ -51,6 +50,7 @@ trait HostedCheckout
 
     /**
      * Get Hosted Checkout Payment Request
+     * @see https://epayments-support.ingenico.com/en/integration-solutions/integrations/hosted-payment-page
      *
      * @param \IngenicoClient\Order $order
      * @param \IngenicoClient\Alias $alias
@@ -230,6 +230,7 @@ trait HostedCheckout
             $request->setData('pmlisttype', $listType);
         }
 
+        // Exclude methods which don't work in Generic mode
         if (in_array($paymentId, [null, Ingenico::CODE])) {
             $request->setData('exclpmlist', 'FACILYPAY3X;FACILYPAY3XNF;FACILYPAY4X;FACILYPAY4XNF;KLARNA_BANK_TRANSFER;KLARNA_DIRECT_DEBIT;KLARNA_FINANCING;KLARNA_PAYLATER;KLARNA_PAYNOW;Open Invoice DE;Open Invoice NL;Open Invoice NO');
         }
@@ -272,6 +273,9 @@ trait HostedCheckout
                 ->setEcomBilltoCompany($order->getCompanyName())
                 ->setEcomShiptoCompany($order->getCompanyName());
 
+            // Remove OWNERADDRESS if persist
+            $request->unsOwnerAddress();
+
             // Shipping details (recommended)
             //if (!$order->getIsVirtual()) {
             //    $request->setOrdershipmeth($order->getShippingMethod())
@@ -309,9 +313,21 @@ trait HostedCheckout
                 // Klarna doesn't support ECOM_BILLTO_POSTAL_STREET_LINE3
                 ->unsEcomBilltoPostalStreetLine3()
                 ->unsEcomShiptoPostalStreetLine3();
+
+            // Set owner address
+            $ownerAddress = trim(implode(' ', [
+                trim($order->getBillingAddress1()),
+                trim($order->getBillingAddress2()),
+                trim($order->getBillingAddress3())
+            ]));
+
+            if (mb_strlen($ownerAddress, 'UTF-8') <= 35) {
+                $request->setOwnerAddress($ownerAddress);
+            }
         }
 
         // Parameters for Afterpay
+        // @see https://epayments-support.ingenico.com/en/payment-methods/alternative-payment-methods/afterpay
         if ($paymentId === Afterpay::CODE) {
             $request->setEcomShiptoPostalNamePrefix($order->getShippingCustomerTitle())
                 ->setEcomShiptoOnlineEmail($order->getBillingEmail())
@@ -339,6 +355,9 @@ trait HostedCheckout
             // Afterpay doesn't support ECOM_BILLTO_POSTAL_STREET_LINE3
             $request->unsEcomBilltoPostalStreetLine3()
                 ->unsEcomShiptoPostalStreetLine3();
+
+            // OWNERADDRESS is mandatory for Afterpay. But we have address problem if it's defined
+            $request->unsOwnerAddress();
         }
 
         // Parameters for Oney
@@ -363,6 +382,9 @@ trait HostedCheckout
                 ->setEcomShipmethoddetails('Standard')
                 ->setEcomEstimateddeliverydate(date('Y-m-d', strtotime('+3 days')))
                 ->setEcomShipmethodspeed(3 * 24);
+
+            // Remove OWNERADDRESS if persist
+            $request->unsOwnerAddress();
 
             $checkoutType = $order->getCheckoutType() ? $order->getCheckoutType() : Checkout::TYPE_B2C;
             if ($checkoutType === Checkout::TYPE_B2B) {
@@ -538,7 +560,6 @@ trait HostedCheckout
             ->setEcomBilltoPostalPostalcode($order->getBillingPostcode())
             ->setEcomBilltoPostalStreetLine1($order->getBillingAddress1())
             ->setEcomBilltoPostalStreetLine2($order->getBillingAddress2())
-            //->setEcomBilltoPostalStreetLine3($order->getBillingAddress3())
             ->setEcomShiptoPostalNameFirst($order->getShippingFirstName())
             ->setEcomShiptoPostalNameLast($order->getShippingLastName())
             ->setEcomShiptoPostalCountrycode($order->getShippingCountryCode())
@@ -546,18 +567,6 @@ trait HostedCheckout
             ->setEcomShiptoPostalPostalcode($order->getShippingPostcode())
             ->setEcomShiptoPostalStreetLine1($order->getShippingAddress1())
             ->setEcomShiptoPostalStreetLine2($order->getShippingAddress2());
-        //->setEcomShiptoPostalStreetLine3($order->getShippingAddress3());
-
-        // Set owner address
-        $ownerAddress = trim(implode(' ', [
-            trim($order->getBillingAddress1()),
-            trim($order->getBillingAddress2()),
-            trim($order->getBillingAddress3())
-        ]));
-
-        if (mb_strlen($ownerAddress, 'UTF-8') <= 35) {
-            $request->setOwnerAddress($ownerAddress);
-        }
 
         return $request;
     }

@@ -55,6 +55,9 @@ class Ingenico_EpaymentsOpen_invoiceModuleFrontController extends ModuleFrontCon
             }
         }
 
+        // Restore cart if it was empty
+        $this->connector->restoreCart($orderId);
+
         $payment_id = Tools::getValue('payment_id');
         $pm = Tools::getValue('pm');
         $brand = Tools::getValue('brand');

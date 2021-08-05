@@ -53,6 +53,9 @@ class Ingenico_EpaymentsPaymentModuleFrontController extends ModuleFrontControll
             Utils::setSessionValue('ingenico_order', $orderId);
         }
 
+        // Restore cart if it was empty
+        $this->connector->restoreCart($orderId);
+
         if ($aliasId && $aliasId !== \IngenicoClient\IngenicoCoreLibrary::ALIAS_CREATE_NEW) {
             $alias = $this->connector->getAlias($aliasId);
             $pm = $alias['PM'];

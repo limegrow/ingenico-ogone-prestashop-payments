@@ -967,3 +967,6 @@ msgstr "Mijn actieve betaalmethoden"
 
 msgid "My account"
 msgstr "Mijn rekening"
+
+msgid "You should accept terms and conditions"
+msgstr "U moet de algemene voorwaarden accepteren"
