@@ -287,8 +287,7 @@ trait OpenInvoice
 
         // Initiate OpenInvoice Payment with HostedCheckout API
         // Get order and add overridden fields
-        $order = $this->getOrder($orderId);
-        $order->setData($fields);
+        $order = $this->getOrder($orderId, $fields);
 
         // Initiate Redirect Payment
         $paymentRequest = $this->getHostedCheckoutPaymentRequest($order, $alias);

@@ -22,6 +22,9 @@
         {if $payment_page_type === 'INLINE'}
             <div class="one-click-wrap">
                 <div class="cc-helper-text"></div>
+                <div class="iframe-tos-hint" style="display: none">
+                    {l s='You should accept terms and conditions' mod='ingenico_epayments'}
+                </div>
                 <div class="iframe-wrap">
                     <iframe id="ingenico_iframe_cb" lazyload="on" src="{$frame_url|escape}"
                             style="width: 100%; min-height: 505px; border: none;"

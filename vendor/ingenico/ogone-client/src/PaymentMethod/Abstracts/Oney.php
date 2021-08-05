@@ -35,7 +35,7 @@ abstract class Oney extends PaymentMethod
             'length' => 35
         ],
         OrderField::BILLING_ADDRESS2 => [
-            'required' => true,
+            'required' => false,
             'field_type' => PaymentMethod::TYPE_TEXT,
             'length' => 35
         ],

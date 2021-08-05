@@ -99,6 +99,7 @@ trait DirectLinkPayment
             $request->setCn(str_replace(['"', "'"], '', $order->getBillingFullName()));
         }
 
+        // @see https://epayments-support.ingenico.com/en/integration-solutions/integrations/directlink
         $request->setOrig($this->getConfiguration()->getShoppingCartExtensionId())
             ->setShoppingCartExtensionId($this->getConfiguration()->getShoppingCartExtensionId())
             ->setPspId($this->getConfiguration()->getPspid())
@@ -119,6 +120,17 @@ trait DirectLinkPayment
 
         // Add Order values
         $request = self::copyOrderDataToPaymentRequest($request, $order);
+
+        // Set owner address
+        $ownerAddress = trim(implode(' ', [
+            trim($order->getBillingAddress1()),
+            trim($order->getBillingAddress2()),
+            trim($order->getBillingAddress3())
+        ]));
+
+        if (mb_strlen($ownerAddress, 'UTF-8') <= 35) {
+            $request->setOwnerAddress($ownerAddress);
+        }
 
         // Use 3DSecure
         if (!$skipSecurityCheck) {

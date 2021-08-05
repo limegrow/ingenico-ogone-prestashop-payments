@@ -2467,6 +2467,11 @@ class Connector extends \IngenicoClient\Connector implements ConnectorInterface
             $fields['customer_dob'] = strtotime($fields['customer_dob']);
         }
 
+        // Sanitize data
+        foreach ($fields as $key => $value) {
+            $fields[$key] = is_string($value) ? trim($value) : $value;
+        }
+
         try {
             $this->coreLibrary->initiateOpenInvoicePayment($orderId, $alias, $fields);
         } catch (\Exception $e) {

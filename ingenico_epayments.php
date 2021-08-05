@@ -41,7 +41,7 @@ use PrestaShopBundle\Controller\Admin\Sell\Order\ActionsBarButton;
 
 class Ingenico_Epayments extends PaymentModule
 {
-    const VERSION = '5.0.0';
+    const VERSION = '5.0.1';
 
     /**
      * @var ContainerInterface
